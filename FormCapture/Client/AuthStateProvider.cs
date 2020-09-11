@@ -33,6 +33,17 @@ namespace FormCapture.Client
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt")));
         }
 
+        public void SetUserAsAuthenticated(string email)
+        {
+            ClaimsPrincipal user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Email, email) }, "api"));
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
+        }
+
+        public void SetUserAsLogedOut()
+        {
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()))));
+        }
+
         public IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             string payload = jwt.Split('.')[1];

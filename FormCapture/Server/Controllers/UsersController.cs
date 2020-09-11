@@ -18,8 +18,6 @@ namespace FormCapture.Server.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private static User user = new User() { IsAuthenticated = false };
-
         private readonly UserManager<IdentityUser> _userManager;
 
         private readonly IConfiguration _configuration;
@@ -33,7 +31,7 @@ namespace FormCapture.Server.Controllers
             _signInManager = signInManager;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationModel registration)
         {
             if (registration == null)
@@ -48,11 +46,11 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return BadRequest();
+                return BadRequest(res.Errors);
             }
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
             if (login == null)

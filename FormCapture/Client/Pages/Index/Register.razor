@@ -1,0 +1,39 @@
+﻿@page "/register"
+@inject IAuthenticationService AuthenticationService
+@inject NavigationManager NavigationManager
+
+<h3>Register</h3>
+
+<div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" @bind-value="model.Email" class="form-control" id="email" name="email" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" @bind-value="model.Password" class="form-control" id="password" name="password" />
+    </div>
+
+    <div class="form-group">
+        <label for="confirm-password">Confirm password:</label>
+        <input type="password" @bind-value="model.ConfirmationPassword" class="form-control" id="confirm-password" name="confirm-password" />
+    </div>
+
+    <button @onclick="SubmitForm" class="btn btn-primary">Submit</button>
+</div>
+
+@code
+{
+    private RegistrationModel model = new RegistrationModel();
+
+    private async Task SubmitForm()
+    {
+        bool res = await AuthenticationService.RegisterUser(model);
+        Console.WriteLine(res);
+        if (res)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}
