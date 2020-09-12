@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using FormCapture.Shared.DbModels;
+
+namespace FormCapture.Server.DataAccess
+{
+    public class ProcessedFileOperations
+    {
+        private readonly AppDbContext _dataContext;
+
+        public ProcessedFileOperations(AppDbContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
+
+        /// <summary>
+        /// Method for obtaining list of files in a specific batch.
+        /// </summary>
+        /// <param name="batchID">ID of the batch.</param>
+        /// <returns>List of files in a specific batch.</returns>
+        public List<ProcessedFile> GetBatchFiles(string batchID) => _dataContext.ProcessedFiles.Where(i => i.BatchID.Equals(batchID)).ToList();
+
+        /// <summary>
+        /// Method for adding a new entry to db table with processed files.
+        /// </summary>
+        /// <param name="files">Entry data as a list of instances of ProcessedFile class.</param>
+        /// <returns>True if entry was written into db. False if not.</returns>
+        public async Task<bool> AddNewFile(List<ProcessedFile> files)
+        {
+            try
+            {
+                foreach (ProcessedFile file in files)
+                {
+                    _dataContext.ProcessedFiles.Add(file);
+                }
+                await _dataContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Method for removing an entry from db table with processed files.
+        /// </summary>
+        /// <param name="files">Entries that will be deleted.</param>
+        /// <returns>True if entry was removed from db. False if not.</returns>
+        public async Task<bool> DeleteFile(List<ProcessedFile> files)
+        {
+            try
+            {
+                foreach (ProcessedFile file in files)
+                {
+                    _dataContext.ProcessedFiles.Remove(file);
+                }
+                await _dataContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+    }
+}

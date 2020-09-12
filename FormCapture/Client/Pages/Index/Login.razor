@@ -1,10 +1,11 @@
-﻿@page "/login"
+﻿@layout MainLayout
+@page "/login"
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 
 <h3>Login</h3>
 
-<div>
+<div class="form-card">
     <div class="form-group">
         <label for="email">Email:</label>
         <input type="email" @bind-value="loginModel.Email" class="form-control" id="email" name="email" />
@@ -25,5 +26,9 @@
     private async Task Submit()
     {
         bool res = await AuthService.LoginUser(loginModel);
+        if (res)
+        {
+            NavigationManager.NavigateTo("/formcapture/home");
+        }
     }
 }
