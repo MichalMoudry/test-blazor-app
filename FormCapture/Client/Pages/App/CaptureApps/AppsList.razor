@@ -4,6 +4,69 @@
 
 <h3>Apps</h3>
 
-@code {
+<div class="row">
+    <div class="col col-lg-2 col-sm-6">
+        <button class="btn btn-success" data-toggle="modal" data-target="#add-app-dialog"><span class="oi oi-plus"></span> Add a new app</button>
+    </div>
 
+    <div class="col col-lg-2 col-sm-6">
+        <button class="btn btn-light"><span class="oi oi-elevator"></span> Sort list</button>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+    <h4>Your apps</h4>
+</div>
+
+<!--Modal for adding apps-->
+<div class="modal" id="add-app-dialog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Add a new capture app</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="app-name">Application name:</label>
+                    <input type="text" @bind-value="captureApplication.Name" id="app-name" name="app-name" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label for="lang-codes">Capture language:</label>
+                    <select @bind="captureApplication.Locale" class="form-control" id="lang-codes" name="lang-codes">
+                        <option value="en-US">en-US</option>
+                        <option value="cz-CS">cz-CS</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" @onclick="ConfirmModal" data-dismiss="modal"><span class="oi oi-check"></span> Confirm</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="oi oi-x"></span> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    private CaptureApplication captureApplication = new CaptureApplication();
+
+    private void ConfirmModal()
+    {
+        if (string.IsNullOrEmpty(captureApplication.Locale))
+        {
+            captureApplication.Locale = "en-US";
+        }
+        captureApplication.ID = Guid.NewGuid().ToString();
+        //TODO: Add REST API call
+        captureApplication.Name = string.Empty;
+        captureApplication.Locale = "en-US";
+    }
 }
