@@ -11,11 +11,11 @@ namespace FormCapture.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CaptureApplicationsController : ControllerBase
+    public class CaptureAppsController : ControllerBase
     {
         private readonly CaptureApplicationsOps _captureApplicationsOps;
 
-        public CaptureApplicationsController(AppDbContext context)
+        public CaptureAppsController(AppDbContext context)
         {
             _captureApplicationsOps = new CaptureApplicationsOps(context);
         }

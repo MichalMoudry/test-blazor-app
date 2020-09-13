@@ -35,7 +35,7 @@ namespace FormCapture.Client
 
         public void SetUserAsAuthenticated(string email)
         {
-            ClaimsPrincipal user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Email, email) }, "api"));
+            ClaimsPrincipal user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, email) }, "api"));
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
 
@@ -44,7 +44,7 @@ namespace FormCapture.Client
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()))));
         }
 
-        public IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+        private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             string payload = jwt.Split('.')[1];
             byte[] jsonBytes = ParseBase64WithoutPadding(payload);

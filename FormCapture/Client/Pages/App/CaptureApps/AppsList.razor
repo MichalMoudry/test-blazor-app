@@ -4,6 +4,8 @@
 
 <h3>Apps</h3>
 
+<hr />
+
 <div class="row">
     <div class="col col-lg-2 col-sm-6">
         <button class="btn btn-success" data-toggle="modal" data-target="#add-app-dialog"><span class="oi oi-plus"></span> Add a new app</button>
@@ -14,10 +16,44 @@
     </div>
 </div>
 
-<hr />
-
-<div class="row">
+<!--User's apps-->
+<div>
     <h4>Your apps</h4>
+    @if (captureApplications == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Locale</td>
+                    <td>Added</td>
+                    <td>Edit</td>
+                    <td>Delete</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (CaptureApplication application in captureApplications)
+                {
+                    <tr>
+                        <td>@application.Name</td>
+                        <td>@application.Locale</td>
+                        <td>@application.Added</td>
+                        <td><span class="oi oi-pencil"></span></td>
+                        <td><span class="oi oi-trash"></span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<!--Block for apps that user is part of-->
+<div class="row">
+
 </div>
 
 <!--Modal for adding apps-->
@@ -34,12 +70,12 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label for="app-name">Application name:</label>
-                    <input type="text" @bind-value="captureApplication.Name" id="app-name" name="app-name" class="form-control" />
+                    <input type="text" @bind="appName" id="app-name" name="app-name" placeholder="Application name..." class="form-control" />
                 </div>
 
                 <div class="form-group">
                     <label for="lang-codes">Capture language:</label>
-                    <select @bind="captureApplication.Locale" class="form-control" id="lang-codes" name="lang-codes">
+                    <select @bind="appLocale" class="form-control" id="lang-codes" name="lang-codes">
                         <option value="en-US">en-US</option>
                         <option value="cz-CS">cz-CS</option>
                     </select>
@@ -56,17 +92,56 @@
 
 @code
 {
-    private CaptureApplication captureApplication = new CaptureApplication();
+    private CaptureApplication captureApplication;
 
-    private void ConfirmModal()
+    /// <summary>
+    /// Field with all user's apps.
+    /// </summary>
+    private List<CaptureApplication> captureApplications = new List<CaptureApplication>();
+
+    /// <summary>
+    /// Field with a capture application name.
+    /// </summary>
+    private string appName;
+
+    /// <summary>
+    /// Field with with a capture application locale.
+    /// </summary>
+    private string appLocale;
+
+    /// <summary>
+    /// Method for confirming modal form for adding a new capture application.
+    /// </summary>
+    private async Task ConfirmModal()
     {
-        if (string.IsNullOrEmpty(captureApplication.Locale))
+        if (string.IsNullOrEmpty(appLocale))
         {
-            captureApplication.Locale = "en-US";
+            appLocale = "en-US";
         }
-        captureApplication.ID = Guid.NewGuid().ToString();
-        //TODO: Add REST API call
-        captureApplication.Name = string.Empty;
-        captureApplication.Locale = "en-US";
+        if (!string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(appLocale))
+        {
+            captureApplication = new CaptureApplication();
+            captureApplication.ID = Guid.NewGuid().ToString();
+            captureApplication.Added = DateTime.Now;
+            captureApplication.Updated = captureApplication.Added;
+            captureApplication.Name = appName;
+            captureApplication.Locale = appLocale;
+            HttpResponseMessage temp = await HttpClient.PostAsJsonAsync("api/captureapps/add", captureApplication);
+            if (temp.IsSuccessStatusCode)
+            {
+                captureApplications.Add(captureApplication);
+            }
+            appName = string.Empty;
+            appLocale = "en-US";
+        }
+    }
+
+    /// <summary>
+    /// Override of OnInitializedAsync() method.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        //HttpResponseMessage temp = await httpClient.PostAsJsonAsync<string>("api/captureapps/", userID);
+        //captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
     }
 }
