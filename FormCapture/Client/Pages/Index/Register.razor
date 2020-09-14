@@ -21,20 +21,50 @@
         <input type="password" @bind-value="model.ConfirmationPassword" placeholder="Confirm your password..." class="form-control" id="confirm-password" name="confirm-password" />
     </div>
 
+    <div class="form-group">
+        <label>Account role:</label>
+        <select class="form-control" @bind="accountRole">
+            <option value="Admin">Admin</option>
+            <option value="Workflow admin">Workflow admin</option>
+            <option value="User">User</option>
+        </select>
+    </div>
+
     <button @onclick="SubmitForm" class="btn btn-primary">Submit</button>
+
+    <br />
+
+    <div class="small-loading-indicator @LoadingIndicatorCssClass">
+    </div>
 </div>
 
 @code
 {
     private RegistrationModel model = new RegistrationModel();
 
+    private string accountRole;
+
+    private bool isLoadingIndicatorHidden = true;
+
+    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "hidden" : null;
+
     private async Task SubmitForm()
     {
-        bool res = await AuthenticationService.RegisterUser(model);
-        Console.WriteLine(res);
-        if (res)
+        if (string.IsNullOrEmpty(accountRole))
         {
-            NavigationManager.NavigateTo("/login");
+            accountRole = "Admin";
+        }
+        if (!string.IsNullOrEmpty(accountRole))
+        {
+            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+            Console.WriteLine(accountRole);
+            model.Role = accountRole;
+            bool res = await AuthenticationService.RegisterUser(model);
+            if (res)
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
         }
     }
 }

@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FormCapture.Server.DataAccess;
 using FormCapture.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class CaptureAppsController : ControllerBase

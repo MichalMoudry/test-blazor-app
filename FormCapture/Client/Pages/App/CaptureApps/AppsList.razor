@@ -1,6 +1,8 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
+@inject ILocalStorageService LocalStorageService
 @page "/formcapture/apps"
+@attribute [Authorize]
 
 <h3>Apps</h3>
 
@@ -109,6 +111,8 @@
     /// </summary>
     private string appLocale;
 
+    private string userEmail;
+
     /// <summary>
     /// Method for confirming modal form for adding a new capture application.
     /// </summary>
@@ -126,6 +130,7 @@
             captureApplication.Updated = captureApplication.Added;
             captureApplication.Name = appName;
             captureApplication.Locale = appLocale;
+
             HttpResponseMessage temp = await HttpClient.PostAsJsonAsync("api/captureapps/add", captureApplication);
             if (temp.IsSuccessStatusCode)
             {
@@ -141,6 +146,8 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        userEmail = await LocalStorageService.GetItemAsync<string>("userEmail");
+        HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", await LocalStorageService.GetItemAsync<string>("token"));
         //HttpResponseMessage temp = await httpClient.PostAsJsonAsync<string>("api/captureapps/", userID);
         //captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -39,6 +40,7 @@ namespace FormCapture.Server.Controllers
             IdentityResult res = await _userManager.CreateAsync(user, registration.Password);
             if (res.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user, registration.Role);
                 return Ok();
             }
             else
@@ -59,11 +61,19 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            Claim[] claims = new Claim[]
+
+            IdentityUser usr = await _userManager.FindByEmailAsync(login.Email);
+            IList<string> roles = await _userManager.GetRolesAsync(usr);
+            List<Claim> claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, login.Email),
-                new Claim(ClaimTypes.Email, login.Email)
+                new Claim(ClaimTypes.Email, login.Email),
+                new Claim(ClaimTypes.Name, login.Email)
             };
+            foreach (string role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["SecurityKey"]));
             SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
             JwtSecurityToken token = new JwtSecurityToken(_configuration["Issuer"], _configuration["Audience"], claims, expires: DateTime.Now.AddDays(1), signingCredentials: credentials);

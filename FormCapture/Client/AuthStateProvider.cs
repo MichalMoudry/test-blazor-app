@@ -33,9 +33,9 @@ namespace FormCapture.Client
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt")));
         }
 
-        public void SetUserAsAuthenticated(string email)
+        public void SetUserAsAuthenticated(string token)
         {
-            ClaimsPrincipal user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.Email, email), new Claim(ClaimTypes.Name, email) }, "api"));
+            ClaimsPrincipal user = new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt"));
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
 
@@ -46,10 +46,18 @@ namespace FormCapture.Client
 
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
+            List<Claim> claims = new List<Claim>();
             string payload = jwt.Split('.')[1];
             byte[] jsonBytes = ParseBase64WithoutPadding(payload);
             Dictionary<string, object> keyValuePairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
-            return keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString()));
+            keyValuePairs.TryGetValue(ClaimTypes.Role, out object roles);
+            foreach (var item in keyValuePairs)
+            {
+                Console.WriteLine($"{item.Key} || {item.Value}");
+            }
+            claims.Add(new Claim(ClaimTypes.Role, roles.ToString()));
+            claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
+            return claims;
         }
 
         private byte[] ParseBase64WithoutPadding(string base64)

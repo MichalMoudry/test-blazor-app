@@ -22,5 +22,9 @@ namespace FormCapture.Shared
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         public string ConfirmationPassword { get; set; }
+
+        [Required]
+        [RegularExpression(@"(^Admin$|^Workflow admin$|^User$)")]
+        public string Role { get; set; }
     }
 }
