@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using FormCapture.Server.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using FormCapture.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
+    [Authorize(Roles = "Admin, Workflow admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class TasksController : ControllerBase

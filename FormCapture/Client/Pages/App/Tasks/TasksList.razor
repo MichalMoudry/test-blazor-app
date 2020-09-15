@@ -1,0 +1,81 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@page "/formcapture/tasks"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        <h3>Tasks</h3>
+
+        <hr />
+
+        <div class="row">
+            <div class="col col-lg-2 col-sm-6">
+                <button class="btn btn-success" @onclick="@(e => Navigate("/formcapture/tasks/add"))"><span class="oi oi-plus"></span> Add a new task</button>
+            </div>
+
+            <div class="col col-lg-2 col-sm-6">
+                <button class="btn btn-light"><span class="oi oi-elevator"></span> Sort list</button>
+            </div>
+        </div>
+
+        <div>
+            <br />
+            @if (tasks == null)
+            {
+                <p>Loading...</p>
+            }
+            else
+            {
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <td>Name</td>
+                            <td>Added</td>
+                            <td>Edit</td>
+                            <td>Delete</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach  (AppWorkflowTask task in tasks)
+                        {
+                            <tr>
+                                <td>@task.TaskName</td>
+                                <td>@task.Added</td>
+                                <td @onclick="@(e => Navigate($"/formcapture/tasks/{task.ID}"))"><span class="oi oi-pencil"></span></td>
+                                <td><span class="oi oi-trash"></span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        @code
+        {
+            /// <summary>
+            /// Field that contains all user's tasks.
+            /// </summary>
+            private List<AppWorkflowTask> tasks;
+
+            private void Navigate(string page)
+            {
+                NavigationManager.NavigateTo(page);
+            }
+
+            /// <summary>
+            /// Override of OnInitializedAsync() method.
+            /// </summary>
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/", ClaimsHelper.Instance().GetEmailClaim().Value);
+                tasks = JsonConvert.DeserializeObject<List<AppWorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>

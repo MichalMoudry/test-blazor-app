@@ -2,94 +2,107 @@
 @inject HttpClient HttpClient
 @inject ILocalStorageService LocalStorageService
 @page "/formcapture/apps"
-@attribute [Authorize]
 
 <h3>Apps</h3>
 
 <hr />
 
-<div class="row">
-    <div class="col col-lg-2 col-sm-6">
-        <button class="btn btn-success" data-toggle="modal" data-target="#add-app-dialog"><span class="oi oi-plus"></span> Add a new app</button>
-    </div>
+<!--Admins's apps-->
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        <div class="row">
+            <div class="col col-lg-2 col-sm-6">
+                <button class="btn btn-success" data-toggle="modal" data-target="#add-app-dialog"><span class="oi oi-plus"></span> Add a new app</button>
+            </div>
 
-    <div class="col col-lg-2 col-sm-6">
-        <button class="btn btn-light"><span class="oi oi-elevator"></span> Sort list</button>
-    </div>
-</div>
-
-<!--User's apps-->
-<div>
-    <h4>Your apps</h4>
-    @if (captureApplications == null)
-    {
-        <p>Loading...</p>
-    }
-    else
-    {
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <td>Name</td>
-                    <td>Locale</td>
-                    <td>Added</td>
-                    <td>Edit</td>
-                    <td>Delete</td>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (CaptureApplication application in captureApplications)
-                {
-                    <tr>
-                        <td>@application.Name</td>
-                        <td>@application.Locale</td>
-                        <td>@application.Added</td>
-                        <td><span class="oi oi-pencil"></span></td>
-                        <td><span class="oi oi-trash"></span></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
-</div>
-
-<!--Block for apps that user is part of-->
-<div class="row">
-
-</div>
-
-<!--Modal for adding apps-->
-<div class="modal" id="add-app-dialog" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Add a new capture app</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+            <div class="col col-lg-2 col-sm-6">
+                <button class="btn btn-light dropdown-toggle" id="apps-sort-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sort list
                 </button>
-            </div>
-
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="app-name">Application name:</label>
-                    <input type="text" @bind="appName" id="app-name" name="app-name" placeholder="Application name..." class="form-control" />
+                <div class="dropdown-menu" aria-labelledby="apps-sort-menu-button">
+                    <a class="dropdown-item" href="">Sort by name</a>
+                    <a class="dropdown-item" href="">Sort by locale</a>
+                    <a class="dropdown-item" href="">Sort by date added</a>
                 </div>
-
-                <div class="form-group">
-                    <label for="lang-codes">Capture language:</label>
-                    <select @bind="appLocale" class="form-control" id="lang-codes" name="lang-codes">
-                        <option value="en-US">en-US</option>
-                        <option value="cz-CS">cz-CS</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" @onclick="ConfirmModal" data-dismiss="modal"><span class="oi oi-check"></span> Confirm</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="oi oi-x"></span> Close</button>
             </div>
         </div>
-    </div>
+
+        <div>
+            <br />
+            <h4><span class="oi oi-list"></span> Your apps</h4>
+            @if (captureApplications == null)
+            {
+                <p>Loading...</p>
+            }
+            else
+            {
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <td>Name</td>
+                            <td>Locale</td>
+                            <td>Added</td>
+                            <td>Edit</td>
+                            <td>Delete</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (CaptureApplication application in captureApplications)
+                        {
+                            <tr>
+                                <td>@application.Name</td>
+                                <td>@application.Locale</td>
+                                <td>@application.Added</td>
+                                <td><span class="oi oi-pencil"></span></td>
+                                <td><span class="oi oi-trash"></span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+
+        <!--Modal for adding apps-->
+        <div class="modal" id="add-app-dialog" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add a new capture app</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="app-name">Application name:</label>
+                            <input type="text" @bind="appName" id="app-name" name="app-name" placeholder="Application name..." class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lang-codes">Capture language:</label>
+                            <select @bind="appLocale" class="form-control" id="lang-codes" name="lang-codes">
+                                <option value="en-US">en-US</option>
+                                <option value="cz-CS">cz-CS</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" @onclick="ConfirmModal" data-dismiss="modal"><span class="oi oi-check"></span> Confirm</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="oi oi-x"></span> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+    </Authorized>
+</AuthorizeView>
+
+<!--Block for apps that user is part of-->
+<div>
+    <h4><span class="oi oi-chevron-bottom"></span> Apps that you are part of</h4>
 </div>
 
 @code
@@ -111,8 +124,6 @@
     /// </summary>
     private string appLocale;
 
-    private string userEmail;
-
     /// <summary>
     /// Method for confirming modal form for adding a new capture application.
     /// </summary>
@@ -130,6 +141,7 @@
             captureApplication.Updated = captureApplication.Added;
             captureApplication.Name = appName;
             captureApplication.Locale = appLocale;
+            captureApplication.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
 
             HttpResponseMessage temp = await HttpClient.PostAsJsonAsync("api/captureapps/add", captureApplication);
             if (temp.IsSuccessStatusCode)
@@ -146,9 +158,11 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
-        userEmail = await LocalStorageService.GetItemAsync<string>("userEmail");
-        HttpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", await LocalStorageService.GetItemAsync<string>("token"));
-        //HttpResponseMessage temp = await httpClient.PostAsJsonAsync<string>("api/captureapps/", userID);
-        //captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
+        if (!ClaimsHelper.Instance().GetRoleClaim().Value.Equals("User"))
+        {
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+            HttpResponseMessage temp = await HttpClient.PostAsJsonAsync<string>("api/captureapps/", ClaimsHelper.Instance().GetEmailClaim().Value);
+            captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
+        }
     }
 }

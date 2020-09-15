@@ -1,0 +1,67 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@page "/formcapture/tasks/add"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        <h3>Add a new task</h3>
+
+        <hr />
+
+        <div>
+            <div class="form-group">
+                <label for="task-name">Task name:</label>
+                <input name="task-name" id="task-name" placeholder="Enter a task name..." @bind-value="workflowTask.TaskName" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label for="task-content">Task content: <a title="Information"><span class="oi oi-question-mark"></span></a></label>
+                <textarea @bind="taskContent" placeholder="Enter task content..." name="task-content" id="task-content" class="form-control">
+                </textarea>
+            </div>
+
+            <div class="form-group">
+                <button @onclick="ConfirmForm" class="btn btn-success"><span class="oi oi-check"></span> Confirm</button>
+            </div>
+        </div>
+
+        @code
+        {
+            private AppWorkflowTask workflowTask = new AppWorkflowTask();
+
+            /// <summary>
+            /// Page field that contains content of the task.
+            /// </summary>
+            private string taskContent;
+
+            private async Task ConfirmForm()
+            {
+                if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.TaskName))
+                {
+                    workflowTask.ID = Guid.NewGuid().ToString();
+                    workflowTask.TaskContent = System.Text.Encoding.UTF8.GetBytes(taskContent);
+                    workflowTask.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
+                    workflowTask.Added = DateTime.Now;
+                    workflowTask.Updated = workflowTask.Added;
+                    HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/add", workflowTask);
+                    if (responseMessage.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo("/formcapture/tasks");
+                    }
+                }
+            }
+
+            protected override void OnInitialized()
+            {
+                taskContent = "";
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                base.OnInitialized();
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>

@@ -35,7 +35,6 @@ namespace FormCapture.Client.Services
             {
                 string token = await httpResponseMessage.Content.ReadAsStringAsync();
                 await _localStorageService.SetItemAsync("token", token);
-                await _localStorageService.SetItemAsync("userEmail", loginModel.Email);
                 ((AuthStateProvider)_authenticationStateProvider).SetUserAsAuthenticated(token);
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
                 return true;

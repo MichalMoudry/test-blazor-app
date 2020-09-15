@@ -3,7 +3,7 @@
 @inject IAuthenticationService AuthService
 @inject NavigationManager NavigationManager
 
-<h3>Login</h3>
+<h3><span class="oi oi-account-login"></span> Login</h3>
 
 <div class="form-card">
     <div class="form-group">
@@ -17,18 +17,33 @@
     </div>
 
     <button @onclick="Submit" class="btn btn-primary">Submit</button>
+
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 </div>
 
 @code
 {
     private LoginModel loginModel = new LoginModel();
 
+    private bool isLoadingIndicatorHidden = true;
+
+    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "hidden" : null;
+
     private async Task Submit()
     {
-        bool res = await AuthService.LoginUser(loginModel);
-        if (res)
+        if (!string.IsNullOrEmpty(loginModel.Email) && !string.IsNullOrEmpty(loginModel.Password))
         {
-            NavigationManager.NavigateTo("/formcapture/home");
+            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+            bool res = await AuthService.LoginUser(loginModel);
+            if (res)
+            {
+                NavigationManager.NavigateTo("/formcapture/home");
+            }
+            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
         }
     }
 }

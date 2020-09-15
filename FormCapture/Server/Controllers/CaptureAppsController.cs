@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Workflow admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class CaptureAppsController : ControllerBase
