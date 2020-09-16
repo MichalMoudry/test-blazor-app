@@ -32,7 +32,7 @@ namespace FormCapture.Server.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationModel registration)
         {
-            if (registration == null)
+            if (registration == null || string.IsNullOrEmpty(registration.Password) || string.IsNullOrEmpty(registration.Email) || string.IsNullOrEmpty(registration.ConfirmationPassword))
             {
                 return BadRequest();
             }

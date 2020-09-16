@@ -26,19 +26,11 @@ namespace FormCapture.Server.DataAccess
 
         public DbSet<CaptureApplication> CaptureApplications { get; set; }
 
-        public DbSet<AppWorkflow> Workflows { get; set; }
-
         public DbSet<UserApps> UserApps { get; set; }
 
         public DbSet<UserSetting> UserSettings { get; set; }
 
-        public DbSet<AppWorkflowGroup> WorkflowGroups { get; set; }
-
-        public DbSet<AppWorkflowTask> WorkflowTasks { get; set; }
-
-        public DbSet<AppWorkflowTaskGrouping> WorkflowTaskGrouping { get; set; }
-
-        public DbSet<CaptureAppWorkflows> CaptureAppWorkflows { get; set; }
+        public DbSet<WorkflowTask> WorkflowTasks { get; set; }
 
         public DbSet<Queue> Queue { get; set; }
 
@@ -47,5 +39,11 @@ namespace FormCapture.Server.DataAccess
         public DbSet<Batch> Batches { get; set; }
 
         public DbSet<ProcessedFile> ProcessedFiles { get; set; }
+
+        public DbSet<Workflow> Workflows { get; set; }
+
+        public DbSet<WorkflowTaskGrouping> TaskGroupings { get; set; }
+
+        public DbSet<CaptureAppWorkflows> AppWorkflows { get; set; }
     }
 }

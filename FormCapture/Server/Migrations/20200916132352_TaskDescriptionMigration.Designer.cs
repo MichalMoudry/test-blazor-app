@@ -4,14 +4,16 @@ using FormCapture.Server.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FormCapture.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200916132352_TaskDescriptionMigration")]
+    partial class TaskDescriptionMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,28 +44,6 @@ namespace FormCapture.Server.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Batches");
-                });
-
-            modelBuilder.Entity("FormCapture.Shared.DbModels.CaptureAppWorkflows", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Added")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AppID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("WorkflowID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("AppWorkflows");
                 });
 
             modelBuilder.Entity("FormCapture.Shared.DbModels.CaptureApplication", b =>
@@ -225,28 +205,6 @@ namespace FormCapture.Server.Migrations
                     b.ToTable("UserSettings");
                 });
 
-            modelBuilder.Entity("FormCapture.Shared.DbModels.Workflow", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Added")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Workflows");
-                });
-
             modelBuilder.Entity("FormCapture.Shared.DbModels.WorkflowTask", b =>
                 {
                     b.Property<string>("ID")
@@ -273,31 +231,6 @@ namespace FormCapture.Server.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("WorkflowTasks");
-                });
-
-            modelBuilder.Entity("FormCapture.Shared.DbModels.WorkflowTaskGrouping", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Added")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("ExecutionOrderNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TaskGroupName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TaskID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("TaskGroupings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -329,22 +262,22 @@ namespace FormCapture.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "819be047-5640-4f5a-b34d-2de279b0ff2b",
-                            ConcurrencyStamp = "8a7ff5d9-c0c9-4427-a3f3-c3b6d0ebd4bc",
+                            Id = "0201d451-b504-4ac1-a2e0-9979bf8387f7",
+                            ConcurrencyStamp = "fadbd83f-e10e-4d9a-9930-75f8b123afa1",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "69d93057-25bd-46d0-8ccf-93eb5869e24e",
-                            ConcurrencyStamp = "261bd49c-7a22-4e3b-8fb9-881c29ed5669",
+                            Id = "bf8e15e1-2943-414d-a019-ce8daae57c6b",
+                            ConcurrencyStamp = "c502c267-f0df-4577-8c24-0daa9104de6a",
                             Name = "Workflow admin",
                             NormalizedName = "WORKFLOW ADMIN"
                         },
                         new
                         {
-                            Id = "9cd777ff-0c8f-4e72-9505-3b2ed5367f76",
-                            ConcurrencyStamp = "32e31626-f587-4bc8-bef6-4607439e2182",
+                            Id = "954c33d8-a328-42bf-9884-8c0605b6aaf0",
+                            ConcurrencyStamp = "904df24a-5968-462f-928f-e7be46203956",
                             Name = "User",
                             NormalizedName = "USER"
                         });

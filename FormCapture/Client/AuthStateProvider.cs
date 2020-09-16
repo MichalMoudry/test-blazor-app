@@ -27,7 +27,6 @@ namespace FormCapture.Client
             {
                 return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
             }
-            ClaimsHelper.Instance().SetToken(token);
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt")));
         }
 
@@ -52,6 +51,7 @@ namespace FormCapture.Client
             claims.Add(new Claim(ClaimTypes.Role, roles.ToString()));
             claims.AddRange(keyValuePairs.Select(kvp => new Claim(kvp.Key, kvp.Value.ToString())));
             ClaimsHelper.Instance().SetClaims(claims);
+            ClaimsHelper.Instance().SetToken(jwt);
             return claims;
         }
 

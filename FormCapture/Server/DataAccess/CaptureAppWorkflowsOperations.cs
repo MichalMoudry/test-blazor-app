@@ -19,7 +19,7 @@ namespace FormCapture.Server.DataAccess
         /// </summary>
         /// <param name="appID">ID of a capture app.</param>
         /// <returns>List of CaptureAppWorkflow instances</returns>
-        public List<CaptureAppWorkflows> GetCaptureAppWorkflows(string appID) => _datacontext.CaptureAppWorkflows.Where(i => i.AppID.Equals(appID)).ToList();
+        public List<CaptureAppWorkflows> GetCaptureAppWorkflows(string appID) => _datacontext.AppWorkflows.Where(i => i.AppID.Equals(appID)).ToList();
 
         /// <summary>
         /// Method for adding a new row to CaptureAppWorkflows table.
@@ -30,7 +30,7 @@ namespace FormCapture.Server.DataAccess
         {
             try
             {
-                _datacontext.CaptureAppWorkflows.Add(captureAppWorkflows);
+                _datacontext.AppWorkflows.Add(captureAppWorkflows);
                 await _datacontext.SaveChangesAsync();
                 return true;
             }

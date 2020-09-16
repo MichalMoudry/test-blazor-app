@@ -28,7 +28,7 @@ namespace FormCapture.Server.Controllers
             {
                 return StatusCode(400);
             }
-            List<AppWorkflowTask> tasks = _tasksOperations.GetUserTasks(userID).OrderBy(i => i.Added).ToList();
+            List<WorkflowTask> tasks = _tasksOperations.GetUserTasks(userID).OrderBy(i => i.Added).ToList();
             if (tasks != null)
             {
                 return Ok(tasks);
@@ -40,7 +40,7 @@ namespace FormCapture.Server.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> Add([FromBody] AppWorkflowTask task)
+        public async Task<IActionResult> Add([FromBody] WorkflowTask task)
         {
             if (task == null)
             {
@@ -58,7 +58,7 @@ namespace FormCapture.Server.Controllers
         }
 
         [HttpPost("Delete")]
-        public async Task<IActionResult> DeleteTask(AppWorkflowTask task)
+        public async Task<IActionResult> DeleteTask(WorkflowTask task)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace FormCapture.Server.Controllers
         }
 
         [HttpPost("Edit")]
-        public async Task<IActionResult> EditTask([FromBody] AppWorkflowTask task)
+        public async Task<IActionResult> EditTask([FromBody] WorkflowTask task)
         {
             if (task == null)
             {
@@ -107,7 +107,7 @@ namespace FormCapture.Server.Controllers
             {
                 return StatusCode(400);
             }
-            AppWorkflowTask tempTask = _tasksOperations.GetSpecificTask(taskID);
+            WorkflowTask tempTask = _tasksOperations.GetSpecificTask(taskID);
             if (tempTask != null)
             {
                 return Ok(tempTask);

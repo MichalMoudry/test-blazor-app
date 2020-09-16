@@ -37,10 +37,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach  (AppWorkflowTask task in tasks)
+                        @foreach  (WorkflowTask task in tasks)
                         {
                             <tr>
-                                <td>@task.TaskName</td>
+                                <td>@task.Name</td>
                                 <td>@task.Added</td>
                                 <td @onclick="@(e => Navigate($"/formcapture/tasks/{task.ID}"))"><span class="oi oi-pencil"></span></td>
                                 <td><span class="oi oi-trash"></span></td>
@@ -56,7 +56,7 @@
             /// <summary>
             /// Field that contains all user's tasks.
             /// </summary>
-            private List<AppWorkflowTask> tasks;
+            private List<WorkflowTask> tasks;
 
             private void Navigate(string page)
             {
@@ -70,7 +70,7 @@
             {
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
                 HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/", ClaimsHelper.Instance().GetEmailClaim().Value);
-                tasks = JsonConvert.DeserializeObject<List<AppWorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
+                tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
             }
         }
     </Authorized>

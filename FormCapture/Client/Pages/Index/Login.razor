@@ -25,16 +25,25 @@
     </div>
 </div>
 
+<div class="alert alert-danger form-alert @FormAlertCssClass" role="alert">
+    Login form wasn't properly completed. Or user does not exist.
+</div>
+
 @code
 {
     private LoginModel loginModel = new LoginModel();
 
     private bool isLoadingIndicatorHidden = true;
 
-    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "hidden" : null;
+    private bool isFormAlertDisplayed = false;
+
+    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
+
+    private string FormAlertCssClass => isFormAlertDisplayed ? "d-block" : "d-none";
 
     private async Task Submit()
     {
+        isFormAlertDisplayed = false;
         if (!string.IsNullOrEmpty(loginModel.Email) && !string.IsNullOrEmpty(loginModel.Password))
         {
             isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
@@ -43,7 +52,15 @@
             {
                 NavigationManager.NavigateTo("/formcapture/home");
             }
+            else
+            {
+                isFormAlertDisplayed = true;
+            }
             isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+        }
+        else
+        {
+            isFormAlertDisplayed = true;
         }
     }
 }

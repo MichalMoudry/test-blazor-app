@@ -1,6 +1,7 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
 @page "/formcapture/tasks/add"
 
 <AuthorizeView Roles="Admin, Workflow admin">
@@ -12,7 +13,12 @@
         <div>
             <div class="form-group">
                 <label for="task-name">Task name:</label>
-                <input name="task-name" id="task-name" placeholder="Enter a task name..." @bind-value="workflowTask.TaskName" class="form-control" />
+                <input type="text" name="task-name" id="task-name" placeholder="Enter a task name..." @bind-value="workflowTask.Name" class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label for="task-description">Task description:</label>
+                <input type="text" name="task-description" id="task-description" placeholder="Enter a task description..." @bind-value="workflowTask.Description" class="form-control" />
             </div>
 
             <div class="form-group">
@@ -22,13 +28,21 @@
             </div>
 
             <div class="form-group">
-                <button @onclick="ConfirmForm" class="btn btn-success"><span class="oi oi-check"></span> Confirm</button>
+                <div class="row">
+                    <div class="col-lg-2 col-sm-6">
+                        <button @onclick="ConfirmForm" class="btn btn-success"><span class="oi oi-check"></span> Confirm</button>
+                    </div>
+
+                    <div class="col-lg-2 col-sm-6">
+                        <button @onclick="TestTaskContent" class="btn btn-warning"><span class="oi oi-beaker"></span> Test task</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         @code
         {
-            private AppWorkflowTask workflowTask = new AppWorkflowTask();
+            private WorkflowTask workflowTask = new WorkflowTask();
 
             /// <summary>
             /// Page field that contains content of the task.
@@ -37,10 +51,10 @@
 
             private async Task ConfirmForm()
             {
-                if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.TaskName))
+                if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.Name))
                 {
                     workflowTask.ID = Guid.NewGuid().ToString();
-                    workflowTask.TaskContent = System.Text.Encoding.UTF8.GetBytes(taskContent);
+                    workflowTask.Content = System.Text.Encoding.UTF8.GetBytes(taskContent);
                     workflowTask.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
                     workflowTask.Added = DateTime.Now;
                     workflowTask.Updated = workflowTask.Added;
@@ -50,6 +64,11 @@
                         NavigationManager.NavigateTo("/formcapture/tasks");
                     }
                 }
+            }
+
+            private async void TestTaskContent()
+            {
+                await IJSRuntime.InvokeVoidAsync("executeJS", taskContent);
             }
 
             protected override void OnInitialized()

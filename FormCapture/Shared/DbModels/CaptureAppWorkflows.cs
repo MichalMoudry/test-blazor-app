@@ -7,6 +7,9 @@ namespace FormCapture.Shared.DbModels
     /// </summary>
     public class CaptureAppWorkflows : CaptureApplicationModel
     {
+        /// <summary>
+        /// ID of the workflow.
+        /// </summary>
         public string WorkflowID { get; set; }
     }
 }

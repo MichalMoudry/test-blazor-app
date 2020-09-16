@@ -1,11 +1,11 @@
-﻿using FormCapture.Shared.Util;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using FormCapture.Shared.Util;
 
 namespace FormCapture.Shared.DbModels
 {
-    public class AppWorkflow : Model
+    public class Workflow : Model
     {
         /// <summary>
         /// Name of the workflow.

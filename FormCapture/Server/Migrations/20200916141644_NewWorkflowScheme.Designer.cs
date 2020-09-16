@@ -4,14 +4,16 @@ using FormCapture.Server.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FormCapture.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200916141644_NewWorkflowScheme")]
+    partial class NewWorkflowScheme
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,28 +44,6 @@ namespace FormCapture.Server.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Batches");
-                });
-
-            modelBuilder.Entity("FormCapture.Shared.DbModels.CaptureAppWorkflows", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("Added")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AppID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Updated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("WorkflowID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("AppWorkflows");
                 });
 
             modelBuilder.Entity("FormCapture.Shared.DbModels.CaptureApplication", b =>
@@ -329,22 +309,22 @@ namespace FormCapture.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "819be047-5640-4f5a-b34d-2de279b0ff2b",
-                            ConcurrencyStamp = "8a7ff5d9-c0c9-4427-a3f3-c3b6d0ebd4bc",
+                            Id = "287dce48-ac0a-4df8-ab23-178c5f2360e8",
+                            ConcurrencyStamp = "cf0a8f00-58cf-4507-bb07-f8844b735310",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "69d93057-25bd-46d0-8ccf-93eb5869e24e",
-                            ConcurrencyStamp = "261bd49c-7a22-4e3b-8fb9-881c29ed5669",
+                            Id = "7e34f3da-d077-4023-8126-3440431ec8e8",
+                            ConcurrencyStamp = "9a6d931e-d5d3-4f64-a10d-f8a13342401c",
                             Name = "Workflow admin",
                             NormalizedName = "WORKFLOW ADMIN"
                         },
                         new
                         {
-                            Id = "9cd777ff-0c8f-4e72-9505-3b2ed5367f76",
-                            ConcurrencyStamp = "32e31626-f587-4bc8-bef6-4607439e2182",
+                            Id = "9ecfc24e-39f1-4dad-b075-0d4044d37ad5",
+                            ConcurrencyStamp = "be8be711-4780-423b-8036-f397a215f657",
                             Name = "User",
                             NormalizedName = "USER"
                         });

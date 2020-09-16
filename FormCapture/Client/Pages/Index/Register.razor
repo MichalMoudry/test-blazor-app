@@ -39,6 +39,10 @@
     </div>
 </div>
 
+<div class="alert alert-danger form-alert @FormAlertCssClass" role="alert">
+    Registration form wasn't properly completed. Or user is already registered.
+</div>
+
 @code
 {
     private RegistrationModel model = new RegistrationModel();
@@ -47,24 +51,40 @@
 
     private bool isLoadingIndicatorHidden = true;
 
-    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "hidden" : null;
+    private bool isFormAlertDisplayed = false;
+
+    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
+
+    private string FormAlertCssClass => isFormAlertDisplayed ? "d-block" : "d-none";
 
     private async Task SubmitForm()
     {
-        if (string.IsNullOrEmpty(accountRole))
+        isFormAlertDisplayed = false;
+        if (!string.IsNullOrEmpty(model.Email) && !string.IsNullOrEmpty(model.Password) && !string.IsNullOrEmpty(model.ConfirmationPassword))
         {
-            accountRole = "Admin";
-        }
-        if (!string.IsNullOrEmpty(accountRole))
-        {
-            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
-            model.Role = accountRole;
-            bool res = await AuthenticationService.RegisterUser(model);
-            if (res)
+            if (string.IsNullOrEmpty(accountRole))
             {
-                NavigationManager.NavigateTo("/login");
+                accountRole = "Admin";
             }
-            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+            if (!string.IsNullOrEmpty(accountRole))
+            {
+                isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+                model.Role = accountRole;
+                bool res = await AuthenticationService.RegisterUser(model);
+                if (res)
+                {
+                    NavigationManager.NavigateTo("/login");
+                }
+                else
+                {
+                    isFormAlertDisplayed = true;
+                }
+                isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+            }
+        }
+        else
+        {
+            isFormAlertDisplayed = true;
         }
     }
 }

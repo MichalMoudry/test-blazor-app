@@ -8,17 +8,22 @@ namespace FormCapture.Shared.DbModels
     /// <summary>
     /// Class that represents a singular task within a system.
     /// </summary>
-    public class AppWorkflowTask : Model
+    public class WorkflowTask : Model
     {
         /// <summary>
         /// Name of the task.
         /// </summary>
-        public string TaskName { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Byte content of the task.
         /// </summary>
-        public byte[] TaskContent { get; set; }
+        public byte[] Content { get; set; }
+
+        /// <summary>
+        /// Description of the task.
+        /// </summary>
+        public string Description { get; set; }
 
         /// <summary>
         /// ID of task's owner.

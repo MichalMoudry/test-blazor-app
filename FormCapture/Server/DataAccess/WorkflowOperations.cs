@@ -19,21 +19,21 @@ namespace FormCapture.Server.DataAccess
         /// </summary>
         /// <param name="userID">ID of the user.</param>
         /// <returns>List of user's workflows.</returns>
-        public List<AppWorkflow> GetUsersAppWorkflows(string userID) => _dataContext.Workflows.Where(i => i.UserID.Equals(userID)).ToList();
+        public List<Workflow> GetUsersAppWorkflows(string userID) => _dataContext.Workflows.Where(i => i.UserID.Equals(userID)).ToList();
 
         /// <summary>
         /// Method for obtaining a single instance of AppWorkflow class.
         /// </summary>
         /// <param name="workflowID">ID of the workflow.</param>
         /// <returns>A single instance of AppWorkflow class.</returns>
-        public AppWorkflow GetAppWorkflow(string workflowID) => _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(workflowID));
+        public Workflow GetAppWorkflow(string workflowID) => _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(workflowID));
         
         /// <summary>
         /// Method for adding a new workflow to db.
         /// </summary>
         /// <param name="appID">New app workflow.</param>
         /// <returns>True if entry was added. False if not.</returns>
-        public async Task<bool> AddWorkflow(AppWorkflow workflow)
+        public async Task<bool> AddWorkflow(Workflow workflow)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace FormCapture.Server.DataAccess
         /// </summary>
         /// <param name="appID">An app workflow.</param>
         /// <returns>True if entry was deleted. False if not.</returns>
-        public async Task<bool> DeleteWorkflow(AppWorkflow workflow)
+        public async Task<bool> DeleteWorkflow(Workflow workflow)
         {
             try
             {
@@ -71,11 +71,11 @@ namespace FormCapture.Server.DataAccess
         /// </summary>
         /// <param name="appID">An app workflow.</param>
         /// <returns>True if entry was edited. False if not.</returns>
-        public async Task<bool> EditWorkflow(AppWorkflow newWorkflow)
+        public async Task<bool> EditWorkflow(Workflow newWorkflow)
         {
             try
             {
-                AppWorkflow origWorkflow = _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(newWorkflow.ID));
+                Workflow origWorkflow = _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(newWorkflow.ID));
                 if (origWorkflow == null)
                 {
                     return false;

@@ -26,7 +26,7 @@ namespace FormCapture.Server.Controllers
         /// <param name="workflow">Instance of the AppWorkflow class.</param>
         /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
-        public async Task<IActionResult> Add([FromBody] AppWorkflow workflow)
+        public async Task<IActionResult> Add([FromBody] Workflow workflow)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace FormCapture.Server.Controllers
             {
                 return StatusCode(400);
             }
-            List<AppWorkflow> workflows = _workflowOperations.GetUsersAppWorkflows(userID)
+            List<Workflow> workflows = _workflowOperations.GetUsersAppWorkflows(userID)
                 .OrderBy(i => i.Added)
                 .ToList();
             if (workflows != null)
@@ -81,7 +81,7 @@ namespace FormCapture.Server.Controllers
         /// <param name="app">An app workflow.</param>
         /// <returns>200 status code or 400 code.<returns>
         [HttpPost("Delete")]
-        public async Task<IActionResult> DeleteWorkflow([FromBody] AppWorkflow workflow)
+        public async Task<IActionResult> DeleteWorkflow([FromBody] Workflow workflow)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace FormCapture.Server.Controllers
             {
                 return StatusCode(400);
             }
-            AppWorkflow workflow = _workflowOperations.GetAppWorkflow(workflowID);
+            Workflow workflow = _workflowOperations.GetAppWorkflow(workflowID);
             if (workflow != null)
             {
                 return Ok(workflow);
@@ -134,7 +134,7 @@ namespace FormCapture.Server.Controllers
         /// <param name="app">Instance of the AppWorkflow class with new data.</param>
         /// <returns>200 or 400 status code.</returns>
         [HttpPost("Edit")]
-        public async Task<IActionResult> EditWorkflow([FromBody] AppWorkflow workflow)
+        public async Task<IActionResult> EditWorkflow([FromBody] Workflow workflow)
         {
             try
             {

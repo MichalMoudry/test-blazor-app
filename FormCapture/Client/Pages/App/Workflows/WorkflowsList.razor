@@ -1,0 +1,37 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@page "/formcapture/workflows"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        <h3>Workflows</h3>
+        <hr />
+
+        <div class="row">
+            <div class="col col-lg-2 col-sm-6">
+                <button class="btn btn-success" @onclick="@(e => Navigate("/formcapture/workflows/add"))"><span class="oi oi-plus"></span> Add a new workflow</button>
+            </div>
+
+            <div class="col col-lg-2 col-sm-6">
+                <button class="btn btn-light"><span class="oi oi-elevator"></span> Sort list</button>
+            </div>
+        </div>
+
+        <div>
+            <br />
+        </div>
+
+        @code
+        {
+            private void Navigate(string page)
+            {
+                NavigationManager.NavigateTo(page);
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>
