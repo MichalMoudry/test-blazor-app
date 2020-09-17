@@ -1,0 +1,241 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
+@page "/formcapture/workflows/add"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        <h3>Create a new workflow</h3>
+        <hr />
+
+        <div class="form-group">
+            <label for="workflow-name">Workflow name:</label>
+            <input name="workflow-name" placeholder="Enter a workflow name..." id="workflow-name" type="text" class="form-control" />
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Scan tasks</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (groupings["scan"].Count != 0)
+                        {
+                            @foreach (WorkflowTaskGrouping grouping in groupings["scan"])
+                            {
+                                <p class="card-text">
+                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name</span>
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="card-text">This group has no tasks yet.</p>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" @onclick="@(e => SetCurrentTaskGroup("scan"))" data-toggle="modal" data-target="#add-tasks-dialog"><span class="oi oi-plus"></span> Add a task</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Recognition tasks</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (groupings["recognition"].Count != 0)
+                        {
+                            @foreach (WorkflowTaskGrouping grouping in groupings["recognition"])
+                            {
+                                <p class="card-text">
+                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name</span>
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="card-text">This group has no tasks yet.</p>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" @onclick="@(e => SetCurrentTaskGroup("recognition"))" data-toggle="modal" data-target="#add-tasks-dialog"><span class="oi oi-plus"></span> Add a task</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Verification tasks</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (groupings["verification"].Count != 0)
+                        {
+                            @foreach (WorkflowTaskGrouping grouping in groupings["verification"])
+                            {
+                                <p class="card-text">
+                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name</span>
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="card-text">This group has no tasks yet.</p>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" @onclick="@(e => SetCurrentTaskGroup("verification"))" data-toggle="modal" data-target="#add-tasks-dialog"><span class="oi oi-plus"></span> Add a task</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Export tasks</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (groupings["export"].Count != 0)
+                        {
+                            @foreach (WorkflowTaskGrouping grouping in groupings["export"])
+                            {
+                                <p class="card-text">
+                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name</span>
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="card-text">This group has no tasks yet.</p>
+                        }
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-primary" @onclick="@(e => SetCurrentTaskGroup("export"))" data-toggle="modal" data-target="#add-tasks-dialog"><span class="oi oi-plus"></span> Add a task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Modal for adding apps-->
+        <div class="modal" id="add-tasks-dialog" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Add tasks to @currentTaskGroup task group</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        @if (tasks == null)
+                        {
+                            <p>Loading...</p>
+                        }
+                        else
+                        {
+                            @if (tasks.Count != 0)
+                            {
+                                <form>
+                                    <fieldset class="form-group">
+                                        @foreach (WorkflowTask task in tasks)
+                                        {
+                                            <div class="form-check">
+                                                <input class="form-check-input" @onchange="eventArgs => { CheckboxClicked(task, eventArgs.Value); }" type="checkbox" id="@task.ID" />
+                                                <label class="form-check-label" for="@task.ID">@task.Name</label>
+                                            </div>
+                                        }
+                                    </fieldset>
+                                </form>
+                            }
+                            //TODO: Added text for workflow admin to create a new task.
+                        }
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" @onclick="ConfirmModal" data-dismiss="modal"><span class="oi oi-check"></span> Confirm</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><span class="oi oi-x"></span> Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <button type="button" class="btn btn-success"><span class="oi oi-check"></span> Confirm</button>
+        </div>
+
+        @code
+        {
+            /// <summary>
+            /// Field that contains groupings for each workflow group.
+            /// </summary>
+            private Dictionary<string, List<WorkflowTaskGrouping>> groupings;
+
+            /// <summary>
+            /// Field that contains all user's tasks.
+            /// </summary>
+            private List<WorkflowTask> tasks;
+
+            private string currentTaskGroup;
+
+            private List<WorkflowTask> addedTasks;
+
+            private void SetCurrentTaskGroup(string taskGroup)
+            {
+                currentTaskGroup = taskGroup;
+                addedTasks = new List<WorkflowTask>();
+            }
+
+            private void CheckboxClicked(WorkflowTask task, object value)
+            {
+                if ((bool)value)
+                {
+                    addedTasks.Add(task);
+                }
+                else
+                {
+                    addedTasks.Remove(task);
+                }
+            }
+
+            private async Task ConfirmModal()
+            {
+                List<string> ids = new List<string>();
+                foreach (WorkflowTask task in addedTasks)
+                {
+                    groupings[currentTaskGroup].Add(new WorkflowTaskGrouping()
+                    {
+                        ID = Guid.NewGuid().ToString(),
+                        TaskGroupName = currentTaskGroup,
+                        TaskID = task.ID,
+                        Added = DateTime.Now,
+                        Updated = DateTime.Now,
+                        ExecutionOrderNumber = groupings[currentTaskGroup].IndexOf(groupings[currentTaskGroup].LastOrDefault()) + 1
+                    });
+                    ids.Add(task.ID);
+                }
+                await IJSRuntime.InvokeVoidAsync("uncheckCheckboxes", ids);
+            }
+
+            protected override async Task OnInitializedAsync()
+            {
+                groupings = new Dictionary<string, List<WorkflowTaskGrouping>>();
+                groupings.Add("export", new List<WorkflowTaskGrouping>());
+                groupings.Add("scan", new List<WorkflowTaskGrouping>());
+                groupings.Add("verification", new List<WorkflowTaskGrouping>());
+                groupings.Add("recognition", new List<WorkflowTaskGrouping>());
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/", ClaimsHelper.Instance().GetEmailClaim().Value);
+                tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>
