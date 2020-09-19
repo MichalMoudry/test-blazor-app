@@ -70,7 +70,10 @@
             {
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
                 HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/", ClaimsHelper.Instance().GetEmailClaim().Value);
-                tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
+                }
             }
         }
     </Authorized>

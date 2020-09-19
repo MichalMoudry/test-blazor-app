@@ -1,6 +1,6 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
-@inject ILocalStorageService LocalStorageService
+@inject NavigationManager NavigationManager
 @page "/formcapture/apps"
 
 <h3>Apps</h3>
@@ -42,18 +42,16 @@
                             <td>Name</td>
                             <td>Locale</td>
                             <td>Added</td>
-                            <td>Edit</td>
                             <td>Delete</td>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (CaptureApplication application in captureApplications)
                         {
-                            <tr>
+                            <tr @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">
                                 <td>@application.Name</td>
                                 <td>@application.Locale</td>
                                 <td>@application.Added</td>
-                                <td><span class="oi oi-pencil"></span></td>
                                 <td><span class="oi oi-trash"></span></td>
                             </tr>
                         }
@@ -124,6 +122,11 @@
     /// </summary>
     private string appLocale;
 
+    private void Navigate(string page)
+    {
+        NavigationManager.NavigateTo(page);
+    }
+
     /// <summary>
     /// Method for confirming modal form for adding a new capture application.
     /// </summary>
@@ -162,7 +165,10 @@
         {
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
             HttpResponseMessage temp = await HttpClient.PostAsJsonAsync<string>("api/captureapps/", ClaimsHelper.Instance().GetEmailClaim().Value);
-            captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
+            if (temp.IsSuccessStatusCode)
+            {
+                captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
+            }
         }
     }
 }

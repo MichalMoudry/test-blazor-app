@@ -11,6 +11,8 @@ namespace FormCapture.Shared.DbModels
 
         public string TaskGroupName { get; set; }
 
+        public string WorkflowID { get; set; }
+
         public int ExecutionOrderNumber { get; set; }
     }
 }

@@ -1,0 +1,115 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@page "/formcapture/apps/{appid}"
+
+<AuthorizeView>
+    <Authorized>
+        @if (captureApplication == null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <h3>@captureApplication.Name</h3>
+
+            <hr />
+
+            <div class="row">
+                <div class="col">
+                    <div class="card m-1">
+                        <div class="card-header">
+                            <h4><span class="oi oi-info"></span> App information</h4>
+                        </div>
+
+                        <div class="card-body">
+                            <ul class="list-group">
+                                <li class="list-group-item">ID: @captureApplication.ID</li>
+                                <li class="list-group-item">Locale: @captureApplication.Locale</li>
+                                <li class="list-group-item">Added: @captureApplication.Added.ToShortDateString()</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card m-1">
+                        <div class="card-header">
+                            <h4><span class="oi oi-list-rich"></span> Queue</h4>
+                        </div>
+
+                        <div class="card-body" id="queue-list-container">
+
+                        </div>
+
+                        <div class="card-footer">
+                            <button class="btn btn-primary">
+                                <span class="oi oi-play-circle"></span> Start a new queue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-100"></div>
+
+                <div class="col">
+                    <div class="card m-1">
+                        <div class="card-header">
+                            <h4><span class="oi oi-document"></span> Templates</h4>
+                        </div>
+
+                        <div class="card-body" id="templates-list-container">
+
+                        </div>
+
+                        <div class="card-footer">
+                            <button class="btn btn-primary">
+                                <span class="oi oi-plus"></span> Add a template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card m-1">
+                        <div class="card-header">
+                            <h4><span class="oi oi-project"></span> Workflows</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-100"></div>
+
+                <div class="col">
+                    <div class="card m-1">
+                        <div class="card-header">
+                            <h4><span class="oi oi-people"></span> Users</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    [Parameter]
+    public string AppID { get; set; }
+
+    private CaptureApplication captureApplication;
+
+    protected override async Task OnInitializedAsync()
+    {
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+        HttpResponseMessage getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
+        if (getAppMessage.IsSuccessStatusCode)
+        {
+            captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
+        }
+    }
+}

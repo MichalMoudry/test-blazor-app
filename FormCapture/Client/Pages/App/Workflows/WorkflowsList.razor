@@ -20,13 +20,53 @@
 
         <div>
             <br />
+            @if (workflows == null)
+            {
+                <p>Loading...</p>
+            }
+            else
+            {
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <td>Name</td>
+                            <td>Added</td>
+                            <td>Edit</td>
+                            <td>Delete</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Workflow workflow in workflows)
+                        {
+                        <tr>
+                            <td>@workflow.Name</td>
+                            <td>@workflow.Added</td>
+                            <td @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.ID}"))"><span class="oi oi-pencil"></span></td>
+                            <td><span class="oi oi-trash"></span></td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
 
         @code
         {
+            private List<Workflow> workflows;
+
             private void Navigate(string page)
             {
                 NavigationManager.NavigateTo(page);
+            }
+
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/workflows/", ClaimsHelper.Instance().GetEmailClaim().Value);
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    workflows = JsonConvert.DeserializeObject<List<Workflow>>(await responseMessage.Content.ReadAsStringAsync());
+                }
             }
         }
     </Authorized>

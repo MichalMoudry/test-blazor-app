@@ -11,7 +11,7 @@
 
         <div class="form-group">
             <label for="workflow-name">Workflow name:</label>
-            <input name="workflow-name" placeholder="Enter a workflow name..." id="workflow-name" type="text" class="form-control" />
+            <input name="workflow-name" @bind-value="workflow.Name" placeholder="Enter a workflow name..." id="workflow-name" type="text" class="form-control" />
         </div>
 
         <div class="row">
@@ -165,7 +165,7 @@
         </div>
 
         <div class="mt-3">
-            <button type="button" class="btn btn-success"><span class="oi oi-check"></span> Confirm</button>
+            <button type="button" class="btn btn-success" @onclick="Submit"><span class="oi oi-check"></span> Confirm</button>
         </div>
 
         @code
@@ -179,6 +179,8 @@
             /// Field that contains all user's tasks.
             /// </summary>
             private List<WorkflowTask> tasks;
+
+            private Workflow workflow = new Workflow() { ID = Guid.NewGuid().ToString(), UserID = ClaimsHelper.Instance().GetEmailClaim().Value };
 
             private string currentTaskGroup;
 
@@ -214,11 +216,27 @@
                         TaskID = task.ID,
                         Added = DateTime.Now,
                         Updated = DateTime.Now,
-                        ExecutionOrderNumber = groupings[currentTaskGroup].IndexOf(groupings[currentTaskGroup].LastOrDefault()) + 1
+                        ExecutionOrderNumber = groupings[currentTaskGroup].IndexOf(groupings[currentTaskGroup].LastOrDefault()) + 1,
+                        WorkflowID = workflow.ID
                     });
                     ids.Add(task.ID);
                 }
                 await IJSRuntime.InvokeVoidAsync("uncheckCheckboxes", ids);
+            }
+
+            private async Task Submit()
+            {
+                if (!string.IsNullOrEmpty(workflow.Name))
+                {
+                    workflow.Added = DateTime.Now;
+                    workflow.Updated = workflow.Added;
+                    HttpResponseMessage addWorkflowMessage = await HttpClient.PostAsJsonAsync("api/workflows/add", workflow);
+                    HttpResponseMessage addTaskGroupingMessage = await HttpClient.PostAsJsonAsync("api/workflowtaskgrouping/add", groupings);
+                    if (addWorkflowMessage.IsSuccessStatusCode && addTaskGroupingMessage.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo("/formcapture/workflows");
+                    }
+                }
             }
 
             protected override async Task OnInitializedAsync()
