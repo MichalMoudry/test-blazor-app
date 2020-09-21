@@ -50,12 +50,26 @@ namespace FormCapture.Client.Helpers
 
         public Claim GetRoleClaim()
         {
-            return claims.Where(i => i.Type.Equals(ClaimTypes.Role)).FirstOrDefault();
+            try
+            {
+                return claims.Where(i => i.Type.Equals(ClaimTypes.Role)).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public Claim GetEmailClaim()
         {
-            return claims.Where(i => i.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+            try
+            {
+                return claims.Where(i => i.Type.Equals(ClaimTypes.Email)).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

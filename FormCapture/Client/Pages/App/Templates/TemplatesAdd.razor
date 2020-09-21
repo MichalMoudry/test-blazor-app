@@ -1,0 +1,18 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@page "/formcapture/apps/{appID}/addtemplate"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        @code
+        {
+            [Parameter]
+            public string AppID { get; set; }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to be here.</h3>
+    </NotAuthorized>
+</AuthorizeView>

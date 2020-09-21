@@ -1,0 +1,15 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@page "/formcapture/notifications"
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Notifications</h3>
+        <hr />
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to view this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>

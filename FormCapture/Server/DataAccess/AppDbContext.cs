@@ -45,5 +45,11 @@ namespace FormCapture.Server.DataAccess
         public DbSet<WorkflowTaskGrouping> TaskGroupings { get; set; }
 
         public DbSet<CaptureAppWorkflows> AppWorkflows { get; set; }
+
+        public DbSet<Notification> Notifications { get; set; }
+
+        public DbSet<Template> Templates { get; set; }
+
+        public DbSet<Field> Fields { get; set; }
     }
 }

@@ -55,7 +55,7 @@
                 <div class="col">
                     <div class="card m-1">
                         <div class="card-header">
-                            <h4><span class="oi oi-document"></span> Templates</h4>
+                            <h4><span class="oi oi-image"></span> Templates</h4>
                         </div>
 
                         <div class="card-body" id="templates-list-container">
@@ -63,7 +63,7 @@
                         </div>
 
                         <div class="card-footer">
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/addtemplate"))">
                                 <span class="oi oi-plus"></span> Add a template
                             </button>
                         </div>
@@ -102,6 +102,11 @@
     public string AppID { get; set; }
 
     private CaptureApplication captureApplication;
+
+    private void Navigate(string page)
+    {
+        NavigationManager.NavigateTo(page);
+    }
 
     protected override async Task OnInitializedAsync()
     {

@@ -1,6 +1,23 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+
 <div class="index-main">
     <div class="content px-4">
         @Body
     </div>
 </div>
+
+@code
+{
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authState = await authenticationStateTask;
+        if (authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/formcapture/home");
+        }
+    }
+}
