@@ -71,5 +71,17 @@ namespace FormCapture.Client.Helpers
                 return null;
             }
         }
+
+        public Claim GetExpirationClaim()
+        {
+            try
+            {
+                return claims.Where(i => i.Type.Equals("exp")).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
     }
 }

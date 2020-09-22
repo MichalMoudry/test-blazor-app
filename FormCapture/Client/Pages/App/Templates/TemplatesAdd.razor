@@ -1,14 +1,69 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
 @page "/formcapture/apps/{appID}/addtemplate"
 
 <AuthorizeView Roles="Admin, Workflow admin">
     <Authorized>
+        <h3>Add a new template</h3>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Template image</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <img id="template-preview-image" src="data:image/png;base64,@fileContent" />
+                    </div>
+
+                    <div class="card-footer">
+                        <input type="file" @onchange="FileUpload" id="template-input" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Fields</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="field-list">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3 mb-2">
+            <button class="btn btn-success"><span class="oi oi-check"></span> Submit</button>
+        </div>
+
         @code
         {
             [Parameter]
             public string AppID { get; set; }
+
+            private Template template = new Template() { ID = Guid.NewGuid().ToString() };
+
+            private string fileContent;
+
+            private async Task FileUpload()
+            {
+                fileContent = await IJSRuntime.InvokeAsync<string>("getFileData", "template-input");
+                Console.WriteLine(await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image"));
+                template.Image = System.Text.Encoding.UTF8.GetBytes(fileContent);
+                template.AppID = this.AppID;
+                template.Added = DateTime.Now;
+                template.Updated = template.Added;
+            }
         }
     </Authorized>
 

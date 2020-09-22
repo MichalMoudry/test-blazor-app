@@ -15,6 +15,13 @@
     protected override async Task OnInitializedAsync()
     {
         AuthenticationState authState = await authenticationStateTask;
+        if (ClaimsHelper.Instance().GetExpirationClaim() != null)
+        {
+            DateTime tokenExpirationDate = new DateTime(1970, 1, 1);
+            tokenExpirationDate.AddSeconds(Convert.ToInt32(ClaimsHelper.Instance().GetExpirationClaim().Value));
+            tokenExpirationDate.AddHours(2);
+            Console.WriteLine(tokenExpirationDate);
+        }
         if (authState.User.Identity.IsAuthenticated)
         {
             NavigationManager.NavigateTo("/formcapture/home");
