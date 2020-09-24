@@ -35,7 +35,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -49,7 +49,7 @@ namespace FormCapture.Server.Controllers
         {
             if (files == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _processedFileOperations.AddNewFile(files);
             if (res)
@@ -58,7 +58,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -72,7 +72,7 @@ namespace FormCapture.Server.Controllers
         {
             if (files == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _processedFileOperations.DeleteFile(files);
             if (res)
@@ -81,7 +81,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
     }

@@ -18,7 +18,9 @@
                     </div>
 
                     <div class="card-body">
-                        <img id="template-preview-image" src="data:image/png;base64,@fileContent" />
+                        <div class="template-canvas">
+                            <img id="template-preview-image" draggable="false" src="@fileContent" />
+                        </div>
                     </div>
 
                     <div class="card-footer">
@@ -42,8 +44,10 @@
             </div>
         </div>
 
-        <div class="mt-3 mb-2">
-            <button class="btn btn-success"><span class="oi oi-check"></span> Submit</button>
+        <div class="mt-3 mb-3 bottom-row">
+            <button class="btn btn-success" disabled="@SubmitButtonDisabledAttribute" @onclick="Confirm">
+                <span class="oi oi-check"></span> Submit
+            </button>
         </div>
 
         @code
@@ -55,14 +59,39 @@
 
             private string fileContent;
 
+            private bool isSubmitButtonDisabled = false;
+
+            private string SubmitButtonDisabledAttribute => isSubmitButtonDisabled ? "disabled" : null;
+
             private async Task FileUpload()
             {
-                fileContent = await IJSRuntime.InvokeAsync<string>("getFileData", "template-input");
-                Console.WriteLine(await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image"));
+                isSubmitButtonDisabled = true;
+                fileContent = "data:image/png;base64,";
+                fileContent += await IJSRuntime.InvokeAsync<string>("getFileData", "template-input");
                 template.Image = System.Text.Encoding.UTF8.GetBytes(fileContent);
                 template.AppID = this.AppID;
                 template.Added = DateTime.Now;
                 template.Updated = template.Added;
+                isSubmitButtonDisabled = false;
+            }
+
+            private async Task Confirm()
+            {
+                string imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
+                string[] imageDimensionsSplit = imageDimensions.Split("|");
+                template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
+                template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
+                HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
+                }
+            }
+
+            protected override void OnInitialized()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                base.OnInitialized();
             }
         }
     </Authorized>

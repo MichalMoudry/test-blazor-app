@@ -231,3 +231,11 @@ app {
 .spinner-border {
     margin-top: 1rem;
 }
+
+.bottom-row {
+    background-color: #f7f7f7;
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    margin-left: -2rem;
+}

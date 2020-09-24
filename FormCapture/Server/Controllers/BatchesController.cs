@@ -5,16 +5,18 @@ using System.Threading.Tasks;
 using FormCapture.Server.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using FormCapture.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
+    [Authorize(Roles = "Admin, Workflow admin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class BatchController : ControllerBase
+    public class BatchesController : ControllerBase
     {
         private readonly BatchOperations _batchOperations;
 
-        public BatchController(AppDbContext dataContext)
+        public BatchesController(AppDbContext dataContext)
         {
             _batchOperations = new BatchOperations(dataContext);
         }
@@ -24,7 +26,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(userID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             List<Batch> batches = _batchOperations.GetUsersBatches(userID);
             if (batches != null)
@@ -33,7 +35,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -42,7 +44,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(appID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             List<Batch> batches = _batchOperations.GetAppsBatches(appID);
             if (batches != null)
@@ -51,7 +53,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -60,7 +62,7 @@ namespace FormCapture.Server.Controllers
         {
             if (batch == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _batchOperations.AddNewBatch(batch);
             if (res)
@@ -69,7 +71,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -78,7 +80,7 @@ namespace FormCapture.Server.Controllers
         {
             if (batch == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _batchOperations.DeleteBatch(batch);
             if (res)
@@ -87,7 +89,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -96,7 +98,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(batchID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             Batch batch = _batchOperations.GetBatch(batchID);
             if (batch != null)
@@ -105,7 +107,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
     }

@@ -35,3 +35,31 @@ function readUploadedFilesAsText(input) {
 function getFileData(inputID) {
     return readUploadedFilesAsText(document.getElementById(inputID));
 }
+
+function drawField() {
+    var canvas = document.getElementById("template-canvas");
+    console.log(canvas);
+    if (canvas != null) {
+        var fieldRectangle;
+        var startX;
+        var startY;
+        canvas.onclick = function (e) {
+            if (fieldRectangle == null) {
+                fieldRectangle = document.createElement("div");
+                fieldRectangle.classList.add("template-field");
+                canvas.appendChild(fieldRectangle);
+                startX = e.pageX;
+                startY = e.pageY;
+                console.log("Drawing started. Start X: " + startX + " start Y: " + startY);
+            }
+            else {
+                fieldRectangle = null;
+                console.log("Field was drawn.");
+            }
+        }
+
+        canvas.onmousemove = function (e) {
+
+        }
+    }
+}
