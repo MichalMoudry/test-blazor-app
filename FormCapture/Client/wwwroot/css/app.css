@@ -88,6 +88,7 @@ app {
 
 #template-preview-image {
     max-width: 100%;
+    height: 50vh;
 }
 
 .sidebar {
@@ -238,4 +239,32 @@ app {
     bottom: 0;
     z-index: 1;
     margin-left: -2rem;
+}
+
+#field-list {
+    overflow: auto;
+    height: 56.7vh;
+}
+
+#template-canvas {
+    overflow: auto;
+    height: 56.7vh;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.field-list-item {
+    background-color: rgba(0,0,0,.03);
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 4px;
+}
+
+.field-input {
+    width: 100%;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    color: #495057;
 }

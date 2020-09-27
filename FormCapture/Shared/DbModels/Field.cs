@@ -8,8 +8,6 @@ namespace FormCapture.Shared.DbModels
 
         public bool IsIdentifying { get; set; }
 
-        public string Content { get; set; }
-
         public int Width { get; set; }
 
         public int Height { get; set; }
