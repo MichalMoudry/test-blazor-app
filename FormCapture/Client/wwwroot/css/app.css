@@ -88,7 +88,6 @@ app {
 
 #template-preview-image {
     max-width: 100%;
-    height: 50vh;
 }
 
 .sidebar {
@@ -243,12 +242,12 @@ app {
 
 #field-list {
     overflow: auto;
-    height: 56.7vh;
+    height: 59vh;
 }
 
 #template-canvas {
     overflow: auto;
-    height: 56.7vh;
+    height: 52vh;
 }
 
 .pointer {
@@ -267,4 +266,9 @@ app {
     border-radius: .25rem;
     padding: .375rem .75rem;
     color: #495057;
+}
+
+.template-field {
+    border: 1px solid black;
+    position: relative;
 }

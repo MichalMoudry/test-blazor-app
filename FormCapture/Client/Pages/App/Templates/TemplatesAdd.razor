@@ -18,7 +18,7 @@
                     </div>
 
                     <div class="card-body">
-                        <div class="template-canvas">
+                        <div id="template-canvas">
                             <img id="template-preview-image" draggable="false" src="@fileContent" />
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                                 <h4>Fields</h4>
                             </div>
                             <div class="col-1">
-                                <span class="oi oi-plus pointer" @onclick="AddNewField"></span>
+                                <span class="oi oi-plus pointer mt-2" @onclick="AddNewField"></span>
                             </div>
                         </div>
                     </div>
@@ -54,12 +54,12 @@
                                                 <input class="field-input" @bind-value="field.Name" placeholder="Enter a field name..." />
                                             </div>
 
-                                            <div class="col-1 pointer">
-                                                <span class="oi oi-pencil mt-1"></span>
+                                            <div class="col-1 pointer" @onclick="DrawField">
+                                                <span class="oi oi-pencil mt-2"></span>
                                             </div>
 
                                             <div class="col-1 pointer" @onclick="@(e => RemoveField(field))">
-                                                <span class="oi oi-trash mt-1"></span>
+                                                <span class="oi oi-trash mt-2"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -71,16 +71,12 @@
                             }
                         </div>
                     </div>
-
-                    <div class="card-footer">
-
-                    </div>
                 </div>
             </div>
         </div>
 
         <!--mt-3 mb-3 bottom-row-->
-        <div>
+        <div class="mt-2 mb-2">
             <button class="btn btn-success" disabled="@SubmitButtonDisabledAttribute" @onclick="Confirm">
                 <span class="oi oi-check"></span> Submit
             </button>
@@ -141,6 +137,11 @@
             private void RemoveField(Field field)
             {
                 fields.Remove(field);
+            }
+
+            private async Task DrawField()
+            {
+                await IJSRuntime.InvokeVoidAsync("drawField");
             }
 
             protected override void OnInitialized()

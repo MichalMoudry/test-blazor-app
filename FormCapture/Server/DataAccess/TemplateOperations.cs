@@ -45,7 +45,6 @@ namespace FormCapture.Server.DataAccess
                 {
                     return false;
                 }
-                //TODO: Add removal of fields.
                 _appDbContext.Templates.Remove(template);
                 await _appDbContext.SaveChangesAsync();
                 return true;
