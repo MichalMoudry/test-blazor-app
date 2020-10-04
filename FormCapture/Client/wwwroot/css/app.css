@@ -272,3 +272,12 @@ app {
     border: 1px solid black;
     position: relative;
 }
+
+#main-loading-div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+}

@@ -1,0 +1,97 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@page "/formcapture/apps/{appID}/addworkflow"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        @if (application != null)
+        {
+            <h3>Associate a workflow to the "@application.Name" app</h3>
+        }
+
+        <hr />
+
+        <ul class="list-group">
+            @if (workflows == null)
+            {
+                <li class="list-group-item">
+                    Loading...
+                </li>
+            }
+            else
+            {
+                foreach (Workflow workflow in workflows)
+                {
+                    <li class="list-group-item">
+                        <input type="checkbox" id="@workflow.ID" class="form-check-input ml-1" @onchange="eventArgs => { CheckboxClicked(workflow.ID, eventArgs.Value); }" />
+                        <label class="form-check-label ml-4" for="@workflow.ID">@workflow.Name</label>
+                    </li>
+                }
+            }
+        </ul>
+
+        <div class="mt-3">
+            <button type="button" class="btn btn-success" @onclick="Submit"><span class="oi oi-check"></span> Confirm</button>
+        </div>
+
+        @code
+        {
+            [Parameter]
+            public string AppID { get; set; }
+
+            private CaptureApplication application;
+
+            private List<Workflow> workflows;
+
+            private List<CaptureAppWorkflows> appWorkflows = new List<CaptureAppWorkflows>();
+
+            private void CheckboxClicked(string workflowID, object value)
+            {
+                if ((bool)value)
+                {
+                    appWorkflows.Add(new CaptureAppWorkflows()
+                    {
+                        ID = Guid.NewGuid().ToString(),
+                        WorkflowID = workflowID,
+                        AppID = this.AppID,
+                        Added = DateTime.Now,
+                        Updated = DateTime.Now
+                    });
+                }
+                else
+                {
+                    appWorkflows.Remove(appWorkflows.SingleOrDefault(i => i.WorkflowID.Equals(workflowID)));
+                }
+            }
+
+            private async Task Submit()
+            {
+                if (appWorkflows.Count > 0)
+                {
+                    HttpResponseMessage addResponseMessage = await HttpClient.PostAsJsonAsync("api/captureappworkflows/add", appWorkflows);
+                    if (addResponseMessage.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
+                    }
+                }
+            }
+
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("/api/captureApps/get", AppID);
+                HttpResponseMessage workflowsResponseMessage = await HttpClient.PostAsJsonAsync("api/workflows/", ClaimsHelper.Instance().GetEmailClaim().Value);
+                if (httpResponseMessage.IsSuccessStatusCode && workflowsResponseMessage.IsSuccessStatusCode)
+                {
+                    application = JsonConvert.DeserializeObject<CaptureApplication>(await httpResponseMessage.Content.ReadAsStringAsync());
+                    workflows = JsonConvert.DeserializeObject<List<Workflow>>(await workflowsResponseMessage.Content.ReadAsStringAsync());
+                }
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>

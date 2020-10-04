@@ -1,4 +1,5 @@
 using FormCapture.Shared.DbModels;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,17 +25,45 @@ namespace FormCapture.Server.DataAccess
         /// <summary>
         /// Method for adding a new row to CaptureAppWorkflows table.
         /// </summary>
-        /// <param name="captureAppWorkflows">New row that will be added.</param>
+        /// <param name="captureAppWorkflows">List of new rows that will be added.</param>
         /// <returns>True if row was added. False if not.</returns>
-        public async Task<bool> AddCaptureAppWorkflows(CaptureAppWorkflows captureAppWorkflows)
+        public async Task<bool> AddCaptureAppWorkflow(List<CaptureAppWorkflows> captureAppWorkflows)
         {
             try
             {
-                _datacontext.AppWorkflows.Add(captureAppWorkflows);
+                foreach (CaptureAppWorkflows appWorkflow in captureAppWorkflows)
+                {
+                    if (!_datacontext.AppWorkflows.Contains(appWorkflow))
+                    {
+                        _datacontext.AppWorkflows.Add(appWorkflow);
+                    }
+                }
                 await _datacontext.SaveChangesAsync();
                 return true;
             }
-            catch (System.Exception)
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Method for removing a row in CaptureAppWorkflows table.
+        /// </summary>
+        /// <param name="captureAppWorkflows">List of rows that will be removed.</param>
+        /// <returns>True if row was removed. False if not.</returns>
+        public async Task<bool> RemoveCaptureAppWorkflow(List<CaptureAppWorkflows> captureAppWorkflows)
+        {
+            try
+            {
+                foreach (CaptureAppWorkflows appWorkflow in captureAppWorkflows)
+                {
+                    _datacontext.AppWorkflows.Remove(appWorkflow);
+                }
+                await _datacontext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
             {
                 return false;
             }

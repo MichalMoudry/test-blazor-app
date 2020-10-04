@@ -31,7 +31,7 @@ namespace FormCapture.Server.Controllers
         {
             if (captureApplication == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _captureApplicationsOps.AddNewApplication(captureApplication);
             if (res)
@@ -40,7 +40,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -54,7 +54,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(userID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             List<CaptureApplication> captureApplications = _captureApplicationsOps.GetUsersCaptureApplications(userID)
                 .OrderBy(i => i.Added)
@@ -65,7 +65,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -79,7 +79,7 @@ namespace FormCapture.Server.Controllers
         {
             if (app == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _captureApplicationsOps.DeleteApp(app);
             if (res)
@@ -88,7 +88,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -102,12 +102,12 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(appID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             CaptureApplication tempApp = _captureApplicationsOps.GetCaptureApplication(appID);
             if (tempApp == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             else
             {
@@ -125,7 +125,7 @@ namespace FormCapture.Server.Controllers
         {
             if (app == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _captureApplicationsOps.EditApplication(app);
             if (res)
@@ -134,7 +134,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
     }
