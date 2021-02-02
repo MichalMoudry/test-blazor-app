@@ -58,7 +58,7 @@
                     workflowTask.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
                     workflowTask.Added = DateTime.Now;
                     workflowTask.Updated = workflowTask.Added;
-                    HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/add", workflowTask);
+                    var responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/add", workflowTask);
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         NavigationManager.NavigateTo("/formcapture/tasks");

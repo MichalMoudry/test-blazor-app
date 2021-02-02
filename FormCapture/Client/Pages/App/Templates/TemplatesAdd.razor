@@ -24,7 +24,7 @@
                     </div>
 
                     <div class="card-footer">
-                        <input type="file" @onchange="FileUpload" id="template-input" />
+                        <InputFile OnChange="FileSelected" />
                     </div>
                 </div>
             </div>
@@ -97,29 +97,29 @@
 
             private string SubmitButtonDisabledAttribute => isSubmitButtonDisabled ? "disabled" : null;
 
-            private async Task FileUpload()
+            private async Task FileSelected(IFileListEntry[] files)
             {
-                isSubmitButtonDisabled = true;
                 fileContent = "data:image/png;base64,";
-                fileContent += await IJSRuntime.InvokeAsync<string>("getFileData", "template-input");
-                template.Image = System.Text.Encoding.UTF8.GetBytes(fileContent);
-                template.AppID = this.AppID;
-                template.Added = DateTime.Now;
-                template.Updated = template.Added;
-                isSubmitButtonDisabled = false;
+                System.IO.MemoryStream stream;
+                foreach (var file in files)
+                {
+                    Console.WriteLine($"{file.Name} - {file.Type}");
+
+                    using (stream = new System.IO.MemoryStream())
+                    {
+                        await file.Data.CopyToAsync(stream);
+                        fileContent += Convert.ToBase64String(stream.ToArray());
+                    }
+                }
             }
 
-            private async Task Confirm()
+            private void Confirm()
             {
-                string imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
-                string[] imageDimensionsSplit = imageDimensions.Split("|");
-                template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
-                template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
-                HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
-                if (httpResponseMessage.IsSuccessStatusCode)
-                {
-                    NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
-                }
+                //HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
+                //if (httpResponseMessage.IsSuccessStatusCode)
+                //{
+                //NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
+                //}
             }
 
             private void AddNewField()
