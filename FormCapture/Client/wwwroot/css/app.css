@@ -269,8 +269,9 @@ app {
 }
 
 .template-field {
-    border: 1px solid black;
+    border: 1px solid red;
     position: relative;
+    background: blue;
 }
 
 #main-loading-div {

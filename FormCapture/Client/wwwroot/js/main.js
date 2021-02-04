@@ -6,6 +6,11 @@
     }
 }
 
+function getImageProperties(imageID) {
+    var img = document.getElementById(imageID);
+    return img.naturalWidth + "|" + img.naturalHeight;
+}
+
 function uncheckCheckboxes(checkboxIdArray) {
     for (var i = 0; i < checkboxIdArray.length; i++) {
         document.getElementById(checkboxIdArray[i]).checked = false;
@@ -46,8 +51,8 @@ function drawField() {
 
         if (canvas.onmousemove == null) {
             canvas.onmousemove = function (e) {
-                x = e.pageX + window.pageXOffset;
-                y = e.pageY + window.pageYOffset;
+                x = e.offsetX;
+                y = e.offsetY;
                 if (fieldRectangle != null) {
                     fieldRectangle.style.width = (x - startX) + "px";
                     fieldRectangle.style.height = (y - startY) + "px";

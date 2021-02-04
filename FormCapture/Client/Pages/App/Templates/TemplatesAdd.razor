@@ -99,22 +99,34 @@
 
             private async Task FileSelected(IFileListEntry[] files)
             {
-                fileContent = "data:image/png;base64,";
+                if (files.Count() > 1)
+                {
+                    return;
+                }
                 System.IO.MemoryStream stream;
                 foreach (var file in files)
                 {
-                    Console.WriteLine($"{file.Name} - {file.Type}");
+                    if (file.Type.Equals("application/pdf"))
+                    {
+                        return;
+                    }
+                    fileContent = $"data:{file.Type};base64,";
 
                     using (stream = new System.IO.MemoryStream())
                     {
                         await file.Data.CopyToAsync(stream);
-                        fileContent += Convert.ToBase64String(stream.ToArray());
+                        template.Image = stream.ToArray();
+                        fileContent += Convert.ToBase64String(template.Image);
                     }
                 }
             }
 
-            private void Confirm()
+            private async Task Confirm()
             {
+                string imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
+                string[] imageDimensionsSplit = imageDimensions.Split("|");
+                template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
+                template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
                 //HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
                 //if (httpResponseMessage.IsSuccessStatusCode)
                 //{
