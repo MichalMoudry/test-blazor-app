@@ -18,11 +18,6 @@ namespace FormCapture.Shared.DbModels
         public string AppWorkflowTaskGroupID { get; set; }
 
         /// <summary>
-        /// 
-        /// </summary>
-        public string AppWorkflowID { get; set; }
-
-        /// <summary>
         /// ID of a user that started the queue.
         /// </summary>
         public string UserID { get; set; }
