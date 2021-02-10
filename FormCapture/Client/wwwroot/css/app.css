@@ -247,6 +247,7 @@ app {
 
 #template-canvas {
     overflow: auto;
+    position: relative;
     height: 52vh;
 }
 
@@ -270,7 +271,7 @@ app {
 
 .template-field {
     border: 1px solid red;
-    position: relative;
+    position: absolute;
     background: blue;
 }
 

@@ -19,7 +19,6 @@ function uncheckCheckboxes(checkboxIdArray) {
 
 function drawField() {
     var canvas = document.getElementById("template-canvas");
-    console.log(canvas);
     if (canvas != null) {
         var fieldRectangle;
         var startX = 0;
@@ -31,17 +30,20 @@ function drawField() {
                 if (fieldRectangle == null) {
                     fieldRectangle = document.createElement("div");
                     fieldRectangle.classList.add("template-field");
+
+                    startX = e.offsetX;
+                    startY = e.offsetY;
+
+                    fieldRectangle.style.top = startX + "px";
+                    fieldRectangle.style.left = startY + "px";
+
                     canvas.appendChild(fieldRectangle);
-                    startX = x;
-                    startY = y;
-                    fieldRectangle.style.left = x + "px";
-                    fieldRectangle.style.top = y + "px";
-                    canvas.appendChild(fieldRectangle);
+
                     console.log("Drawing started. Start X: " + startX + " start Y: " + startY);
                 }
                 else {
                     fieldRectangle = null;
-                    console.log("Start X: " + startX + " | Start Y: " + startY + " | x: " + x + " | y: " + y);
+                    console.log("x: " + x + " | y: " + y);
                     console.log("Field was drawn.");
                     canvas.onclick = null;
                     canvas.onmousemove = null;
@@ -51,9 +53,9 @@ function drawField() {
 
         if (canvas.onmousemove == null) {
             canvas.onmousemove = function (e) {
-                x = e.offsetX;
-                y = e.offsetY;
                 if (fieldRectangle != null) {
+                    x = e.offsetX;
+                    y = e.offsetY;
                     fieldRectangle.style.width = (x - startX) + "px";
                     fieldRectangle.style.height = (y - startY) + "px";
                     fieldRectangle.style.left = ((x - startX) < 0) ? x + "px" : startX + "px";
