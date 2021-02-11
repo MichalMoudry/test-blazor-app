@@ -87,7 +87,7 @@ app {
 }
 
 #template-preview-image {
-    max-width: 100%;
+    /*max-width: 100%;*/
 }
 
 .sidebar {
@@ -270,9 +270,10 @@ app {
 }
 
 .template-field {
-    border: 1px solid red;
+    border: 1px solid #28a745;
     position: absolute;
-    background: blue;
+    background: #2c844052;
+    border-radius: 3px;
 }
 
 #main-loading-div {

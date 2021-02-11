@@ -59,7 +59,7 @@
                                                 <input class="field-input" @bind-value="field.Name" placeholder="Enter a field name..." />
                                             </div>
 
-                                            <div class="col-1 pointer" @onclick="DrawField">
+                                            <div class="col-1 pointer" @onclick="@(e => DrawField(field.ID))">
                                                 <span class="oi oi-pencil mt-2"></span>
                                             </div>
 
@@ -132,11 +132,11 @@
                 string[] imageDimensionsSplit = imageDimensions.Split("|");
                 template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
                 template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
-                //HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
-                //if (httpResponseMessage.IsSuccessStatusCode)
-                //{
-                //NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
-                //}
+                HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
+                }
             }
 
             private void AddNewField()
@@ -147,7 +147,8 @@
                     Name = "New field",
                     Added = DateTime.Now,
                     Updated = DateTime.Now,
-                    IsIdentifying = false
+                    IsIdentifying = false,
+                    TemplateID = template.ID
                 });
             }
 
@@ -156,9 +157,9 @@
                 fields.Remove(field);
             }
 
-            private async Task DrawField()
+            private async Task DrawField(string fieldID)
             {
-                await IJSRuntime.InvokeVoidAsync("drawField");
+                await IJSRuntime.InvokeVoidAsync("drawField", fieldID);
             }
 
             protected override void OnInitialized()

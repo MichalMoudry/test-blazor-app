@@ -17,7 +17,8 @@ function uncheckCheckboxes(checkboxIdArray) {
     }
 }
 
-function drawField() {
+function drawField(fieldID) {
+    var existingField = document.getElementById(fieldID);
     var canvas = document.getElementById("template-canvas");
     if (canvas != null) {
         var fieldRectangle;
@@ -30,6 +31,7 @@ function drawField() {
                 if (fieldRectangle == null) {
                     fieldRectangle = document.createElement("div");
                     fieldRectangle.classList.add("template-field");
+                    fieldRectangle.id = fieldID;
 
                     startX = e.offsetX;
                     startY = e.offsetY;

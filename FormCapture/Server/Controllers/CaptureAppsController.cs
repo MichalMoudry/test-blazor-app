@@ -25,7 +25,7 @@ namespace FormCapture.Server.Controllers
         /// Method for adding a new capture application.
         /// </summary>
         /// <param name="captureApplication">Instance of the CaptureApplication class.</param>
-        /// <returns>200 or 400 status code.</returns>    
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] CaptureApplication captureApplication)
         {
