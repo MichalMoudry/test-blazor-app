@@ -132,11 +132,12 @@
                 string[] imageDimensionsSplit = imageDimensions.Split("|");
                 template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
                 template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
-                HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
-                if (httpResponseMessage.IsSuccessStatusCode)
-                {
-                    NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
-                }
+                await IJSRuntime.InvokeVoidAsync("recognizeFields");
+                //HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
+                //if (httpResponseMessage.IsSuccessStatusCode)
+                //{
+                    //NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
+                //}
             }
 
             private void AddNewField()

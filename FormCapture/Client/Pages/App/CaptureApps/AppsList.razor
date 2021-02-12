@@ -146,7 +146,7 @@
             captureApplication.Locale = appLocale;
             captureApplication.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
 
-            HttpResponseMessage temp = await HttpClient.PostAsJsonAsync("api/captureapps/add", captureApplication);
+            var temp = await HttpClient.PostAsJsonAsync("api/captureapps/add", captureApplication);
             if (temp.IsSuccessStatusCode)
             {
                 captureApplications.Add(captureApplication);
@@ -164,7 +164,7 @@
         if (!ClaimsHelper.Instance().GetRoleClaim().Value.Equals("User"))
         {
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-            HttpResponseMessage temp = await HttpClient.PostAsJsonAsync<string>("api/captureapps/", ClaimsHelper.Instance().GetEmailClaim().Value);
+            var temp = await HttpClient.PostAsJsonAsync<string>("api/captureapps/", ClaimsHelper.Instance().GetEmailClaim().Value);
             if (temp.IsSuccessStatusCode)
             {
                 captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
