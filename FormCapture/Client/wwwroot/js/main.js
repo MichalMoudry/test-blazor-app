@@ -22,18 +22,39 @@ function uncheckCheckboxes(checkboxIdArray) {
 
 async function recognizeFields() {
     var fields = document.getElementsByClassName("template-field");
-    var imgProperties = getImageProperties("template-preview-image");
+    var fieldHeight;
+    var fieldWidth;
+    var fieldTop;
+    var fieldLeft;
+    var results = [];
+    var imageSrc = document.getElementById("template-preview-image").src;
     await worker.load();
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
-    console.log(fields[0].style.height + " - " + fields[0].style.width);
+    for (var i = 0; i < fields.length; i++) {
+        fieldHeight = fields[i].style.height;
+        fieldHeight = fieldHeight.substring(0, fieldHeight.length - 2);
+        fieldWidth = fields[i].style.width;
+        fieldWidth = fieldWidth.substring(0, fieldWidth.length - 2);
+        fieldTop = fields[i].style.top;
+        fieldTop = fieldTop.substring(0, fieldTop.length - 2);
+        fieldLeft = fields[i].style.left;
+        fieldLeft = fieldLeft.substring(0, fieldLeft.length - 2);
+        const { data: { text } } = await worker.recognize(imageSrc,
+        {
+            rectangle: { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight }
+        });
+        results.push(text);
+    }
+    console.log(results);
+    await worker.terminate();
 }
 
 function drawField(fieldID) {
     var existingField = document.getElementById(fieldID);
     if (existingField != null) {
         console.error("Field was alredy drawn.");
-        return;
+        //return;
     }
     var canvas = document.getElementById("template-canvas");
     if (canvas != null) {
