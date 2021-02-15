@@ -53,8 +53,7 @@ async function recognizeFields() {
 function drawField(fieldID) {
     var existingField = document.getElementById(fieldID);
     if (existingField != null) {
-        console.error("Field was alredy drawn.");
-        //return;
+        existingField.remove();
     }
     var canvas = document.getElementById("template-canvas");
     if (canvas != null) {

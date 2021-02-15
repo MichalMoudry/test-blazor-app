@@ -21,8 +21,8 @@ namespace FormCapture.Server.Controllers
             _templateOperations = new TemplateOperations(dataContext);
         }
 
-        [HttpPost("App")]
-        public IActionResult GetApps(string appID)
+        [HttpPost("")]
+        public IActionResult GetApps([FromBody] string appID)
         {
             if (string.IsNullOrEmpty(appID))
             {
@@ -40,7 +40,7 @@ namespace FormCapture.Server.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<IActionResult> Add(Template template)
+        public async Task<IActionResult> Add([FromBody] Template template)
         {
             if (template == null)
             {
@@ -58,7 +58,7 @@ namespace FormCapture.Server.Controllers
         }
 
         [HttpPost("Delete")]
-        public async Task<IActionResult> Delete(Template template)
+        public async Task<IActionResult> Delete([FromBody] Template template)
         {
             if (template == null)
             {

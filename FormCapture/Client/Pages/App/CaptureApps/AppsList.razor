@@ -57,6 +57,11 @@
                         }
                     </tbody>
                 </table>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
             }
         </div>
 
@@ -122,6 +127,10 @@
     /// </summary>
     private string appLocale;
 
+    private bool isLoadingIndicatorHidden = true;
+
+    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
+
     private void Navigate(string page)
     {
         NavigationManager.NavigateTo(page);
@@ -163,12 +172,14 @@
     {
         if (!ClaimsHelper.Instance().GetRoleClaim().Value.Equals("User"))
         {
+            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
             var temp = await HttpClient.PostAsJsonAsync<string>("api/captureapps/", ClaimsHelper.Instance().GetEmailClaim().Value);
             if (temp.IsSuccessStatusCode)
             {
                 captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
             }
+            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
         }
     }
 }

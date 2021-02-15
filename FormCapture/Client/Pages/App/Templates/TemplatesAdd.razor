@@ -2,7 +2,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime IJSRuntime
-@page "/formcapture/apps/{appID}/addtemplate"
+@page "/formcapture/apps/{ApplicationID}/addtemplate"
 
 <AuthorizeView Roles="Admin, Workflow admin">
     <Authorized>
@@ -90,7 +90,7 @@
         @code
         {
             [Parameter]
-            public string AppID { get; set; }
+            public string ApplicationID { get; set; }
 
             private Template template = new Template() { ID = Guid.NewGuid().ToString() };
 
@@ -128,15 +128,26 @@
 
             private async Task Confirm()
             {
-                string imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
-                string[] imageDimensionsSplit = imageDimensions.Split("|");
-                template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
-                template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
-                //HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
-                //if (httpResponseMessage.IsSuccessStatusCode)
-                //{
-                    //NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
-                //}
+                if (fields.Count > 0 && !string.IsNullOrEmpty(template.Name) && template.Image != null)
+                {
+                    template.AppID = ApplicationID;
+                    template.Added = DateTime.Now;
+                    template.Updated = template.Updated;
+                    var imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
+                    var imageDimensionsSplit = imageDimensions.Split("|");
+                    template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
+                    template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
+                    var httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
+                    var fieldsResponseMessage = await HttpClient.PostAsJsonAsync("api/fields/add", fields);
+                    if (httpResponseMessage.IsSuccessStatusCode && fieldsResponseMessage.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo($"/formcapture/apps/{ApplicationID}");
+                    }
+                    else
+                    {
+                        //TODO: Add notification display
+                    }
+                }
             }
 
             private void AddNewField()

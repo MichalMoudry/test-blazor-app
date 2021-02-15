@@ -59,7 +59,28 @@
                         </div>
 
                         <div class="card-body" id="templates-list-container">
-
+                            @if (templates != null)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td><b>Name</b></td>
+                                                <td><b>Added</b></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var template in templates)
+                                            {
+                                                <tr>
+                                                    <td>@template.Name</td>
+                                                    <td>@template.Added</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
                         </div>
 
                         <div class="card-footer">
@@ -113,6 +134,8 @@
 
     private CaptureApplication captureApplication;
 
+    private List<Template> templates;
+
     private void Navigate(string page)
     {
         NavigationManager.NavigateTo(page);
@@ -121,10 +144,12 @@
     protected override async Task OnInitializedAsync()
     {
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-        HttpResponseMessage getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
-        if (getAppMessage.IsSuccessStatusCode)
+        var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
+        var getTemplatesMessage = await HttpClient.PostAsJsonAsync("api/templates/", AppID);
+        if (getAppMessage.IsSuccessStatusCode && getTemplatesMessage.IsSuccessStatusCode)
         {
             captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
+            templates = JsonConvert.DeserializeObject<List<Template>>(await getTemplatesMessage.Content.ReadAsStringAsync());
         }
     }
 }
