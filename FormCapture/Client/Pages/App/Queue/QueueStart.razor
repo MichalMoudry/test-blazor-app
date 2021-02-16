@@ -1,0 +1,29 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
+@page "/formcapture/apps/{ApplicationID}/startqueue"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        <h3>Start a new queue</h3>
+
+        <hr />
+
+        @code
+        {
+            [Parameter]
+            public string ApplicationID { get; set; }
+
+            protected override void OnInitialized()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                base.OnInitialized();
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to be here.</h3>
+    </NotAuthorized>
+</AuthorizeView>

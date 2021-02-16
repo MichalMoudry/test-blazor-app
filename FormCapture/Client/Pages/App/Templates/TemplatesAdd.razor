@@ -19,7 +19,7 @@
             <div class="col-md">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Template image</h4>
+                        <h4><span class="oi oi-image"></span> Template image</h4>
                     </div>
 
                     <div class="card-body">
@@ -35,44 +35,65 @@
             </div>
 
             <div class="col-md">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="row">
-                            <div class="col">
-                                <h4>Fields</h4>
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <h4>Fields</h4>
+                                </div>
+                                <div class="col-1">
+                                    <span class="oi oi-plus pointer mt-2" @onclick="AddNewField"></span>
+                                </div>
                             </div>
-                            <div class="col-1">
-                                <span class="oi oi-plus pointer mt-2" @onclick="AddNewField"></span>
+                        </div>
+
+                        <div class="card-body">
+                            <div id="field-list">
+                                @if (fields.Count > 0)
+                                {
+                                    @foreach (Field field in fields)
+                                    {
+                                        <div class="field-list-item mt-1 pr-3 pl-3 pt-2 pb-2">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <input class="field-input" @bind-value="field.Name" placeholder="Enter a field name..." />
+                                                </div>
+
+                                                <div class="col-1 pointer" @onclick="@(e => DrawField(field.ID))">
+                                                    <span class="oi oi-pencil mt-2"></span>
+                                                </div>
+
+                                                <div class="col-1 pointer" @onclick="@(e => SetFieldToIdentifying(field))">
+                                                    <span class="oi oi-star mt-2"></span>
+                                                </div>
+
+                                                <div class="col-1 pointer" @onclick="@(e => RemoveField(field))">
+                                                    <span class="oi oi-trash mt-2"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="card-text">This template has no fields.</p>
+                                }
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-body">
-                        <div id="field-list">
-                            @if (fields.Count > 0)
-                            {
-                                @foreach (Field field in fields)
-                                {
-                                    <div class="field-list-item mt-1 pr-3 pl-3 pt-2 pb-2">
-                                        <div class="row">
-                                            <div class="col">
-                                                <input class="field-input" @bind-value="field.Name" placeholder="Enter a field name..." />
-                                            </div>
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h4><span class="oi oi-star"></span> Identifying field</h4>
+                        </div>
 
-                                            <div class="col-1 pointer" @onclick="@(e => DrawField(field.ID))">
-                                                <span class="oi oi-pencil mt-2"></span>
-                                            </div>
-
-                                            <div class="col-1 pointer" @onclick="@(e => RemoveField(field))">
-                                                <span class="oi oi-trash mt-2"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            }
-                            else
+                        <div class="card-body">
+                            @if (identifyingField != null)
                             {
-                                <p class="card-text">This template has no fields.</p>
+                                <div class="field-list-item">
+                                    <p>@identifyingField.Name</p>
+                                </div>
                             }
                         </div>
                     </div>
@@ -99,6 +120,8 @@
             private bool isSubmitButtonDisabled = false;
 
             private List<Field> fields = new List<Field>();
+
+            private Field identifyingField;
 
             private string SubmitButtonDisabledAttribute => isSubmitButtonDisabled ? "disabled" : null;
 
@@ -161,6 +184,11 @@
                     IsIdentifying = false,
                     TemplateID = template.ID
                 });
+            }
+
+            private void SetFieldToIdentifying(Field field)
+            {
+                identifyingField = field;
             }
 
             private void RemoveField(Field field)

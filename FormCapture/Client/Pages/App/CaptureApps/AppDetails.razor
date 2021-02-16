@@ -43,7 +43,7 @@
                         </div>
 
                         <div class="card-footer">
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/startqueue"))">
                                 <span class="oi oi-play-circle"></span> Start a new queue
                             </button>
                         </div>
