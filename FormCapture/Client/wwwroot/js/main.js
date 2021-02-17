@@ -20,17 +20,17 @@ function uncheckCheckboxes(checkboxIdArray) {
     }
 }
 
-async function recognizeFields() {
+async function recognizeFields(imageID, lang) {
     var fields = document.getElementsByClassName("template-field");
     var fieldHeight;
     var fieldWidth;
     var fieldTop;
     var fieldLeft;
     var results = [];
-    var imageSrc = document.getElementById("template-preview-image").src;
+    var imageSrc = document.getElementById(imageID).src;
     await worker.load();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
+    await worker.loadLanguage(lang);
+    await worker.initialize(lang);
     for (var i = 0; i < fields.length; i++) {
         fieldHeight = fields[i].style.height;
         fieldHeight = fieldHeight.substring(0, fieldHeight.length - 2);

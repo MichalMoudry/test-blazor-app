@@ -160,16 +160,17 @@
                     var imageDimensionsSplit = imageDimensions.Split("|");
                     template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
                     template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
-                    var httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
-                    var fieldsResponseMessage = await HttpClient.PostAsJsonAsync("api/fields/add", fields);
-                    if (httpResponseMessage.IsSuccessStatusCode && fieldsResponseMessage.IsSuccessStatusCode)
-                    {
-                        NavigationManager.NavigateTo($"/formcapture/apps/{ApplicationID}");
-                    }
-                    else
-                    {
+                    await IJSRuntime.InvokeVoidAsync("recognizeFields", "template-preview-image", "ces");
+                    //var httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
+                    //var fieldsResponseMessage = await HttpClient.PostAsJsonAsync("api/fields/add", fields);
+                    //if (httpResponseMessage.IsSuccessStatusCode && fieldsResponseMessage.IsSuccessStatusCode)
+                    //{
+                        //NavigationManager.NavigateTo($"/formcapture/apps/{ApplicationID}");
+                    //}
+                    //else
+                    //{
                         //TODO: Add notification display
-                    }
+                    //}
                 }
             }
 
