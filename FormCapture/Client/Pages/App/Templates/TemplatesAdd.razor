@@ -151,7 +151,7 @@
 
             private async Task Confirm()
             {
-                if (fields.Count > 0 && !string.IsNullOrEmpty(template.Name) && template.Image != null)
+                if (fields.Count > 0 && !string.IsNullOrEmpty(template.Name) && template.Image != null && identifyingField != null)
                 {
                     template.AppID = ApplicationID;
                     template.Added = DateTime.Now;
@@ -160,17 +160,28 @@
                     var imageDimensionsSplit = imageDimensions.Split("|");
                     template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
                     template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
-                    await IJSRuntime.InvokeVoidAsync("recognizeFields", "template-preview-image", "ces");
-                    //var httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
-                    //var fieldsResponseMessage = await HttpClient.PostAsJsonAsync("api/fields/add", fields);
-                    //if (httpResponseMessage.IsSuccessStatusCode && fieldsResponseMessage.IsSuccessStatusCode)
-                    //{
-                        //NavigationManager.NavigateTo($"/formcapture/apps/{ApplicationID}");
-                    //}
-                    //else
-                    //{
+                    //await IJSRuntime.InvokeVoidAsync("recognizeFields", "template-preview-image", "ces");
+                    string fieldProperties;
+                    string[] fieldPropertiesSplit;
+                    foreach (var field in fields)
+                    {
+                        fieldProperties = await IJSRuntime.InvokeAsync<string>("getFieldProperties", field.ID);
+                        fieldPropertiesSplit = fieldProperties.Split(",");
+                        field.Width = Convert.ToInt32(fieldPropertiesSplit[0]);
+                        field.Height = Convert.ToInt32(fieldPropertiesSplit[1]);
+                        field.Xposition = Convert.ToInt32(fieldPropertiesSplit[2]);
+                        field.Yposition = Convert.ToInt32(fieldPropertiesSplit[3]);
+                    }
+                    var httpResponseMessage = await HttpClient.PostAsJsonAsync("api/templates/add", template);
+                    var fieldsResponseMessage = await HttpClient.PostAsJsonAsync("api/fields/add", fields);
+                    if (httpResponseMessage.IsSuccessStatusCode && fieldsResponseMessage.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo($"/formcapture/apps/{ApplicationID}");
+                    }
+                    else
+                    {
                         //TODO: Add notification display
-                    //}
+                    }
                 }
             }
 
@@ -189,6 +200,11 @@
 
             private void SetFieldToIdentifying(Field field)
             {
+                if (identifyingField != null)
+                {
+                    identifyingField.IsIdentifying = false;
+                }
+                field.IsIdentifying = true;
                 identifyingField = field;
             }
 

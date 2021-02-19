@@ -50,6 +50,20 @@ async function recognizeFields(imageID, lang) {
     await worker.terminate();
 }
 
+//Method for obtaining properies of a specific template field.
+function getFieldProperties(fieldID) {
+    var field = document.getElementById(fieldID);
+    if (field != null) {
+        return field.style.width.substring(0, field.style.width.length - 2) + "," +
+            field.style.height.substring(0, field.style.height.length - 2) + "," +
+            field.style.top.substring(0, field.style.top.length - 2) + "," +
+            field.style.left.substring(0, field.style.left.length - 2);
+    }
+    else {
+        return null;
+    }
+}
+
 function drawField(fieldID) {
     var existingField = document.getElementById(fieldID);
     if (existingField != null) {

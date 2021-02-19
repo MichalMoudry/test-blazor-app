@@ -6,7 +6,7 @@ using System.Text;
 namespace FormCapture.Shared.DbModels
 {
     /// <summary>
-    /// Class that represents a singular task within a system.
+    /// Class that represents a singular task within the system.
     /// </summary>
     public class WorkflowTask : Model
     {
