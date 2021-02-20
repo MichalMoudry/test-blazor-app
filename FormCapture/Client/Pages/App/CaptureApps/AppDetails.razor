@@ -98,7 +98,28 @@
                         </div>
 
                         <div class="card-body">
-
+                            @if (appWorkflows != null)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td><b>Name</b></td>
+                                                <td><b>Associated</b></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var workflow in appWorkflows)
+                                            {
+                                                <tr>
+                                                    <td>Temp workflow name</td>
+                                                    <td>@workflow.Added</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
                         </div>
 
                         <div class="card-footer">
@@ -136,6 +157,8 @@
 
     private List<Template> templates;
 
+    private List<CaptureAppWorkflows> appWorkflows;
+
     private void Navigate(string page)
     {
         NavigationManager.NavigateTo(page);
@@ -146,10 +169,12 @@
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
         var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
         var getTemplatesMessage = await HttpClient.PostAsJsonAsync("api/templates/", AppID);
-        if (getAppMessage.IsSuccessStatusCode && getTemplatesMessage.IsSuccessStatusCode)
+        var getWorkflowsMessage = await HttpClient.GetAsync($"/api/captureappworkflows/{AppID}");
+        if (getAppMessage.IsSuccessStatusCode && getTemplatesMessage.IsSuccessStatusCode && getWorkflowsMessage.IsSuccessStatusCode)
         {
             captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
             templates = JsonConvert.DeserializeObject<List<Template>>(await getTemplatesMessage.Content.ReadAsStringAsync());
+            appWorkflows = JsonConvert.DeserializeObject<List<CaptureAppWorkflows>>(await getWorkflowsMessage.Content.ReadAsStringAsync());
         }
     }
 }

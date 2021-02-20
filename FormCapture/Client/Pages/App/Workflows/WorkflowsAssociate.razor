@@ -28,6 +28,12 @@
                         <label class="form-check-label ml-4" for="@workflow.ID">@workflow.Name</label>
                     </li>
                 }
+                @if (workflows.Count <= 0)
+                {
+                    <li>
+                        <p>There are no workflows. <a href="./formcapture/workflows/add" title="Go to workflow creation page">Go to workflow creation page.</a></p>
+                    </li>
+                }
             }
         </ul>
 

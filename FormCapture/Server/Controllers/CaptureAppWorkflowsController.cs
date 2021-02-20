@@ -21,8 +21,8 @@ namespace FormCapture.Server.Controllers
             _captureApplicationsOps = new CaptureAppWorkflowsOperations(appDbContext);
         }
 
-        [HttpPost("")]
-        public IActionResult GetWorkflowIds([FromBody] string appID)
+        [HttpGet("{appID}")]
+        public IActionResult GetWorkflowIds(string appID)
         {
             if (string.IsNullOrEmpty(appID))
             {

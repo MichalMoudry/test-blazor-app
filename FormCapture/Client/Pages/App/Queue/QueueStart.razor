@@ -10,15 +10,33 @@
 
         <hr />
 
+        <h4><span class="oi oi-project"></span> Workflow</h4>
+
+        <select class="form-control">
+            @if (appWorkflows != null)
+            {
+                @foreach (var workflow in appWorkflows)
+                {
+                    <option value="@workflow.ID">@workflow.ID</option>
+                }
+            }
+        </select>
+
         @code
         {
             [Parameter]
             public string ApplicationID { get; set; }
 
-            protected override void OnInitialized()
+            private List<CaptureAppWorkflows> appWorkflows;
+
+            protected override async Task OnInitializedAsync()
             {
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-                base.OnInitialized();
+                var getWorkflowsMessage = await HttpClient.GetAsync($"/api/captureappworkflows/{ApplicationID}");
+                if (getWorkflowsMessage.IsSuccessStatusCode)
+                {
+                    appWorkflows = JsonConvert.DeserializeObject<List<CaptureAppWorkflows>>(await getWorkflowsMessage.Content.ReadAsStringAsync());
+                }
             }
         }
     </Authorized>
