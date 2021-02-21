@@ -11,5 +11,7 @@ namespace FormCapture.Shared.DbModels
         /// ID of the workflow.
         /// </summary>
         public string WorkflowID { get; set; }
+
+        public string WorkflowName { get; set; }
     }
 }
