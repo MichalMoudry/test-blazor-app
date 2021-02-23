@@ -26,7 +26,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(userID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             List<WorkflowTask> tasks = _tasksOperations.GetUserTasks(userID).OrderBy(i => i.Added).ToList();
             if (tasks != null)
@@ -35,7 +35,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -44,7 +44,7 @@ namespace FormCapture.Server.Controllers
         {
             if (task == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _tasksOperations.AddTask(task);
             if (res)
@@ -53,7 +53,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -64,7 +64,7 @@ namespace FormCapture.Server.Controllers
             {
                 if (task == null)
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
                 bool res = await _tasksOperations.RemoveTask(task);
                 if (res)
@@ -73,12 +73,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (System.Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -87,7 +87,7 @@ namespace FormCapture.Server.Controllers
         {
             if (task == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             bool res = await _tasksOperations.EditTask(task);
             if (res)
@@ -96,7 +96,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -105,7 +105,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(taskID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             WorkflowTask tempTask = _tasksOperations.GetSpecificTask(taskID);
             if (tempTask != null)
@@ -114,7 +114,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
     }

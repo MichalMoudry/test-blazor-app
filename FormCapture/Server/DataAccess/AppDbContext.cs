@@ -51,5 +51,7 @@ namespace FormCapture.Server.DataAccess
         public DbSet<Template> Templates { get; set; }
 
         public DbSet<Field> Fields { get; set; }
+
+        public DbSet<WorkflowTaskParameter> WorkflowTaskParameters { get; set; }
     }
 }

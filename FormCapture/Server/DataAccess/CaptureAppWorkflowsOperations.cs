@@ -31,13 +31,7 @@ namespace FormCapture.Server.DataAccess
         {
             try
             {
-                foreach (CaptureAppWorkflows appWorkflow in captureAppWorkflows)
-                {
-                    if (!_datacontext.AppWorkflows.Contains(appWorkflow))
-                    {
-                        _datacontext.AppWorkflows.Add(appWorkflow);
-                    }
-                }
+                _datacontext.AppWorkflows.AddRange(captureAppWorkflows);
                 await _datacontext.SaveChangesAsync();
                 return true;
             }
@@ -56,10 +50,7 @@ namespace FormCapture.Server.DataAccess
         {
             try
             {
-                foreach (CaptureAppWorkflows appWorkflow in captureAppWorkflows)
-                {
-                    _datacontext.AppWorkflows.Remove(appWorkflow);
-                }
+                _datacontext.AppWorkflows.RemoveRange(captureAppWorkflows);
                 await _datacontext.SaveChangesAsync();
                 return true;
             }
