@@ -12,17 +12,39 @@
 
         <div>
             <div class="form-group">
-                <label for="task-name">Task name:</label>
+                <label for="task-name"><b>Task name</b>:</label>
                 <input type="text" name="task-name" id="task-name" placeholder="Enter a task name..." @bind-value="workflowTask.Name" class="form-control" />
             </div>
 
             <div class="form-group">
-                <label for="task-description">Task description:</label>
+                <label for="task-description"><b>Task description</b>:</label>
                 <input type="text" name="task-description" id="task-description" placeholder="Enter a task description..." @bind-value="workflowTask.Description" class="form-control" />
             </div>
 
             <div class="form-group">
-                <label for="task-content">Task content: <a title="Information"><span class="oi oi-question-mark"></span></a></label>
+                <p><b>Task parameters</b>:</p>
+                @if (taskParameters != null)
+                {
+                    @foreach (var paramater in taskParameters)
+                    {
+                        <div class="row mb-2">
+                            <div class="col">
+                                <label for="@paramater.ID-name-label">Name:</label>
+                                <input name="@paramater.ID-name-label" id="@paramater.ID-name-label" type="text" @bind="@paramater.ParameterName" class="form-control" placeholder="Enter parameter's name..." />
+                            </div>
+
+                            <div class="col">
+                                <label for="@paramater.ID-value-label">Value:</label>
+                                <input name="@paramater.ID-value-label" id="@paramater.ID-value-label" type="text" @bind="@paramater.ParemeterValue" class="form-control" placeholder="Enter parameter's value..." />
+                            </div>
+                        </div>
+                    }
+                }
+                <button class="btn btn-primary mt-1" @onclick="AddNewParameter"><span class="oi oi-plus"></span> Add a new parameter</button>
+            </div>
+
+            <div class="form-group">
+                <label for="task-content"><b>Task content</b>: <a title="Information"><span class="oi oi-question-mark"></span></a></label>
                 <textarea @bind="taskContent" placeholder="Enter task content..." name="task-content" id="task-content" class="form-control">
                 </textarea>
             </div>
@@ -42,7 +64,9 @@
 
         @code
         {
-            private WorkflowTask workflowTask = new WorkflowTask();
+            private WorkflowTask workflowTask = new WorkflowTask() { ID = Guid.NewGuid().ToString() };
+
+            private List<WorkflowTaskParameter> taskParameters = new List<WorkflowTaskParameter>();
 
             /// <summary>
             /// Page field that contains content of the task.
@@ -53,17 +77,25 @@
             {
                 if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.Name))
                 {
-                    workflowTask.ID = Guid.NewGuid().ToString();
                     workflowTask.Content = System.Text.Encoding.UTF8.GetBytes(taskContent);
                     workflowTask.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
                     workflowTask.Added = DateTime.Now;
                     workflowTask.Updated = workflowTask.Added;
                     var responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/add", workflowTask);
+                    if (taskParameters.Count > 0)
+                    {
+                        await HttpClient.PostAsJsonAsync("api/taskparameters/add", taskParameters);
+                    }
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         NavigationManager.NavigateTo("/formcapture/tasks");
                     }
                 }
+            }
+
+            private void AddNewParameter()
+            {
+                taskParameters.Add(new WorkflowTaskParameter() { ID = Guid.NewGuid().ToString(), TaskID = workflowTask.ID, Added = DateTime.Now, Updated = DateTime.Now });
             }
 
             private async void TestTaskContent()
