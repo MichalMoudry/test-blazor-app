@@ -226,6 +226,10 @@ app {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+
+    #queue-files-preview {
+        max-width: 50%;
+    }
 }
 
 .spinner-border {
