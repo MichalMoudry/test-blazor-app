@@ -18,9 +18,9 @@ namespace FormCapture.Server.DataAccess
         /// <summary>
         /// Method for obtaining list of files in a specific batch.
         /// </summary>
-        /// <param name="batchID">ID of the batch.</param>
+        /// <param name="queueID">ID of the batch.</param>
         /// <returns>List of files in a specific batch.</returns>
-        public List<ProcessedFile> GetBatchFiles(string batchID) => _dataContext.ProcessedFiles.Where(i => i.BatchID.Equals(batchID)).ToList();
+        public List<ProcessedFile> GetQueueFiles(string queueID) => _dataContext.ProcessedFiles.Where(i => i.QueueID.Equals(queueID)).ToList();
 
         /// <summary>
         /// Method for adding a new entry to db table with processed files.

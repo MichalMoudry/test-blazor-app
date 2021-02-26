@@ -8,11 +8,6 @@ namespace FormCapture.Shared.DbModels
     public class Queue : CaptureApplicationModel
     {
         /// <summary>
-        /// ID of a batch that is part of the specific queue.
-        /// </summary>
-        public string BatchID { get; set; }
-
-        /// <summary>
         /// ID of a group of tasks that will be executed next.
         /// </summary>
         public string AppWorkflowTaskGroupID { get; set; }

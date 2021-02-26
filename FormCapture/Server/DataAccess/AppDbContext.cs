@@ -34,10 +34,6 @@ namespace FormCapture.Server.DataAccess
 
         public DbSet<Queue> Queue { get; set; }
 
-        public DbSet<Metadata> Metadata { get; set; }
-
-        public DbSet<Batch> Batches { get; set; }
-
         public DbSet<ProcessedFile> ProcessedFiles { get; set; }
 
         public DbSet<Workflow> Workflows { get; set; }

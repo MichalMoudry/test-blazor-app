@@ -23,8 +23,8 @@ namespace FormCapture.Shared.DbModels
         public string Type { get; set; }
 
         /// <summary>
-        /// ID of the batch that this file belongs to.
+        /// ID of the queue that this file belongs to.
         /// </summary>
-        public string BatchID { get; set; }
+        public string QueueID { get; set; }
     }
 }

@@ -73,8 +73,6 @@
 
             private List<string> uploadedImagesAsBase64String = new List<string>();
 
-            private Batch batch = new Batch() { ID = Guid.NewGuid().ToString() };
-
             private Queue queue = new Queue() { ID = Guid.NewGuid().ToString() };
 
             private List<ProcessedFile> processedFiles = new List<ProcessedFile>();
@@ -89,7 +87,7 @@
                 ProcessedFile tempFile;
                 foreach (var file in files)
                 {
-                    tempFile = new ProcessedFile() { ID = Guid.NewGuid().ToString(), BatchID = batch.ID, Type = file.Type, Name = file.Name, Added = DateTime.Now, Updated = DateTime.Now };
+                    tempFile = new ProcessedFile() { ID = Guid.NewGuid().ToString(), QueueID = queue.ID, Type = file.Type, Name = file.Name, Added = DateTime.Now, Updated = DateTime.Now };
                     using (stream = new System.IO.MemoryStream())
                     {
                         await file.Data.CopyToAsync(stream);
@@ -97,6 +95,17 @@
                         processedFiles.Add(tempFile);
                         uploadedImagesAsBase64String.Add($"data:{file.Type};base64,{Convert.ToBase64String(tempFile.Content)}");
                     }
+                }
+            }
+
+            private async Task Confirm()
+            {
+                queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
+                queue.AppID = ApplicationID;
+                var postFilesResponse = await HttpClient.PostAsJsonAsync("/api/processedfiles/add", processedFiles);
+                if (postFilesResponse.IsSuccessStatusCode)
+                {
+
                 }
             }
 

@@ -25,10 +25,10 @@ namespace FormCapture.Server.Controllers
         /// </summary>
         /// <param name="batchID">ID of the specific batch.</param>
         /// <returns>List of files in a specific batch (in JSON format) or 400 status code.</returns>
-        [HttpPost("")]
-        public IActionResult GetBatchFiles([FromBody] string batchID)
+        [HttpGet("{queueID}")]
+        public IActionResult GetBatchFiles(string queueID)
         {
-            List<ProcessedFile> files = _processedFileOperations.GetBatchFiles(batchID).OrderBy(i => i.Added).ToList();
+            List<ProcessedFile> files = _processedFileOperations.GetQueueFiles(queueID).OrderBy(i => i.Added).ToList();
             if (files != null)
             {
                 return Ok(files);
