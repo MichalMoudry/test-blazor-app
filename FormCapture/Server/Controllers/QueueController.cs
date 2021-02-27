@@ -5,7 +5,6 @@ using FormCapture.Server.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using FormCapture.Shared.DbModels;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace FormCapture.Server.Controllers
 {
@@ -20,8 +19,8 @@ namespace FormCapture.Server.Controllers
             _queueOperations = new QueueOperations(dataContext);
         }
 
-        [HttpPost("App")]
-        public IActionResult GetAppsQueue([FromBody] string appID)
+        [HttpGet("{appID}")]
+        public IActionResult GetAppsQueue(string appID)
         {
             if (string.IsNullOrEmpty(appID))
             {

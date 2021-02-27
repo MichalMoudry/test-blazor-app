@@ -108,6 +108,11 @@
             {
                 queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
                 queue.AppID = ApplicationID;
+                queue.Added = DateTime.Now;
+                queue.Updated = DateTime.Now;
+                queue.AppWorkflowTaskGroupID = "scan";
+                queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
+                queue.Status = FormCapture.Shared.Util.Enums.QueueStatus.Start;
                 var postFilesResponse = await HttpClient.PostAsJsonAsync("/api/processedfiles/add", processedFiles);
                 if (postFilesResponse.IsSuccessStatusCode)
                 {

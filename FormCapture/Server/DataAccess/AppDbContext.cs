@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FormCapture.Shared.DbModels;
 using Microsoft.AspNetCore.Identity;
+using FormCapture.Shared.Util.Enums;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -22,6 +23,10 @@ namespace FormCapture.Server.DataAccess
             builder.Entity<IdentityRole>().HasData(new IdentityRole() { Id = Guid.NewGuid().ToString(), Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<IdentityRole>().HasData(new IdentityRole() { Id = Guid.NewGuid().ToString(), Name = "Workflow admin", NormalizedName = "WORKFLOW ADMIN", ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<IdentityRole>().HasData(new IdentityRole() { Id = Guid.NewGuid().ToString(), Name = "User", NormalizedName = "USER", ConcurrencyStamp = Guid.NewGuid().ToString() });
+
+            //Value conversion config
+            builder.Entity<Queue>().Property(e => e.Status).HasConversion(i => i.ToString(), i => (QueueStatus)Enum.Parse(typeof(QueueStatus), i));
+            builder.Entity<Notification>().Property(e => e.NotificationType).HasConversion(i => i.ToString(), i => (NotificationType)Enum.Parse(typeof(NotificationType), i));
         }
 
         public DbSet<CaptureApplication> CaptureApplications { get; set; }

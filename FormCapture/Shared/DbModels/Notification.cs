@@ -1,4 +1,5 @@
 ﻿using FormCapture.Shared.Util;
+using FormCapture.Shared.Util.Enums;
 
 namespace FormCapture.Shared.DbModels
 {
@@ -10,6 +11,6 @@ namespace FormCapture.Shared.DbModels
 
         public string RecipientID { get; set; }
 
-        public string NotificationType { get; set; }
+        public NotificationType NotificationType { get; set; }
     }
 }

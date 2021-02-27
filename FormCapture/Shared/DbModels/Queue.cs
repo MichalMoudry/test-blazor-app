@@ -1,4 +1,5 @@
 using FormCapture.Shared.Util;
+using FormCapture.Shared.Util.Enums;
 
 namespace FormCapture.Shared.DbModels
 {
@@ -20,6 +21,6 @@ namespace FormCapture.Shared.DbModels
         /// <summary>
         /// Status of the specific queue.
         /// </summary>
-        public string Status { get; set; }
+        public QueueStatus Status { get; set; }
     }
 }
