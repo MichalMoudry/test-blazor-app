@@ -32,7 +32,7 @@ namespace FormCapture.Server.Controllers
             {
                 if (taskGroupings == null || taskGroupings.Count <= 0)
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
                 bool res = await _workflowTaskGroupingOperations.AddGrouping(taskGroupings);
                 if (res)
@@ -41,12 +41,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -60,7 +60,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(workflowID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             List<WorkflowTaskGrouping> taskGroupings = _workflowTaskGroupingOperations.GetWorkflowTaskGroupings(workflowID);
             if (taskGroupings != null)
@@ -69,7 +69,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -85,7 +85,7 @@ namespace FormCapture.Server.Controllers
             {
                 if (taskGroupings == null || taskGroupings.Count <= 0)
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
                 bool res = await _workflowTaskGroupingOperations.RemoveGrouping(taskGroupings);
                 if (res)
@@ -94,12 +94,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
     }

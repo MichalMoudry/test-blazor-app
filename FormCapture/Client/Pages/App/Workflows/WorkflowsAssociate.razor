@@ -24,7 +24,7 @@
                 foreach (Workflow workflow in workflows)
                 {
                     <li class="list-group-item">
-                        <input type="checkbox" id="@workflow.ID" class="form-check-input ml-1" @onchange="eventArgs => { CheckboxClicked(workflow.ID, eventArgs.Value); }" />
+                        <input type="checkbox" id="@workflow.ID" class="form-check-input ml-1" @onchange="eventArgs => { CheckboxClicked(workflow, eventArgs.Value); }" />
                         <label class="form-check-label ml-4" for="@workflow.ID">@workflow.Name</label>
                     </li>
                 }
@@ -52,22 +52,23 @@
 
             private List<CaptureAppWorkflows> appWorkflows = new List<CaptureAppWorkflows>();
 
-            private void CheckboxClicked(string workflowID, object value)
+            private void CheckboxClicked(Workflow workflow, object value)
             {
                 if ((bool)value)
                 {
                     appWorkflows.Add(new CaptureAppWorkflows()
                     {
                         ID = Guid.NewGuid().ToString(),
-                        WorkflowID = workflowID,
+                        WorkflowID = workflow.ID,
                         AppID = this.AppID,
                         Added = DateTime.Now,
-                        Updated = DateTime.Now
+                        Updated = DateTime.Now,
+                        WorkflowName = workflow.Name
                     });
                 }
                 else
                 {
-                    appWorkflows.Remove(appWorkflows.SingleOrDefault(i => i.WorkflowID.Equals(workflowID)));
+                    appWorkflows.Remove(appWorkflows.SingleOrDefault(i => i.WorkflowID.Equals(workflow.ID)));
                 }
             }
 

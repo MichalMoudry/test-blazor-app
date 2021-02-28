@@ -4,7 +4,7 @@
 @inject IJSRuntime IJSRuntime
 @page "/formcapture/apps/{ApplicationID}/startqueue"
 
-<AuthorizeView Roles="Admin, Workflow admin">
+<AuthorizeView Roles="Admin, Workflow admin, User">
     <Authorized>
         <h3><span class="oi oi-play-circle"></span> Start a new queue</h3>
 
@@ -45,14 +45,17 @@
                             }
                         }
                     </div>
-                    <button class="carousel-control-prev" type="button" data-target="#queue-files-preview" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-target="#queue-files-preview" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                    @if (uploadedImagesAsBase64String.Count > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" data-target="#queue-files-preview" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-target="#queue-files-preview" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    }
                 </div>
             }
             else
@@ -60,7 +63,8 @@
                 <br />
             }
         }
-        <button class="btn btn-success mt-3">
+
+        <button class="btn btn-success mt-3" @onclick="Confirm">
             <span class="oi oi-check"></span> Start the queue
         </button>
 
@@ -79,6 +83,10 @@
 
             private async Task FileSelected(InputFileChangeEventArgs e)
             {
+                if (uploadedImagesAsBase64String.Count > 0)
+                {
+                    uploadedImagesAsBase64String.Clear();
+                }
                 if (e.FileCount == 0)
                 {
                     return;
@@ -96,10 +104,10 @@
                     uploadedImagesAsBase64String.Add($"data:{file.ContentType};base64,{Convert.ToBase64String(buffer)}");
                     //using (stream = new System.IO.MemoryStream())
                     //{
-                        //await file.OpenReadStream().CopyToAsync(stream);
-                        //tempFile.Content = stream.ToArray();
-                        //processedFiles.Add(tempFile);
-                        //uploadedImagesAsBase64String.Add($"data:{file.ContentType};base64,{Convert.ToBase64String(tempFile.Content)}");
+                    //await file.OpenReadStream().CopyToAsync(stream);
+                    //tempFile.Content = stream.ToArray();
+                    //processedFiles.Add(tempFile);
+                    //uploadedImagesAsBase64String.Add($"data:{file.ContentType};base64,{Convert.ToBase64String(tempFile.Content)}");
                     //}
                 }
             }
@@ -114,9 +122,10 @@
                 queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
                 queue.Status = FormCapture.Shared.Util.Enums.QueueStatus.Start;
                 var postFilesResponse = await HttpClient.PostAsJsonAsync("/api/processedfiles/add", processedFiles);
-                if (postFilesResponse.IsSuccessStatusCode)
+                var queueResponseMessage = await HttpClient.PostAsJsonAsync("/api/queue/add", queue);
+                if (postFilesResponse.IsSuccessStatusCode && queueResponseMessage.IsSuccessStatusCode)
                 {
-
+                    NavigationManager.NavigateTo($"/formcapture/queue/{queue.ID}/processing");
                 }
             }
 

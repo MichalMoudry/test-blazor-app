@@ -5,9 +5,11 @@ using FormCapture.Server.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using FormCapture.Shared.DbModels;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
+    [Authorize(Roles = "Admin, Workflow admin, User")]
     [Route("api/[controller]")]
     [ApiController]
     public class QueueController : ControllerBase
@@ -24,7 +26,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(appID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             List<Queue> queues = _queueOperations.GetAppsQueues(appID).OrderBy(i => i.Added).ToList();
             if (queues != null)
@@ -33,7 +35,25 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("queue")]
+        public IActionResult GetQueue(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest();
+            }
+            Queue queue = _queueOperations.GetQueue(id);
+            if (queue != null)
+            {
+                return Ok(queue);
+            }
+            else
+            {
+                return BadRequest();
             }
         }
 
@@ -44,7 +64,7 @@ namespace FormCapture.Server.Controllers
             {
                 if (queue == null)
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
                 string userID = queue.UserID;
                 bool res = await _queueOperations.AddQueue(queue);
@@ -54,12 +74,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -68,7 +88,7 @@ namespace FormCapture.Server.Controllers
         {
             if (queue == null)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             try
             {
@@ -79,12 +99,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
     }

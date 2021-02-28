@@ -1,0 +1,45 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
+@page "/formcapture/queue/{QueueID}/processing"
+
+<AuthorizeView Roles="Admin, Workflow admin, User">
+    <Authorized>
+
+        @if (processedFiles != null)
+        {
+            @foreach (var file in processedFiles)
+            {
+                <p>@file.Name</p>
+            }
+        }
+
+
+        @code
+        {
+            [Parameter]
+            public string QueueID { get; set; }
+
+            private Queue queue;
+
+            private List<ProcessedFile> processedFiles;
+
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                var filesResponse = await HttpClient.GetAsync($"/api/processedfiles/{QueueID}");
+                var queueResponse = await HttpClient.GetAsync($"/api/queue/queue?id={QueueID}");
+                if (filesResponse.IsSuccessStatusCode && queueResponse.IsSuccessStatusCode)
+                {
+                    processedFiles = JsonConvert.DeserializeObject<List<ProcessedFile>>(await filesResponse.Content.ReadAsStringAsync());
+                    queue = JsonConvert.DeserializeObject<Queue>(await queueResponse.Content.ReadAsStringAsync());
+                }
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to be here.</h3>
+    </NotAuthorized>
+</AuthorizeView>

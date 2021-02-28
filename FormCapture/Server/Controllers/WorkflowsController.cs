@@ -34,7 +34,7 @@ namespace FormCapture.Server.Controllers
             {
                 if (workflow == null || string.IsNullOrEmpty(workflow.Name))
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
                 bool res = await _workflowOperations.AddWorkflow(workflow);
                 if (res)
@@ -43,12 +43,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -62,7 +62,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(userID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             List<Workflow> workflows = _workflowOperations.GetUsersAppWorkflows(userID)
                 .OrderBy(i => i.Added)
@@ -73,7 +73,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -89,7 +89,7 @@ namespace FormCapture.Server.Controllers
             {
                 if (workflow == null)
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
                 bool res = await _workflowOperations.DeleteWorkflow(workflow);
                 if (res)
@@ -98,12 +98,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -117,7 +117,7 @@ namespace FormCapture.Server.Controllers
         {
             if (string.IsNullOrEmpty(workflowID))
             {
-                return StatusCode(400);
+                return BadRequest();
             }
             Workflow workflow = _workflowOperations.GetAppWorkflow(workflowID);
             if (workflow != null)
@@ -126,7 +126,7 @@ namespace FormCapture.Server.Controllers
             }
             else
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
 
@@ -142,7 +142,7 @@ namespace FormCapture.Server.Controllers
             {
                 if (workflow == null || string.IsNullOrEmpty(workflow.Name))
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
                 bool res = await _workflowOperations.EditWorkflow(workflow);
                 if (res)
@@ -151,12 +151,12 @@ namespace FormCapture.Server.Controllers
                 }
                 else
                 {
-                    return StatusCode(400);
+                    return BadRequest();
                 }
             }
             catch (Exception)
             {
-                return StatusCode(400);
+                return BadRequest();
             }
         }
     }

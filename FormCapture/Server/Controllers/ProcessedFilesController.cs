@@ -6,9 +6,11 @@ using FormCapture.Server.DataAccess;
 using Microsoft.AspNetCore.Mvc;
 using FormCapture.Shared.DbModels;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
+    [Authorize(Roles = "Admin, Workflow admin, User")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProcessedFilesController : ControllerBase
@@ -26,7 +28,7 @@ namespace FormCapture.Server.Controllers
         /// <param name="batchID">ID of the specific batch.</param>
         /// <returns>List of files in a specific batch (in JSON format) or 400 status code.</returns>
         [HttpGet("{queueID}")]
-        public IActionResult GetBatchFiles(string queueID)
+        public IActionResult GetQueueFiles(string queueID)
         {
             List<ProcessedFile> files = _processedFileOperations.GetQueueFiles(queueID).OrderBy(i => i.Added).ToList();
             if (files != null)

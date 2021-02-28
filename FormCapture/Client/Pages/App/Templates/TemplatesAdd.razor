@@ -134,6 +134,7 @@
                 fileContent = $"data:{e.File.ContentType};base64,";
                 var buffer = new byte[e.File.Size];
                 await e.File.OpenReadStream().ReadAsync(buffer);
+                template.Image = buffer;
                 fileContent += Convert.ToBase64String(buffer);
             }
 
