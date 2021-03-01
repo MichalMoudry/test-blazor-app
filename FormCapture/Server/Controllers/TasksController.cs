@@ -21,8 +21,8 @@ namespace FormCapture.Server.Controllers
             _tasksOperations = new TasksOperations(context);
         }
 
-        [HttpPost("")]
-        public IActionResult GetUsersTasks([FromBody] string userID)
+        [HttpGet("{userID}")]
+        public IActionResult GetUsersTasks(string userID)
         {
             if (string.IsNullOrEmpty(userID))
             {
@@ -100,7 +100,7 @@ namespace FormCapture.Server.Controllers
             }
         }
 
-        [HttpGet("")]
+        [HttpGet("task")]
         public IActionResult GetTask([FromQuery] string taskID)
         {
             if (string.IsNullOrEmpty(taskID))
@@ -115,6 +115,24 @@ namespace FormCapture.Server.Controllers
             else
             {
                 return BadRequest();
+            }
+        }
+
+        [HttpPost("grouped")]
+        public IActionResult GetTasksFromGrouping([FromBody] List<WorkflowTaskGrouping> groupings)
+        {
+            if (groupings == null)
+            {
+                return BadRequest();
+            }
+            List<WorkflowTask> tasks = _tasksOperations.GetTasksFromGrouping(groupings);
+            if (tasks.Count > 0)
+            {
+                return Ok(tasks);
+            }
+            else
+            {
+                return BadRequest("There are no tasks.");
             }
         }
     }

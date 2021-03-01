@@ -25,15 +25,26 @@
 
             private List<ProcessedFile> processedFiles;
 
+            private List<WorkflowTaskGrouping> taskGroupings;
+
+            private List<WorkflowTask> tasks;
+
             protected override async Task OnInitializedAsync()
             {
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
                 var filesResponse = await HttpClient.GetAsync($"/api/processedfiles/{QueueID}");
                 var queueResponse = await HttpClient.GetAsync($"/api/queue/queue?id={QueueID}");
-                if (filesResponse.IsSuccessStatusCode && queueResponse.IsSuccessStatusCode)
+                var taskGroupingsResponse = await HttpClient.GetAsync($"/api/workflowtaskgrouping/{queue.WorkflowID}");
+                if (filesResponse.IsSuccessStatusCode && queueResponse.IsSuccessStatusCode && taskGroupingsResponse.IsSuccessStatusCode)
                 {
                     processedFiles = JsonConvert.DeserializeObject<List<ProcessedFile>>(await filesResponse.Content.ReadAsStringAsync());
                     queue = JsonConvert.DeserializeObject<Queue>(await queueResponse.Content.ReadAsStringAsync());
+                    taskGroupings = JsonConvert.DeserializeObject<List<WorkflowTaskGrouping>>(await taskGroupingsResponse.Content.ReadAsStringAsync());
+                    var tasksResponse = await HttpClient.PostAsJsonAsync("/api/tasks/grouped", taskGroupings);
+                    if (tasksResponse.IsSuccessStatusCode)
+                    {
+                        tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksResponse.Content.ReadAsStringAsync());
+                    }
                 }
             }
         }

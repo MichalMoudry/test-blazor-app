@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 using FormCapture.Shared.DbModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -19,20 +19,6 @@ namespace FormCapture.Server.DataAccess
         }
 
         /// <summary>
-        /// Method for obtaining list of user's workflow tasks.
-        /// </summary>
-        /// <param name="userID">ID of the user.</param>
-        /// <returns>List of user's workflow tasks.</returns>
-        public List<WorkflowTask> GetUserTasks(string userID) => _datacontext.WorkflowTasks.Where(i => i.UserID.Equals(userID)).ToList();
-
-        /// <summary>
-        /// Method for obtaining a specific task.
-        /// </summary>
-        /// <param name="taskID">ID of the task.</param>
-        /// <returns>A specific workflow task.</returns>
-        public WorkflowTask GetSpecificTask(string taskID) => _datacontext.WorkflowTasks.SingleOrDefault(i => i.ID.Equals(taskID));
-
-        /// <summary>
         /// Method for adding a new workflow task to db.
         /// </summary>
         /// <param name="newTask">A new workflow task.</param>
@@ -42,25 +28,6 @@ namespace FormCapture.Server.DataAccess
             try
             {
                 _datacontext.WorkflowTasks.Add(newTask);
-                await _datacontext.SaveChangesAsync();
-                return true;
-            }
-            catch (System.Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Method for removing a workflow task from db.
-        /// </summary>
-        /// <param name="task">Task that will be removed.</param>
-        /// <returns>True if task was removed. False if operation failed.</returns>
-        public async Task<bool> RemoveTask(WorkflowTask task)
-        {
-            try
-            {
-                _datacontext.Remove(task);
                 await _datacontext.SaveChangesAsync();
                 return true;
             }
@@ -87,6 +54,54 @@ namespace FormCapture.Server.DataAccess
                 }
                 //Setting new values.
                 _datacontext.Entry(origTask).CurrentValues.SetValues(newTask);
+                await _datacontext.SaveChangesAsync();
+                return true;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Method for obtaining a specific task.
+        /// </summary>
+        /// <param name="taskID">ID of the task.</param>
+        /// <returns>A specific workflow task.</returns>
+        public WorkflowTask GetSpecificTask(string taskID) => _datacontext.WorkflowTasks.SingleOrDefault(i => i.ID.Equals(taskID));
+
+        /// <summary>
+        /// Method for obtaining a list of task specified in a list of task groupings.
+        /// </summary>
+        /// <param name="groupings">List of task groupings.</param>
+        /// <returns>A list of task specified in a list of task groupings.</returns>
+        public List<WorkflowTask> GetTasksFromGrouping(List<WorkflowTaskGrouping> groupings)
+        {
+            List<WorkflowTask> tasks = new List<WorkflowTask>();
+            foreach (var grouping in groupings)
+            {
+                tasks.Add(_datacontext.WorkflowTasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)));
+            }
+            return tasks;
+        }
+
+        /// <summary>
+        /// Method for obtaining list of user's workflow tasks.
+        /// </summary>
+        /// <param name="userID">ID of the user.</param>
+        /// <returns>List of user's workflow tasks.</returns>
+        public List<WorkflowTask> GetUserTasks(string userID) => _datacontext.WorkflowTasks.Where(i => i.UserID.Equals(userID)).ToList();
+
+        /// <summary>
+        /// Method for removing a workflow task from db.
+        /// </summary>
+        /// <param name="task">Task that will be removed.</param>
+        /// <returns>True if task was removed. False if operation failed.</returns>
+        public async Task<bool> RemoveTask(WorkflowTask task)
+        {
+            try
+            {
+                _datacontext.Remove(task);
                 await _datacontext.SaveChangesAsync();
                 return true;
             }

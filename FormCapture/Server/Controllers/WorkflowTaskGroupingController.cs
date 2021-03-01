@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using FormCapture.Server.DataAccess;
+﻿using FormCapture.Server.DataAccess;
 using FormCapture.Shared.DbModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
@@ -51,29 +51,6 @@ namespace FormCapture.Server.Controllers
         }
 
         /// <summary>
-        /// Method for obtaining list of workflow's task groupings.
-        /// </summary>
-        /// <param name="workflowID">ID of the workflow.</param>
-        /// <returns>List of group's task groupings (in JSON format) or 400 status code.</returns>
-        [HttpPost("")]
-        public IActionResult GetGroupTaskGroupings([FromBody] string workflowID)
-        {
-            if (string.IsNullOrEmpty(workflowID))
-            {
-                return BadRequest();
-            }
-            List<WorkflowTaskGrouping> taskGroupings = _workflowTaskGroupingOperations.GetWorkflowTaskGroupings(workflowID);
-            if (taskGroupings != null)
-            {
-                return Ok(taskGroupings);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        /// <summary>
         /// Method for deleting task grouping.
         /// </summary>
         /// <param name="taskGroupings">Dictionary of existing task groupings.</param>
@@ -98,6 +75,29 @@ namespace FormCapture.Server.Controllers
                 }
             }
             catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Method for obtaining list of workflow's task groupings.
+        /// </summary>
+        /// <param name="workflowID">ID of the workflow.</param>
+        /// <returns>List of group's task groupings (in JSON format) or 400 status code.</returns>
+        [HttpGet("{workflowID}")]
+        public IActionResult GetGroupTaskGroupings(string workflowID)
+        {
+            if (string.IsNullOrEmpty(workflowID))
+            {
+                return BadRequest();
+            }
+            List<WorkflowTaskGrouping> taskGroupings = _workflowTaskGroupingOperations.GetWorkflowTaskGroupings(workflowID);
+            if (taskGroupings != null)
+            {
+                return Ok(taskGroupings);
+            }
+            else
             {
                 return BadRequest();
             }

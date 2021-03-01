@@ -11,7 +11,7 @@
         <hr />
 
         <h4><span class="oi oi-project"></span> Select workflow</h4>
-        <select class="form-control">
+        <select class="form-control" @bind="workflowID">
             @if (appWorkflows != null)
             {
                 @foreach (var workflow in appWorkflows)
@@ -75,6 +75,8 @@
 
             private List<CaptureAppWorkflows> appWorkflows;
 
+            private string workflowID;
+
             private List<string> uploadedImagesAsBase64String = new List<string>();
 
             private Queue queue = new Queue() { ID = Guid.NewGuid().ToString() };
@@ -114,18 +116,26 @@
 
             private async Task Confirm()
             {
-                queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
-                queue.AppID = ApplicationID;
-                queue.Added = DateTime.Now;
-                queue.Updated = DateTime.Now;
-                queue.AppWorkflowTaskGroupID = "scan";
-                queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
-                queue.Status = FormCapture.Shared.Util.Enums.QueueStatus.Start;
-                var postFilesResponse = await HttpClient.PostAsJsonAsync("/api/processedfiles/add", processedFiles);
-                var queueResponseMessage = await HttpClient.PostAsJsonAsync("/api/queue/add", queue);
-                if (postFilesResponse.IsSuccessStatusCode && queueResponseMessage.IsSuccessStatusCode)
+                if (appWorkflows.Count > 0 && uploadedImagesAsBase64String.Count > 0)
                 {
-                    NavigationManager.NavigateTo($"/formcapture/queue/{queue.ID}/processing");
+                    queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
+                    queue.AppID = ApplicationID;
+                    queue.Added = DateTime.Now;
+                    queue.Updated = DateTime.Now;
+                    queue.AppWorkflowTaskGroupID = "scan";
+                    queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
+                    queue.Status = FormCapture.Shared.Util.Enums.QueueStatus.Start;
+                    if (string.IsNullOrEmpty(workflowID))
+                    {
+                        workflowID = appWorkflows.FirstOrDefault().ID;
+                    }
+                    queue.WorkflowID = workflowID;
+                    var postFilesResponse = await HttpClient.PostAsJsonAsync("/api/processedfiles/add", processedFiles);
+                    var queueResponseMessage = await HttpClient.PostAsJsonAsync("/api/queue/add", queue);
+                    if (postFilesResponse.IsSuccessStatusCode && queueResponseMessage.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo($"/formcapture/queue/{queue.ID}/processing");
+                    }
                 }
             }
 

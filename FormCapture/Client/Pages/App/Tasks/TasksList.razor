@@ -69,7 +69,7 @@
             protected override async Task OnInitializedAsync()
             {
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-                var responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/", ClaimsHelper.Instance().GetEmailClaim().Value);
+                var responseMessage = await HttpClient.GetAsync($"api/tasks/{ClaimsHelper.Instance().GetEmailClaim().Value}");
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
