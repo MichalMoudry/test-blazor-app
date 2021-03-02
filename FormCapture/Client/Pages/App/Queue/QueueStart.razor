@@ -127,7 +127,7 @@
                     queue.Status = FormCapture.Shared.Util.Enums.QueueStatus.Start;
                     if (string.IsNullOrEmpty(workflowID))
                     {
-                        workflowID = appWorkflows.FirstOrDefault().ID;
+                        workflowID = appWorkflows.FirstOrDefault().WorkflowID;
                     }
                     queue.WorkflowID = workflowID;
                     var postFilesResponse = await HttpClient.PostAsJsonAsync("/api/processedfiles/add", processedFiles);
