@@ -33,7 +33,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            bool res = await _fieldOperations.AddFields(fields);
+            var res = await _fieldOperations.AddFields(fields);
             if (res)
             {
                 return Ok();
@@ -56,10 +56,32 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            bool res = await _fieldOperations.RemoveFields(fields);
+            var res = await _fieldOperations.RemoveFields(fields);
             if (res)
             {
                 return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("identifying")]
+        public IActionResult GetIdentifyingFields([FromBody] List<Template> templates)
+        {
+            if (templates == null)
+            {
+                return BadRequest();
+            }
+            var fields = _fieldOperations.GetIdentifyingFields(templates);
+            if (fields != null || fields.Count > 0)
+            {
+                return Ok(fields);
+            }
+            else if (fields.Count == 0)
+            {
+                return BadRequest("There are no identifying fields.");
             }
             else
             {

@@ -21,7 +21,7 @@
         }
 
         <div id="scanTasks">
-            <h4>Scan tasks</h4>
+            <h4><span class="oi oi-document"></span> Scan tasks</h4>
             <ul class="list-group">
                 @if (scanTaskProgression != null)
                 {
@@ -32,7 +32,7 @@
                             <li class="list-group-item active">
                                 @item.Key - @if (item.Value)
                                 {
-                                    <span>done</span>
+                                    <span><span class="oi oi-circle-check"></span></span>
                                 }
                                 else
                                 {
@@ -45,7 +45,7 @@
                             <li class="list-group-item">
                                 @item.Key - @if (item.Value)
                                 {
-                                    <span>done</span>
+                                    <span><span class="oi oi-circle-check"></span></span>
                                 }
                                 else
                                 {
@@ -59,15 +59,53 @@
         </div>
 
         <div id="recognitionTasks">
-
+            <h4><span class="oi oi-aperture"></span> Recognition tasks</h4>
+            <ul class="list-group">
+                @if (recognitionTaskProgression != null)
+                {
+                    @foreach (var task in recognitionTaskProgression)
+                    {
+                        @if (recognitionTaskProgression.Last().Equals(task))
+                        {
+                            <li class="list-group-item active">
+                                @task.Key - @if (task.Value)
+                                {
+                                    <span><span class="oi oi-circle-check"></span></span>
+                                }
+                                else
+                                {
+                                    <span>in progress</span>
+                                }
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="list-group-item">
+                                @task.Key - @if (task.Value)
+                                {
+                                    <span><span class="oi oi-circle-check"></span></span>
+                                }
+                                else
+                                {
+                                    <span>in progress</span>
+                                }
+                            </li>
+                        }
+                    }
+                }
+            </ul>
         </div>
 
         <div id="verificationTasks">
-
+            <h4><span class="oi oi-eye"></span> Verification tasks</h4>
+            <ul class="list-group">
+            </ul>
         </div>
 
         <div id="exportTasks">
-
+            <h4><span class="oi oi-expand-left"></span> Export tasks</h4>
+            <ul class="list-group">
+            </ul>
         </div>
 
 
@@ -84,7 +122,15 @@
 
             private List<WorkflowTask> tasks;
 
+            private List<Template> templates;
+
             private Dictionary<string, bool> scanTaskProgression = new Dictionary<string, bool>();
+
+            private Dictionary<string, bool> recognitionTaskProgression = new Dictionary<string, bool>();
+
+            private Dictionary<string, bool> verificationTaskProgression = new Dictionary<string, bool>();
+
+            private Dictionary<string, bool> exportTaskProgression = new Dictionary<string, bool>();
 
             private string SetImageSource(byte[] data, string contentType)
             {
@@ -118,8 +164,38 @@
                     if (tasksResponse.IsSuccessStatusCode)
                     {
                         tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksResponse.Content.ReadAsStringAsync());
+                        scanTaskProgression["Obtaining custom tasks..."] = true;
                     }
-                    scanTaskProgression["Obtaining custom tasks..."] = true;
+                    else
+                    {
+                        scanTaskProgression["Obtaining custom tasks..."] = false;
+                        return;
+                    }
+
+                    recognitionTaskProgression.Add("Obtaining app's templates", false);
+                    var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
+                    if (templatesResponse.IsSuccessStatusCode)
+                    {
+                        templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
+                        recognitionTaskProgression["Obtaining app's templates"] = true;
+                    }
+                    else
+                    {
+                        recognitionTaskProgression["Obtaining app's templates"] = false;
+                        return;
+                    }
+
+                    recognitionTaskProgression.Add("Obtaining identifying fields", false);
+                    var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
+                    if (identifyingFieldsResponse.IsSuccessStatusCode)
+                    {
+                        recognitionTaskProgression["Obtaining identifying fields"] = true;
+                    }
+                    else
+                    {
+                        recognitionTaskProgression["Obtaining identifying fields"] = false;
+                        return;
+                    }
                 }
             }
         }

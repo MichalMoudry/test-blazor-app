@@ -17,5 +17,7 @@ namespace FormCapture.Shared.DbModels
         public int Yposition { get; set; }
 
         public string TemplateID { get; set; }
+
+        public string ExpectedValue { get; set; }
     }
 }

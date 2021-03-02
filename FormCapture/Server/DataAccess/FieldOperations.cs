@@ -17,6 +17,16 @@ namespace FormCapture.Server.DataAccess
 
         public List<Field> GetTemplateFields(string templateID) => _appDbContext.Fields.Where(i => i.TemplateID.Equals(templateID)).ToList();
 
+        public List<Field> GetIdentifyingFields(List<Template> templates)
+        {
+            List<Field> fields = new List<Field>();
+            foreach (var template in templates)
+            {
+                fields.Add(_appDbContext.Fields.SingleOrDefault(i => i.TemplateID.Equals(template.ID) && i.IsIdentifying == true));
+            }
+            return fields;
+        }
+
         public async Task<bool> AddFields(List<Field> fields)
         {
             try

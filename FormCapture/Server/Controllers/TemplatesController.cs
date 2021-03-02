@@ -21,8 +21,8 @@ namespace FormCapture.Server.Controllers
             _templateOperations = new TemplateOperations(dataContext);
         }
 
-        [HttpPost("")]
-        public IActionResult GetApps([FromBody] string appID)
+        [HttpGet("{appID}")]
+        public IActionResult GetAppTemplates(string appID)
         {
             if (string.IsNullOrEmpty(appID))
             {

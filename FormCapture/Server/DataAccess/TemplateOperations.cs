@@ -15,7 +15,12 @@ namespace FormCapture.Server.DataAccess
             _appDbContext = appDbContext;
         }
 
-        public List<Template> GetAppsTemplates(string appID) => _appDbContext.Templates.Where(i => i.AppID.Equals(appID)).OrderBy(i => i.Added).ToList();
+        public List<Template> GetAppsTemplates(string appID)
+        {
+            var templates = _appDbContext.Templates.Where(i => i.AppID.Equals(appID)).OrderBy(i => i.Added).ToList();
+            templates.ForEach(i => i.Image = null);
+            return templates;
+        }
 
         public Template GetTemplate(string templateID) => _appDbContext.Templates.SingleOrDefault(i => i.ID.Equals(templateID));
 
