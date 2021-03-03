@@ -6,7 +6,7 @@
 
 <AuthorizeView Roles="Admin, Workflow admin">
     <Authorized>
-        <h3>Add a new template</h3>
+        <h3><span class="oi oi-plus"></span> Add a new template</h3>
 
         <hr />
 
@@ -95,6 +95,15 @@
                                     <p>@identifyingField.Name</p>
                                 </div>
                             }
+                            else
+                            {
+                                <div class="field-list-item">
+                                    <p>Select a identifying field</p>
+                                </div>
+                            }
+                            <div>
+                                <input @bind="expectedValue" name="expected-value" id="expected-value" type="text" placeholder="Enter field's expected value..." class="form-control" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -119,6 +128,8 @@
 
             private bool isSubmitButtonDisabled = false;
 
+            private string expectedValue;
+
             private List<Field> fields = new List<Field>();
 
             private Field identifyingField;
@@ -140,11 +151,11 @@
 
             private async Task Confirm()
             {
-                if (fields.Count > 0 && !string.IsNullOrEmpty(template.Name) && template.Image != null && identifyingField != null)
+                if (fields.Count > 0 && !string.IsNullOrEmpty(template.Name) && template.Image != null && identifyingField != null && !string.IsNullOrEmpty(expectedValue))
                 {
                     template.AppID = ApplicationID;
                     template.Added = DateTime.Now;
-                    template.Updated = template.Updated;
+                    template.Updated = template.Added;
                     var imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
                     var imageDimensionsSplit = imageDimensions.Split("|");
                     template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
@@ -194,6 +205,7 @@
                     identifyingField.IsIdentifying = false;
                 }
                 field.IsIdentifying = true;
+                field.ExpectedValue = expectedValue;
                 identifyingField = field;
             }
 
