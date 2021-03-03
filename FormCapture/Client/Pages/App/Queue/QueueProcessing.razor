@@ -15,8 +15,11 @@
             @foreach (var file in processedFiles)
             {
                 <div>
-                    <img src="@SetImageSource(file.Content, file.Type)" alt="@file.Name" draggable="false" />
+                    <img src="@SetImageSource(file.Content, file.Type)" id="@file.ID" alt="@file.Name" draggable="false" />
                 </div>
+                @if (processedFiles.Last().Equals(file))
+                {
+                }
             }
         }
 
@@ -108,7 +111,6 @@
             </ul>
         </div>
 
-
         @code
         {
             [Parameter]
@@ -132,9 +134,60 @@
 
             private Dictionary<string, bool> exportTaskProgression = new Dictionary<string, bool>();
 
+            private List<Field> idFields;
+
+            private List<Field> nonIdFields;
+
             private string SetImageSource(byte[] data, string contentType)
             {
                 return $"data:{contentType};base64,{Convert.ToBase64String(data)}";
+            }
+
+            private async Task ExecuteScanTasks()
+            {
+                scanTaskProgression.Add("Obtaining custom tasks...", false);
+                //Pull task groupings
+                var taskGroupingsResponse = await HttpClient.GetAsync($"/api/workflowtaskgrouping/{queue.WorkflowID}");
+                if (taskGroupingsResponse.IsSuccessStatusCode)
+                {
+                    taskGroupings = JsonConvert.DeserializeObject<List<WorkflowTaskGrouping>>(await taskGroupingsResponse.Content.ReadAsStringAsync());
+                }
+
+                //Pull tasks from groupings
+                var tasksResponse = await HttpClient.PostAsJsonAsync("/api/tasks/grouped", taskGroupings);
+                if (tasksResponse.IsSuccessStatusCode)
+                {
+                    tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksResponse.Content.ReadAsStringAsync());
+                    scanTaskProgression["Obtaining custom tasks..."] = true;
+                }
+            }
+
+            private async Task ExecuteRecognitionTasks()
+            {
+                //Pull templates
+                recognitionTaskProgression.Add("Obtaining app's templates", false);
+                var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
+                if (templatesResponse.IsSuccessStatusCode)
+                {
+                    templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining app's templates"] = true;
+                }
+
+                //Pull id fields
+                recognitionTaskProgression.Add("Obtaining identifying fields", false);
+                var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
+                if (identifyingFieldsResponse.IsSuccessStatusCode)
+                {
+                    idFields = JsonConvert.DeserializeObject<List<Field>>(await identifyingFieldsResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining identifying fields"] = true;
+                }
+
+                recognitionTaskProgression.Add("Applying identifying fields", false);
+                foreach (var file in processedFiles)
+                {
+                    //await IJSRuntime.InvokeVoidAsync("recog", idFields, Convert.ToBase64String(file.Content), file.Type, "ces");
+                    //await IJSRuntime.InvokeVoidAsync("recog", idFields, file.ID, file.Type, "ces");
+                }
             }
 
             protected override async Task OnInitializedAsync()
@@ -150,52 +203,8 @@
                     processedFiles = JsonConvert.DeserializeObject<List<ProcessedFile>>(await filesResponse.Content.ReadAsStringAsync());
                     queue = JsonConvert.DeserializeObject<Queue>(await queueResponse.Content.ReadAsStringAsync());
                     scanTaskProgression["Obtaining files..."] = true;
-
-                    scanTaskProgression.Add("Obtaining custom tasks...", false);
-                    //Pull task groupings
-                    var taskGroupingsResponse = await HttpClient.GetAsync($"/api/workflowtaskgrouping/{queue.WorkflowID}");
-                    if (taskGroupingsResponse.IsSuccessStatusCode)
-                    {
-                        taskGroupings = JsonConvert.DeserializeObject<List<WorkflowTaskGrouping>>(await taskGroupingsResponse.Content.ReadAsStringAsync());
-                    }
-
-                    //Pull tasks from groupings
-                    var tasksResponse = await HttpClient.PostAsJsonAsync("/api/tasks/grouped", taskGroupings);
-                    if (tasksResponse.IsSuccessStatusCode)
-                    {
-                        tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksResponse.Content.ReadAsStringAsync());
-                        scanTaskProgression["Obtaining custom tasks..."] = true;
-                    }
-                    else
-                    {
-                        scanTaskProgression["Obtaining custom tasks..."] = false;
-                        return;
-                    }
-
-                    recognitionTaskProgression.Add("Obtaining app's templates", false);
-                    var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
-                    if (templatesResponse.IsSuccessStatusCode)
-                    {
-                        templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
-                        recognitionTaskProgression["Obtaining app's templates"] = true;
-                    }
-                    else
-                    {
-                        recognitionTaskProgression["Obtaining app's templates"] = false;
-                        return;
-                    }
-
-                    recognitionTaskProgression.Add("Obtaining identifying fields", false);
-                    var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
-                    if (identifyingFieldsResponse.IsSuccessStatusCode)
-                    {
-                        recognitionTaskProgression["Obtaining identifying fields"] = true;
-                    }
-                    else
-                    {
-                        recognitionTaskProgression["Obtaining identifying fields"] = false;
-                        return;
-                    }
+                    await ExecuteScanTasks();
+                    await ExecuteRecognitionTasks();
                 }
             }
         }

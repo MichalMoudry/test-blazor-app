@@ -20,6 +20,28 @@ function uncheckCheckboxes(checkboxIdArray) {
     }
 }
 
+async function recog(fields, imageData, contentType, lang) {
+    //fields["height"] = fields["height"] + "px";
+    //fields["width"] = fields["width"] + "px";
+    //fields["xposition"] = fields["xposition"] + "px";
+    //fields["yposition"] = fields["yposition"] + "px";
+    await worker.load();
+    await worker.loadLanguage(lang);
+    await worker.initialize(lang);
+    var results = [];
+
+    for (var i = 0; i < fields.length; i++) {
+        const { data: { text } } = await worker.recognize("data:" + contentType + ";base64," + imageData,
+        {
+            rectangle: { top: fields[i]["xposition"], left: fields[i]["yposition"], width: fields[i]["width"], height: fields[i]["height"] }
+        });
+        results.push(text);
+    }
+
+    console.log(results);
+    await worker.terminate();
+}
+
 async function recognizeFields(imageID, lang) {
     var fields = document.getElementsByClassName("template-field");
     var fieldHeight;
