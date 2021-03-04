@@ -174,41 +174,35 @@
             {
                 recognitionTaskProgression.Add("Obtaining app's templates", false);
                 //Pull templates
-                await Task.Run(async () =>
+                var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
+                if (templatesResponse.IsSuccessStatusCode)
                 {
-                    var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
-                    if (templatesResponse.IsSuccessStatusCode)
-                    {
-                        templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
-                        recognitionTaskProgression["Obtaining app's templates"] = true;
-                    }
-                });
+                    templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining app's templates"] = true;
+                }
 
                 recognitionTaskProgression.Add("Obtaining identifying fields", false);
+                this.StateHasChanged();
                 //Pull id fields
-                await Task.Run(async () =>
+                var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
+                if (identifyingFieldsResponse.IsSuccessStatusCode)
                 {
-                    var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
-                    if (identifyingFieldsResponse.IsSuccessStatusCode)
-                    {
-                        idFields = JsonConvert.DeserializeObject<List<Field>>(await identifyingFieldsResponse.Content.ReadAsStringAsync());
-                        recognitionTaskProgression["Obtaining identifying fields"] = true;
-                    }
-                });
+                    idFields = JsonConvert.DeserializeObject<List<Field>>(await identifyingFieldsResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining identifying fields"] = true;
+                }
 
                 recognitionTaskProgression.Add("Applying identifying fields", false);
-                await Task.Run(async () =>
+                this.StateHasChanged();
+                System.Text.Json.JsonElement recogResponse;
+                foreach (var file in processedFiles)
                 {
-                    object recogResponse;
-                    foreach (var file in processedFiles)
+                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, file.ID, "ces");
+                    foreach (var item in recogResponse.EnumerateArray())
                     {
-                        recogResponse = await IJSRuntime.InvokeAsync<object>("recog", idFields, file.ID, "ces");
-                        if (recogResponse != null)
-                        {
-                            Console.WriteLine(JsonConvert.SerializeObject(recogResponse));
-                        }
+                        Console.WriteLine($"{item.ToString()} - {item.ToString().GetType()}");
                     }
-                });
+                    recognitionTaskProgression["Applying identifying fields"] = true;
+                }
             }
 
             protected override async Task OnInitializedAsync()
