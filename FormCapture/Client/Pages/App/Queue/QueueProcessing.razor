@@ -7,9 +7,9 @@
 <AuthorizeView Roles="Admin, Workflow admin, User">
     <Authorized>
 
-        <h3>Queue processing</h3>
+        <h3><span class="oi oi-play-circle"></span> Queue processing</h3>
 
-        <h4>Processed files</h4>
+        <h4 class="mt-4"><span class="oi oi-file"></span> Processed files</h4>
         @if (processedFiles != null)
         {
             @foreach (var file in processedFiles)
@@ -23,7 +23,7 @@
             }
         }
 
-        <div id="scanTasks">
+        <div id="scanTasks" class="mt-4">
             <h4><span class="oi oi-document"></span> Scan tasks</h4>
             <ul class="list-group">
                 @if (scanTaskProgression != null)
@@ -59,9 +59,13 @@
                     }
                 }
             </ul>
+
+            <button type="button" class="btn btn-success mt-2 @ContinueButtonCssClass" @onclick="ContinueProcessing">
+                Continue processing <span class="oi oi-play-circle"></span>
+            </button>
         </div>
 
-        <div id="recognitionTasks">
+        <div id="recognitionTasks" class="mt-4">
             <h4><span class="oi oi-aperture"></span> Recognition tasks</h4>
             <ul class="list-group">
                 @if (recognitionTaskProgression != null)
@@ -99,13 +103,13 @@
             </ul>
         </div>
 
-        <div id="verificationTasks">
+        <div id="verificationTasks" class="mt-4">
             <h4><span class="oi oi-eye"></span> Verification tasks</h4>
             <ul class="list-group">
             </ul>
         </div>
 
-        <div id="exportTasks">
+        <div id="exportTasks" class="mt-4">
             <h4><span class="oi oi-expand-left"></span> Export tasks</h4>
             <ul class="list-group">
             </ul>
@@ -138,6 +142,10 @@
 
             private List<Field> nonIdFields;
 
+            private bool isContinueButtonHidden = true;
+
+            private string ContinueButtonCssClass => isContinueButtonHidden ? "d-none" : null;
+
             private string SetImageSource(byte[] data, string contentType)
             {
                 return $"data:{contentType};base64,{Convert.ToBase64String(data)}";
@@ -162,32 +170,45 @@
                 }
             }
 
-            private async Task ExecuteRecognitionTasks()
+            private async Task ContinueProcessing()
             {
-                //Pull templates
                 recognitionTaskProgression.Add("Obtaining app's templates", false);
-                var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
-                if (templatesResponse.IsSuccessStatusCode)
+                //Pull templates
+                await Task.Run(async () =>
                 {
-                    templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
-                    recognitionTaskProgression["Obtaining app's templates"] = true;
-                }
+                    var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
+                    if (templatesResponse.IsSuccessStatusCode)
+                    {
+                        templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
+                        recognitionTaskProgression["Obtaining app's templates"] = true;
+                    }
+                });
 
-                //Pull id fields
                 recognitionTaskProgression.Add("Obtaining identifying fields", false);
-                var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
-                if (identifyingFieldsResponse.IsSuccessStatusCode)
+                //Pull id fields
+                await Task.Run(async () =>
                 {
-                    idFields = JsonConvert.DeserializeObject<List<Field>>(await identifyingFieldsResponse.Content.ReadAsStringAsync());
-                    recognitionTaskProgression["Obtaining identifying fields"] = true;
-                }
+                    var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
+                    if (identifyingFieldsResponse.IsSuccessStatusCode)
+                    {
+                        idFields = JsonConvert.DeserializeObject<List<Field>>(await identifyingFieldsResponse.Content.ReadAsStringAsync());
+                        recognitionTaskProgression["Obtaining identifying fields"] = true;
+                    }
+                });
 
                 recognitionTaskProgression.Add("Applying identifying fields", false);
-                foreach (var file in processedFiles)
+                await Task.Run(async () =>
                 {
-                    //await IJSRuntime.InvokeVoidAsync("recog", idFields, Convert.ToBase64String(file.Content), file.Type, "ces");
-                    //await IJSRuntime.InvokeVoidAsync("recog", idFields, file.ID, file.Type, "ces");
-                }
+                    object recogResponse;
+                    foreach (var file in processedFiles)
+                    {
+                        recogResponse = await IJSRuntime.InvokeAsync<object>("recog", idFields, file.ID, "ces");
+                        if (recogResponse != null)
+                        {
+                            Console.WriteLine(JsonConvert.SerializeObject(recogResponse));
+                        }
+                    }
+                });
             }
 
             protected override async Task OnInitializedAsync()
@@ -204,7 +225,7 @@
                     queue = JsonConvert.DeserializeObject<Queue>(await queueResponse.Content.ReadAsStringAsync());
                     scanTaskProgression["Obtaining files..."] = true;
                     await ExecuteScanTasks();
-                    await ExecuteRecognitionTasks();
+                    isContinueButtonHidden = false;
                 }
             }
         }

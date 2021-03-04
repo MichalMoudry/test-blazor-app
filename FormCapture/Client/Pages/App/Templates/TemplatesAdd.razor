@@ -112,7 +112,7 @@
 
         <!--mt-3 mb-3 bottom-row-->
         <div class="mt-2 mb-2">
-            <button class="btn btn-success" disabled="@SubmitButtonDisabledAttribute" @onclick="Confirm">
+            <button class="btn btn-success" @onclick="Confirm">
                 <span class="oi oi-check"></span> Submit
             </button>
         </div>
@@ -126,15 +126,11 @@
 
             private string fileContent;
 
-            private bool isSubmitButtonDisabled = false;
-
             private string expectedValue;
 
             private List<Field> fields = new List<Field>();
 
             private Field identifyingField;
-
-            private string SubmitButtonDisabledAttribute => isSubmitButtonDisabled ? "disabled" : null;
 
             private async Task FileSelected(InputFileChangeEventArgs e)
             {
@@ -156,6 +152,7 @@
                     template.AppID = ApplicationID;
                     template.Added = DateTime.Now;
                     template.Updated = template.Added;
+                    fields.SingleOrDefault(i => i.IsIdentifying).ExpectedValue = expectedValue;
                     var imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
                     var imageDimensionsSplit = imageDimensions.Split("|");
                     template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
@@ -205,7 +202,6 @@
                     identifyingField.IsIdentifying = false;
                 }
                 field.IsIdentifying = true;
-                field.ExpectedValue = expectedValue;
                 identifyingField = field;
             }
 
