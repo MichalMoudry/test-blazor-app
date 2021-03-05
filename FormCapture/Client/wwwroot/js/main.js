@@ -35,7 +35,7 @@ async function recog(fields, imageData, lang) {
         {
             rectangle: { top: fields[i]["xposition"], left: fields[i]["yposition"], width: fields[i]["width"], height: fields[i]["height"] }
         });
-        results.push(text.replace(/\s/g, "") + "-" + fields[i]["templateid"]);
+        results.push(text.replace(/\s/g, "") + "/" + fields[i]["id"]);
     }
     await worker.terminate();
     return results;

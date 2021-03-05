@@ -179,6 +179,10 @@
             {
                 captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
             }
+            else if (temp.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+            {
+                Navigate("/");
+            }
             isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
         }
     }

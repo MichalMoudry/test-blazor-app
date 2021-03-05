@@ -19,8 +19,7 @@
         if (ClaimsHelper.Instance().GetExpirationClaim() != null)
         {
             DateTime tokenExpirationDate = new DateTime(1970, 1, 1);
-            tokenExpirationDate = tokenExpirationDate.AddSeconds(Convert.ToInt32(ClaimsHelper.Instance().GetExpirationClaim().Value));
-            tokenExpirationDate = tokenExpirationDate.AddHours(2);
+            tokenExpirationDate = tokenExpirationDate.AddSeconds(Convert.ToInt32(ClaimsHelper.Instance().GetExpirationClaim().Value) + 1);
             res = DateTime.Compare(tokenExpirationDate, DateTime.Now);
         }
         if (authState.User.Identity.IsAuthenticated && res > 0)
