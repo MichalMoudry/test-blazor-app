@@ -20,7 +20,7 @@ function uncheckCheckboxes(checkboxIdArray) {
     }
 }
 
-async function recog(fields, imageData, lang) {
+async function recog(fields, images, lang, contentType) {
     //fields["height"] = fields["height"] + "px";
     //fields["width"] = fields["width"] + "px";
     //fields["xposition"] = fields["xposition"] + "px";
@@ -30,12 +30,23 @@ async function recog(fields, imageData, lang) {
     await worker.initialize(lang);
     var results = [];
 
-    for (var i = 0; i < fields.length; i++) {
+    /*
+     for (var i = 0; i < fields.length; i++) {
         const { data: { text } } = await worker.recognize(document.getElementById(imageData).src,
         {
             rectangle: { top: fields[i]["xposition"], left: fields[i]["yposition"], width: fields[i]["width"], height: fields[i]["height"] }
         });
         results.push(text.replace(/\s/g, "") + "/" + fields[i]["id"]);
+    }
+     */
+    for (var i = 0; i < images.length; i++) {
+        for (var x = 0; x < fields.length; x++) {
+            const { data: { text } } = await worker.recognize("data:" + contentType + ";base64," + images[i],
+            {
+                rectangle: { top: fields[x]["xposition"], left: fields[x]["yposition"], width: fields[x]["width"], height: fields[x]["height"] }
+            });
+            results.push(text.replace(/\s/g, "") + "/" + fields[x]["id"]);
+        }
     }
     await worker.terminate();
     return results;
