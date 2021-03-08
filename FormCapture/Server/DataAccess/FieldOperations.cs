@@ -27,6 +27,20 @@ namespace FormCapture.Server.DataAccess
             return fields;
         }
 
+        public Dictionary<string, List<Field>> GetNonIdentifyingFields(List<ProcessedFile> processedFiles)
+        {
+            if (processedFiles == null)
+            {
+                return null;
+            }
+            var res = new Dictionary<string, List<Field>>();
+            foreach (var file in processedFiles)
+            {
+                res.Add(file.ID, _appDbContext.Fields.Where(i => i.IsIdentifying.Equals(false) && i.TemplateID.Equals(file.TemplateID)).ToList());
+            }
+            return res;
+        }
+
         public async Task<bool> AddFields(List<Field> fields)
         {
             try

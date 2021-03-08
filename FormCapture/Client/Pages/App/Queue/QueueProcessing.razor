@@ -140,7 +140,7 @@
 
             private List<Field> idFields;
 
-            private List<Field> nonIdFields;
+            private Dictionary<string, List<Field>> nonIdFields;
 
             private bool isContinueButtonHidden = true;
 
@@ -195,8 +195,8 @@
                 string[] recogResponseArray;
                 Field idField;
                 recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "ces");
-                Console.WriteLine(recogResponse);
-                foreach (var item in recogResponse.EnumerateArray())
+                var recogResponseList = recogResponse.EnumerateArray().ToList();
+                foreach (var item in recogResponseList)
                 {
                     recogResponseArray = item.ToString().Split("/");
                     idField = idFields.SingleOrDefault(i => i.ID.Equals(recogResponseArray[1]) && i.ExpectedValue.Equals(recogResponseArray[0]));
@@ -204,32 +204,21 @@
                     {
                         if (idField.ExpectedValue.Equals(recogResponseArray[0]))
                         {
+                            processedFiles[recogResponseList.IndexOf(item)].TemplateID = idField.TemplateID;
                         }
                     }
                 }
-                /*
-                System.Text.Json.JsonElement recogResponse;
-                string[] recogResponseArray;
-                Field idField;
                 foreach (var file in processedFiles)
                 {
-                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, file.ID, "ces");
-                    foreach (var item in recogResponse.EnumerateArray())
-                    {
-                        recogResponseArray = item.ToString().Split("/");
-                        idField = idFields.SingleOrDefault(i => i.ID.Equals(recogResponseArray[1]) && i.ExpectedValue.Equals(recogResponseArray[0]));
-                        if (idField != null)
-                        {
-                            if (idField.ExpectedValue.Equals(recogResponseArray[0]))
-                            {
-                                file.TemplateID = idField.TemplateID;
-                            }
-                        }
-                    }
-                    Console.WriteLine(file.TemplateID);
-                    recognitionTaskProgression["Applying identifying fields"] = true;
+                    Console.WriteLine($"{file.Name} - {file.TemplateID}");
                 }
-                */
+                var identifiedFiles = new List<ProcessedFile>(processedFiles.Where(i => i.TemplateID != null));
+                identifiedFiles.ForEach(i => i.Content = null);
+                var nonIdFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/nonidfields", identifiedFiles);
+                if (nonIdFieldsResponse.IsSuccessStatusCode)
+                {
+                    nonIdFields = JsonConvert.DeserializeObject<Dictionary<string, List<Field>>>(await nonIdFieldsResponse.Content.ReadAsStringAsync());
+                }
             }
 
             protected override async Task OnInitializedAsync()

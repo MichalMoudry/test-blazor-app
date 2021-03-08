@@ -88,5 +88,27 @@ namespace FormCapture.Server.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost("nonidfields")]
+        public IActionResult GetNonIdFields(List<ProcessedFile> processedFiles)
+        {
+            if (processedFiles == null)
+            {
+                return BadRequest();
+            }
+            var fields = _fieldOperations.GetNonIdentifyingFields(processedFiles);
+            if (fields != null || fields.Count > 0)
+            {
+                return Ok(fields);
+            }
+            else if (fields.Count == 0)
+            {
+                return BadRequest("There are no fields.");
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }
