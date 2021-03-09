@@ -9,110 +9,116 @@
 
         <h3><span class="oi oi-play-circle"></span> Queue processing</h3>
 
-        <h4 class="mt-4"><span class="oi oi-file"></span> Processed files</h4>
-        @if (processedFiles != null)
-        {
-            @foreach (var file in processedFiles)
-            {
-                <div>
-                    <img src="@SetImageSource(file.Content, file.Type)" id="@file.ID" alt="@file.Name" draggable="false" />
+        <div class="row">
+            <div class="col">
+                <h4 class="mt-4"><span class="oi oi-file"></span> Processed files</h4>
+                @if (processedFiles != null)
+                {
+                    @foreach (var file in processedFiles)
+                    {
+                        <div>
+                            <img src="@SetImageSource(file.Content, file.Type)" id="@file.ID" alt="@file.Name" draggable="false" />
+                        </div>
+                        @if (processedFiles.Last().Equals(file))
+                        {
+                        }
+                    }
+                }
+            </div>
+
+            <div class="col">
+                <div id="scanTasks" class="mt-4">
+                    <h4><span class="oi oi-document"></span> Scan tasks</h4>
+                    <ul class="list-group">
+                        @if (scanTaskProgression != null)
+                        {
+                            @foreach (var item in scanTaskProgression)
+                            {
+                                @if (scanTaskProgression.Last().Equals(item))
+                                {
+                                    <li class="list-group-item active">
+                                        @item.Key - @if (item.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">
+                                        @item.Key - @if (item.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+
+                    <button type="button" class="btn btn-success mt-2 @ContinueButtonCssClass" @onclick="ContinueProcessing">
+                        Continue processing <span class="oi oi-play-circle"></span>
+                    </button>
                 </div>
-                @if (processedFiles.Last().Equals(file))
-                {
-                }
-            }
-        }
 
-        <div id="scanTasks" class="mt-4">
-            <h4><span class="oi oi-document"></span> Scan tasks</h4>
-            <ul class="list-group">
-                @if (scanTaskProgression != null)
-                {
-                    @foreach (var item in scanTaskProgression)
-                    {
-                        @if (scanTaskProgression.Last().Equals(item))
+                <div id="recognitionTasks" class="mt-4">
+                    <h4><span class="oi oi-aperture"></span> Recognition tasks</h4>
+                    <ul class="list-group">
+                        @if (recognitionTaskProgression != null)
                         {
-                            <li class="list-group-item active">
-                                @item.Key - @if (item.Value)
+                            @foreach (var task in recognitionTaskProgression)
+                            {
+                                @if (recognitionTaskProgression.Last().Equals(task))
                                 {
-                                    <span><span class="oi oi-circle-check"></span></span>
+                                    <li class="list-group-item active">
+                                        @task.Key - @if (task.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
                                 }
                                 else
                                 {
-                                    <span>in progress</span>
+                                    <li class="list-group-item">
+                                        @task.Key - @if (task.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
                                 }
-                            </li>
+                            }
                         }
-                        else
-                        {
-                            <li class="list-group-item">
-                                @item.Key - @if (item.Value)
-                                {
-                                    <span><span class="oi oi-circle-check"></span></span>
-                                }
-                                else
-                                {
-                                    <span>in progress</span>
-                                }
-                            </li>
-                        }
-                    }
-                }
-            </ul>
+                    </ul>
+                </div>
 
-            <button type="button" class="btn btn-success mt-2 @ContinueButtonCssClass" @onclick="ContinueProcessing">
-                Continue processing <span class="oi oi-play-circle"></span>
-            </button>
-        </div>
+                <div id="verificationTasks" class="mt-4">
+                    <h4><span class="oi oi-eye"></span> Verification tasks</h4>
+                    <ul class="list-group">
+                    </ul>
+                </div>
 
-        <div id="recognitionTasks" class="mt-4">
-            <h4><span class="oi oi-aperture"></span> Recognition tasks</h4>
-            <ul class="list-group">
-                @if (recognitionTaskProgression != null)
-                {
-                    @foreach (var task in recognitionTaskProgression)
-                    {
-                        @if (recognitionTaskProgression.Last().Equals(task))
-                        {
-                            <li class="list-group-item active">
-                                @task.Key - @if (task.Value)
-                                {
-                                    <span><span class="oi oi-circle-check"></span></span>
-                                }
-                                else
-                                {
-                                    <span>in progress</span>
-                                }
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="list-group-item">
-                                @task.Key - @if (task.Value)
-                                {
-                                    <span><span class="oi oi-circle-check"></span></span>
-                                }
-                                else
-                                {
-                                    <span>in progress</span>
-                                }
-                            </li>
-                        }
-                    }
-                }
-            </ul>
-        </div>
-
-        <div id="verificationTasks" class="mt-4">
-            <h4><span class="oi oi-eye"></span> Verification tasks</h4>
-            <ul class="list-group">
-            </ul>
-        </div>
-
-        <div id="exportTasks" class="mt-4">
-            <h4><span class="oi oi-expand-left"></span> Export tasks</h4>
-            <ul class="list-group">
-            </ul>
+                <div id="exportTasks" class="mt-4">
+                    <h4><span class="oi oi-expand-left"></span> Export tasks</h4>
+                    <ul class="list-group">
+                    </ul>
+                </div>
+            </div>
         </div>
 
         @code
@@ -194,7 +200,7 @@
                 System.Text.Json.JsonElement recogResponse;
                 string[] recogResponseArray;
                 Field idField;
-                recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "ces");
+                recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recogIdFields", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "ces");
                 var recogResponseList = recogResponse.EnumerateArray().ToList();
                 foreach (var item in recogResponseList)
                 {
@@ -208,16 +214,22 @@
                         }
                     }
                 }
-                foreach (var file in processedFiles)
-                {
-                    Console.WriteLine($"{file.Name} - {file.TemplateID}");
-                }
+
+                recognitionTaskProgression.Add("Obtaining non identifying fields", false);
                 var identifiedFiles = new List<ProcessedFile>(processedFiles.Where(i => i.TemplateID != null));
-                identifiedFiles.ForEach(i => i.Content = null);
                 var nonIdFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/nonidfields", identifiedFiles);
                 if (nonIdFieldsResponse.IsSuccessStatusCode)
                 {
                     nonIdFields = JsonConvert.DeserializeObject<Dictionary<string, List<Field>>>(await nonIdFieldsResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining non identifying fields"] = true;
+                }
+                else
+                {
+                    return;
+                }
+                foreach (var file in processedFiles)
+                {
+                    Console.WriteLine(await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recogNonIdFields", nonIdFields[file.ID], Convert.ToBase64String(file.Content), "ces"));
                 }
             }
 

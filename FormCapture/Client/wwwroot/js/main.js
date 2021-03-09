@@ -20,7 +20,7 @@ function uncheckCheckboxes(checkboxIdArray) {
     }
 }
 
-async function recog(fields, images, lang, contentType) {
+async function recogIdFields(fields, images, lang, contentType) {
     //fields["height"] = fields["height"] + "px";
     //fields["width"] = fields["width"] + "px";
     //fields["xposition"] = fields["xposition"] + "px";
@@ -52,34 +52,23 @@ async function recog(fields, images, lang, contentType) {
     return results;
 }
 
-async function recognizeFields(imageID, lang) {
-    var fields = document.getElementsByClassName("template-field");
-    var fieldHeight;
-    var fieldWidth;
-    var fieldTop;
-    var fieldLeft;
-    var results = [];
-    var imageSrc = document.getElementById(imageID).src;
+async function recogNonIdFields(fields, images, lang, contentType) {
     await worker.load();
     await worker.loadLanguage(lang);
     await worker.initialize(lang);
-    for (var i = 0; i < fields.length; i++) {
-        fieldHeight = fields[i].style.height;
-        fieldHeight = fieldHeight.substring(0, fieldHeight.length - 2);
-        fieldWidth = fields[i].style.width;
-        fieldWidth = fieldWidth.substring(0, fieldWidth.length - 2);
-        fieldTop = fields[i].style.top;
-        fieldTop = fieldTop.substring(0, fieldTop.length - 2);
-        fieldLeft = fields[i].style.left;
-        fieldLeft = fieldLeft.substring(0, fieldLeft.length - 2);
-        const { data: { text } } = await worker.recognize(imageSrc,
-        {
-            rectangle: { top: fieldTop, left: fieldLeft, width: fieldWidth, height: fieldHeight }
-        });
-        results.push(text);
+    var results = [];
+
+    for (var i = 0; i < images.length; i++) {
+        for (var x = 0; x < fields.length; x++) {
+            const { data: { text } } = await worker.recognize("data:" + contentType + ";base64," + images[i],
+                {
+                    rectangle: { top: fields[x]["xposition"], left: fields[x]["yposition"], width: fields[x]["width"], height: fields[x]["height"] }
+                });
+            results.push(text.replace(/\s/g, "") + "/" + fields[x]["id"]);
+        }
     }
-    console.log(results);
     await worker.terminate();
+    return results;
 }
 
 //Method for obtaining properies of a specific template field.
