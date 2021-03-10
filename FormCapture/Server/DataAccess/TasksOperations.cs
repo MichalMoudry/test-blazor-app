@@ -77,10 +77,15 @@ namespace FormCapture.Server.DataAccess
         /// <returns>A list of task specified in a list of task groupings.</returns>
         public List<WorkflowTask> GetTasksFromGrouping(List<WorkflowTaskGrouping> groupings)
         {
-            List<WorkflowTask> tasks = new List<WorkflowTask>();
+            var tasks = new List<WorkflowTask>();
+            WorkflowTask task;
             foreach (var grouping in groupings)
             {
-                tasks.Add(_datacontext.WorkflowTasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)));
+                task = _datacontext.WorkflowTasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID));
+                if (task != null && !tasks.Contains(task))
+                {
+                    tasks.Add(task);
+                }
             }
             return tasks;
         }

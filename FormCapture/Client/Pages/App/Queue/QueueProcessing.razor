@@ -90,7 +90,7 @@
                         }
                     </ul>
 
-                    <button type="button" class="btn btn-warning mt-3" data-toggle="modal" data-target="#resultModal">
+                    <button type="button" class="btn btn-warning mt-3 @DisplayResultsButtonCssClass" data-toggle="modal" data-target="#resultModal">
                         <span class="oi oi-target"></span> View results
                     </button>
                 </div>
@@ -132,12 +132,18 @@
                                         {
                                             <div class="carousel-item active">
                                                 <img src="@SetImageSource(file.Content, file.Type)" id="@file.ID" alt="@file.Name" class="d-block carousel-image" draggable="false" />
+                                                <div class="carousel-caption d-none d-md-block">
+                                                    <h6>@file.Name</h6>
+                                                </div>
                                             </div>
                                         }
                                         else
                                         {
                                             <div class="carousel-item">
                                                 <img src="@SetImageSource(file.Content, file.Type)" id="@file.ID" alt="@file.Name" class="d-block carousel-image" draggable="false" />
+                                                <div class="carousel-caption d-none d-md-block">
+                                                    <h6>@file.Name</h6>
+                                                </div>
                                             </div>
                                         }
                                     }
@@ -161,7 +167,7 @@
                                     <ul class="list-group">
                                         @foreach (var value in fieldValues.Where(i => i.FileID.Equals(file.ID)))
                                         {
-                                            <li class="list-group-item">@value.FieldName - @value.Value</li>
+                                            <li class="list-group-item">@value.FieldName - <span id="@value.FieldID">@value.Value</span></li>
                                         }
                                     </ul>
                                 }
@@ -174,160 +180,263 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </div>
 
-            @code
+        <!--Verficition modal-->
+        <div id="verificationModal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><span class="oi oi-eye"></span> Results verification</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @code
         {
-                [Parameter]
-                public string QueueID { get; set; }
+            [Parameter]
+            public string QueueID { get; set; }
 
-                private Queue queue;
+            private Queue queue;
 
-                private List<ProcessedFile> processedFiles;
+            private List<ProcessedFile> processedFiles;
 
-                private List<WorkflowTaskGrouping> taskGroupings;
+            private List<WorkflowTaskGrouping> taskGroupings;
 
-                private List<WorkflowTask> tasks;
+            private List<WorkflowTask> tasks;
 
-                private List<Template> templates;
+            private List<Template> templates;
 
-                private Dictionary<string, bool> scanTaskProgression = new Dictionary<string, bool>();
+            private Dictionary<string, bool> scanTaskProgression = new Dictionary<string, bool>();
 
-                private Dictionary<string, bool> recognitionTaskProgression = new Dictionary<string, bool>();
+            private Dictionary<string, bool> recognitionTaskProgression = new Dictionary<string, bool>();
 
-                private Dictionary<string, bool> verificationTaskProgression = new Dictionary<string, bool>();
+            private Dictionary<string, bool> verificationTaskProgression = new Dictionary<string, bool>();
 
-                private Dictionary<string, bool> exportTaskProgression = new Dictionary<string, bool>();
+            private Dictionary<string, bool> exportTaskProgression = new Dictionary<string, bool>();
 
-                private List<Field> idFields;
+            private List<Field> idFields;
 
-                private Dictionary<string, List<Field>> nonIdFields;
+            private Dictionary<string, List<Field>> nonIdFields;
 
-                private List<FieldValue> fieldValues = new List<FieldValue>();
+            private List<FieldValue> fieldValues = new List<FieldValue>();
 
-                private bool isContinueButtonHidden = true;
+            private bool isContinueButtonHidden = true;
 
-                private string ContinueButtonCssClass => isContinueButtonHidden ? "d-none" : null;
+            private string ContinueButtonCssClass => isContinueButtonHidden ? "d-none" : null;
 
-                private string SetImageSource(byte[] data, string contentType)
+            private bool isDisplayResultsButtonHidden = true;
+
+            private string DisplayResultsButtonCssClass => isDisplayResultsButtonHidden ? "d-none" : null;
+
+            private string SetImageSource(byte[] data, string contentType)
+            {
+                return $"data:{contentType};base64,{Convert.ToBase64String(data)}";
+            }
+
+            private async Task ExecuteScanTasks()
+            {
+                scanTaskProgression.Add("Obtaining custom tasks...", false);
+                //Pull task groupings
+                var taskGroupingsResponse = await HttpClient.GetAsync($"/api/workflowtaskgrouping/{queue.WorkflowID}");
+                if (taskGroupingsResponse.IsSuccessStatusCode)
                 {
-                    return $"data:{contentType};base64,{Convert.ToBase64String(data)}";
+                    taskGroupings = JsonConvert.DeserializeObject<List<WorkflowTaskGrouping>>(await taskGroupingsResponse.Content.ReadAsStringAsync());
+                }
+                else
+                {
+                    return;
                 }
 
-                private async Task ExecuteScanTasks()
+                //Pull tasks from groupings
+                var tasksResponse = await HttpClient.PostAsJsonAsync("/api/tasks/grouped", taskGroupings);
+                if (tasksResponse.IsSuccessStatusCode)
                 {
-                    scanTaskProgression.Add("Obtaining custom tasks...", false);
-                    //Pull task groupings
-                    var taskGroupingsResponse = await HttpClient.GetAsync($"/api/workflowtaskgrouping/{queue.WorkflowID}");
-                    if (taskGroupingsResponse.IsSuccessStatusCode)
-                    {
-                        taskGroupings = JsonConvert.DeserializeObject<List<WorkflowTaskGrouping>>(await taskGroupingsResponse.Content.ReadAsStringAsync());
-                    }
-
-                    //Pull tasks from groupings
-                    var tasksResponse = await HttpClient.PostAsJsonAsync("/api/tasks/grouped", taskGroupings);
-                    if (tasksResponse.IsSuccessStatusCode)
-                    {
-                        tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksResponse.Content.ReadAsStringAsync());
-                        scanTaskProgression["Obtaining custom tasks..."] = true;
-                    }
+                    tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksResponse.Content.ReadAsStringAsync());
+                    scanTaskProgression["Obtaining custom tasks..."] = true;
+                }
+                else
+                {
+                    return;
                 }
 
-                private async Task ContinueProcessing()
+                //Execute custom js tasks
+                bool executeJSRes;
+                foreach (var grouping in taskGroupings.OrderBy(i => i.ExecutionOrderNumber).Where(i => i.TaskGroupName.Equals(TaskGroupID.Scan.ToString().ToLower())))
                 {
-                    recognitionTaskProgression.Add("Obtaining app's templates", false);
-                    //Pull templates
-                    var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
-                    if (templatesResponse.IsSuccessStatusCode)
+                    foreach (var task in tasks.Where(i => i.ID.Equals(grouping.TaskID)).ToList())
                     {
-                        templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
-                        recognitionTaskProgression["Obtaining app's templates"] = true;
-                    }
-
-                    recognitionTaskProgression.Add("Obtaining identifying fields", false);
-                    //Pull id fields
-                    var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
-                    if (identifyingFieldsResponse.IsSuccessStatusCode)
-                    {
-                        idFields = JsonConvert.DeserializeObject<List<Field>>(await identifyingFieldsResponse.Content.ReadAsStringAsync());
-                        recognitionTaskProgression["Obtaining identifying fields"] = true;
-                    }
-
-                    recognitionTaskProgression.Add("Applying identifying fields", false);
-                    this.StateHasChanged();
-                    System.Text.Json.JsonElement recogResponse;
-                    string[] recogResponseArray;
-                    Field idField;
-                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "ces", processedFiles.Select(i => i.Type));
-                    var recogResponseList = recogResponse.EnumerateArray().ToList();
-                    foreach (var item in recogResponseList)
-                    {
-                        recogResponseArray = item.ToString().Split("/");
-                        idField = idFields.SingleOrDefault(i => i.ID.Equals(recogResponseArray[1]) && i.ExpectedValue.Equals(recogResponseArray[0]));
-                        if (idField != null)
+                        scanTaskProgression.Add($"Executing custom task: {task.Name}", false);
+                        this.StateHasChanged();
+                        executeJSRes = await IJSRuntime.InvokeAsync<bool>("executeJS", System.Text.Encoding.UTF8.GetString(task.Content));
+                        if (executeJSRes)
                         {
-                            if (idField.ExpectedValue.Equals(recogResponseArray[0]))
-                            {
-                                processedFiles[recogResponseList.IndexOf(item)].TemplateID = idField.TemplateID;
-                                fieldValues.Add(new FieldValue() { ID = Guid.NewGuid().ToString(), FileID = processedFiles[recogResponseList.IndexOf(item)].ID, FieldID = recogResponseArray[1], FieldName = idField.Name, Value = recogResponseArray[0], Added = DateTime.Now, Updated = DateTime.Now });
-                                recognitionTaskProgression["Applying identifying fields"] = true;
-                            }
+                            scanTaskProgression[$"Executing custom task: {task.Name}"] = true;
                         }
-                    }
-
-                    recognitionTaskProgression.Add("Obtaining non identifying fields", false);
-                    var idedFiles = new List<ProcessedFile>(processedFiles.Where(i => i.TemplateID != null));
-                    var nonIdFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/nonidfields", idedFiles);
-                    if (nonIdFieldsResponse.IsSuccessStatusCode)
-                    {
-                        nonIdFields = JsonConvert.DeserializeObject<Dictionary<string, List<Field>>>(await nonIdFieldsResponse.Content.ReadAsStringAsync());
-                        recognitionTaskProgression["Obtaining non identifying fields"] = true;
-                    }
-                    else
-                    {
-                        return;
-                    }
-
-                    recognitionTaskProgression.Add("Applying rest of fields", false);
-                    this.StateHasChanged();
-                    foreach (var file in idedFiles)
-                    {
-                        recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", nonIdFields[file.ID], new string[] { Convert.ToBase64String(file.Content) }, "ces", new string[] { file.Type });
-                        foreach (var item in recogResponse.EnumerateArray())
+                        else
                         {
-                            recogResponseArray = item.ToString().Split("/");
-                            idField = nonIdFields.SingleOrDefault(i => i.Key.Equals(file.ID)).Value.SingleOrDefault(i => i.ID.Equals(recogResponseArray[1]));
-                            if (!string.IsNullOrEmpty(recogResponseArray[0]))
-                            {
-                                fieldValues.Add(new FieldValue() { ID = Guid.NewGuid().ToString(), FileID = file.ID, FieldID = recogResponseArray[1], FieldName = idField.Name, Value = recogResponseArray[0], Added = DateTime.Now, Updated = DateTime.Now });
-                            }
+                            return;
                         }
-                    }
-                    recognitionTaskProgression["Applying rest of fields"] = true;
-                }
-
-                protected override async Task OnInitializedAsync()
-                {
-                    HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-                    scanTaskProgression.Add("Obtaining files...", false);
-                    //Pull queue and its files
-                    var filesResponse = await HttpClient.GetAsync($"/api/processedfiles/{QueueID}");
-                    var queueResponse = await HttpClient.GetAsync($"/api/queue/queue?id={QueueID}");
-
-                    if (filesResponse.IsSuccessStatusCode && queueResponse.IsSuccessStatusCode)
-                    {
-                        processedFiles = JsonConvert.DeserializeObject<List<ProcessedFile>>(await filesResponse.Content.ReadAsStringAsync());
-                        queue = JsonConvert.DeserializeObject<Queue>(await queueResponse.Content.ReadAsStringAsync());
-                        scanTaskProgression["Obtaining files..."] = true;
-                        await ExecuteScanTasks();
-                        isContinueButtonHidden = false;
                     }
                 }
             }
+
+            private async Task ExecuteRecognitionTasks()
+            {
+                recognitionTaskProgression.Add("Obtaining app's templates", false);
+                //Pull templates
+                var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
+                if (templatesResponse.IsSuccessStatusCode)
+                {
+                    templates = JsonConvert.DeserializeObject<List<Template>>(await templatesResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining app's templates"] = true;
+                }
+
+                recognitionTaskProgression.Add("Obtaining identifying fields", false);
+                //Pull id fields
+                var identifyingFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/identifying", templates);
+                if (identifyingFieldsResponse.IsSuccessStatusCode)
+                {
+                    idFields = JsonConvert.DeserializeObject<List<Field>>(await identifyingFieldsResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining identifying fields"] = true;
+                }
+
+                //Apply id fields to images
+                recognitionTaskProgression.Add("Applying identifying fields", false);
+                this.StateHasChanged();
+                System.Text.Json.JsonElement recogResponse;
+                string[] recogResponseArray;
+                Field idField;
+                recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "ces", processedFiles.Select(i => i.Type));
+                var recogResponseList = recogResponse.EnumerateArray().ToList();
+                foreach (var item in recogResponseList)
+                {
+                    recogResponseArray = item.ToString().Split("/");
+                    idField = idFields.SingleOrDefault(i => i.ID.Equals(recogResponseArray[1]) && i.ExpectedValue.Equals(recogResponseArray[0]));
+                    if (idField != null)
+                    {
+                        if (idField.ExpectedValue.Equals(recogResponseArray[0]))
+                        {
+                            processedFiles[recogResponseList.IndexOf(item)].TemplateID = idField.TemplateID;
+                            fieldValues.Add(new FieldValue() { ID = Guid.NewGuid().ToString(), FileID = processedFiles[recogResponseList.IndexOf(item)].ID, FieldID = recogResponseArray[1], FieldName = idField.Name, Value = recogResponseArray[0], Added = DateTime.Now, Updated = DateTime.Now });
+                            recognitionTaskProgression["Applying identifying fields"] = true;
+                        }
+                    }
+                }
+
+                //Pull non id fields
+                recognitionTaskProgression.Add("Obtaining non identifying fields", false);
+                var idedFiles = new List<ProcessedFile>(processedFiles.Where(i => i.TemplateID != null));
+                var nonIdFieldsResponse = await HttpClient.PostAsJsonAsync("/api/fields/nonidfields", idedFiles);
+                if (nonIdFieldsResponse.IsSuccessStatusCode)
+                {
+                    nonIdFields = JsonConvert.DeserializeObject<Dictionary<string, List<Field>>>(await nonIdFieldsResponse.Content.ReadAsStringAsync());
+                    recognitionTaskProgression["Obtaining non identifying fields"] = true;
+                }
+                else
+                {
+                    return;
+                }
+
+                recognitionTaskProgression.Add("Applying rest of fields", false);
+                this.StateHasChanged();
+                foreach (var file in idedFiles)
+                {
+                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", nonIdFields[file.ID], new string[] { Convert.ToBase64String(file.Content) }, "ces", new string[] { file.Type });
+                    foreach (var item in recogResponse.EnumerateArray())
+                    {
+                        recogResponseArray = item.ToString().Split("/");
+                        idField = nonIdFields.SingleOrDefault(i => i.Key.Equals(file.ID)).Value.SingleOrDefault(i => i.ID.Equals(recogResponseArray[1]));
+                        if (!string.IsNullOrEmpty(recogResponseArray[0]))
+                        {
+                            fieldValues.Add(new FieldValue() { ID = Guid.NewGuid().ToString(), FileID = file.ID, FieldID = recogResponseArray[1], FieldName = idField.Name, Value = recogResponseArray[0], Added = DateTime.Now, Updated = DateTime.Now });
+                        }
+                        else
+                        {
+                            fieldValues.Add(new FieldValue() { ID = Guid.NewGuid().ToString(), FileID = file.ID, FieldID = recogResponseArray[1], FieldName = idField.Name, Value = "Not recognized.", Added = DateTime.Now, Updated = DateTime.Now });
+                        }
+                    }
+                }
+                recognitionTaskProgression["Applying rest of fields"] = true;
+                isDisplayResultsButtonHidden = false;
+
+                //Execute custom js tasks
+                bool executeJSRes;
+                foreach (var grouping in taskGroupings.OrderBy(i => i.ExecutionOrderNumber).Where(i => i.TaskGroupName.Equals(TaskGroupID.Recognition.ToString().ToLower())))
+                {
+                    foreach (var task in tasks.Where(i => i.ID.Equals(grouping.TaskID)).ToList())
+                    {
+                        recognitionTaskProgression.Add($"Executing custom task: {task.Name}", false);
+                        this.StateHasChanged();
+                        executeJSRes = await IJSRuntime.InvokeAsync<bool>("executeJS", System.Text.Encoding.UTF8.GetString(task.Content));
+                        if (executeJSRes)
+                        {
+                            recognitionTaskProgression[$"Executing custom task: {task.Name}"] = true;
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+
+            private async Task ExecuteVerificationTasks()
+            {
+                var failedFiles = processedFiles.Where(i => i.TemplateID == null);
+                var failedFieldValues = fieldValues.Where(i => i.Value.Equals("Not recognized."));
+                foreach (var file in failedFiles)
+                {
+                    Console.WriteLine(file.Name);
+                }
+                foreach (var value in failedFieldValues)
+                {
+                    Console.WriteLine($"{value.FieldID} - {value.Value}");
+                }
+                await Task.Delay(100);
+            }
+
+            private async Task ContinueProcessing()
+            {
+                isContinueButtonHidden = true;
+                await ExecuteRecognitionTasks();
+                await ExecuteVerificationTasks();
+            }
+
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                scanTaskProgression.Add("Obtaining files...", false);
+                //Pull queue and its files
+                var filesResponse = await HttpClient.GetAsync($"/api/processedfiles/{QueueID}");
+                var queueResponse = await HttpClient.GetAsync($"/api/queue/queue?id={QueueID}");
+
+                if (filesResponse.IsSuccessStatusCode && queueResponse.IsSuccessStatusCode)
+                {
+                    processedFiles = JsonConvert.DeserializeObject<List<ProcessedFile>>(await filesResponse.Content.ReadAsStringAsync());
+                    queue = JsonConvert.DeserializeObject<Queue>(await queueResponse.Content.ReadAsStringAsync());
+                    scanTaskProgression["Obtaining files..."] = true;
+                    await ExecuteScanTasks();
+                    isContinueButtonHidden = false;
+                }
+            }
+        }
 </Authorized>
 
     <NotAuthorized>

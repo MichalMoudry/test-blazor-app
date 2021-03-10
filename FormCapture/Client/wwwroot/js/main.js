@@ -3,8 +3,10 @@
 function executeJS(code) {
     try {
         eval(code);
+        return true;
     } catch (e) {
         console.error("Execution of code failed.");
+        return false;
     }
 }
 
