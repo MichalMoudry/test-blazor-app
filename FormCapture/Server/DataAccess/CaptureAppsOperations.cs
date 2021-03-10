@@ -1,8 +1,7 @@
-using System;
+using FormCapture.Shared.DbModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FormCapture.Shared.DbModels;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -14,13 +13,6 @@ namespace FormCapture.Server.DataAccess
         {
             _dataContext = context;
         }
-
-        /// <summary>
-        /// Method for obtaining list of user's applications where they are a admin.
-        /// </summary>
-        /// <param name="userID">ID of a specific user.</param>
-        /// <returns>List of user's applications where they are a admin.</returns>
-        public List<CaptureApplication> GetUsersCaptureApplications(string userID) => _dataContext.CaptureApplications.Where(i => i.UserID.Equals(userID)).ToList();
 
         /// <summary>
         /// Method for adding a new entry to db table with capture applications.
@@ -61,13 +53,6 @@ namespace FormCapture.Server.DataAccess
         }
 
         /// <summary>
-        /// Method for obtaining single instance of CaptureApplication class.
-        /// </summary>
-        /// <param name="appID">ID of wanted app.</param>
-        /// <returns>Single instance of CaptureApplication class or null.</returns>
-        public CaptureApplication GetCaptureApplication(string appID) => _dataContext.CaptureApplications.SingleOrDefault(i => i.ID.Equals(appID));
-
-        /// <summary>
         /// Method for editing already exiting capture app.
         /// </summary>
         /// <param name="newApp">Instance of a CaptureApp class with new data.</param>
@@ -90,5 +75,19 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        /// <summary>
+        /// Method for obtaining single instance of CaptureApplication class.
+        /// </summary>
+        /// <param name="appID">ID of wanted app.</param>
+        /// <returns>Single instance of CaptureApplication class or null.</returns>
+        public CaptureApplication GetCaptureApplication(string appID) => _dataContext.CaptureApplications.SingleOrDefault(i => i.ID.Equals(appID));
+
+        /// <summary>
+        /// Method for obtaining list of user's applications where they are a admin.
+        /// </summary>
+        /// <param name="userID">ID of a specific user.</param>
+        /// <returns>List of user's applications where they are a admin.</returns>
+        public List<CaptureApplication> GetUsersCaptureApplications(string userID) => _dataContext.CaptureApplications.Where(i => i.UserID.Equals(userID)).ToList();
     }
 }

@@ -74,5 +74,24 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        public async Task<bool> EditQueue(Queue newQueue)
+        {
+            try
+            {
+                var originalQueue = _dataContext.Queue.SingleOrDefault(i => i.ID.Equals(newQueue.ID));
+                if (originalQueue == null)
+                {
+                    return false;
+                }
+                _dataContext.Entry(originalQueue).CurrentValues.SetValues(newQueue);
+                await _dataContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

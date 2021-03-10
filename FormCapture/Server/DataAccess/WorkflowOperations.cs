@@ -15,20 +15,6 @@ namespace FormCapture.Server.DataAccess
         }
 
         /// <summary>
-        /// Method for obtaining list of user's workflows.
-        /// </summary>
-        /// <param name="userID">ID of the user.</param>
-        /// <returns>List of user's workflows.</returns>
-        public List<Workflow> GetUsersAppWorkflows(string userID) => _dataContext.Workflows.Where(i => i.UserID.Equals(userID)).ToList();
-
-        /// <summary>
-        /// Method for obtaining a single instance of AppWorkflow class.
-        /// </summary>
-        /// <param name="workflowID">ID of the workflow.</param>
-        /// <returns>A single instance of AppWorkflow class.</returns>
-        public Workflow GetAppWorkflow(string workflowID) => _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(workflowID));
-        
-        /// <summary>
         /// Method for adding a new workflow to db.
         /// </summary>
         /// <param name="appID">New app workflow.</param>
@@ -75,7 +61,7 @@ namespace FormCapture.Server.DataAccess
         {
             try
             {
-                Workflow origWorkflow = _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(newWorkflow.ID));
+                var origWorkflow = _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(newWorkflow.ID));
                 if (origWorkflow == null)
                 {
                     return false;
@@ -89,5 +75,19 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        /// <summary>
+        /// Method for obtaining a single instance of AppWorkflow class.
+        /// </summary>
+        /// <param name="workflowID">ID of the workflow.</param>
+        /// <returns>A single instance of AppWorkflow class.</returns>
+        public Workflow GetAppWorkflow(string workflowID) => _dataContext.Workflows.SingleOrDefault(i => i.ID.Equals(workflowID));
+
+        /// <summary>
+        /// Method for obtaining list of user's workflows.
+        /// </summary>
+        /// <param name="userID">ID of the user.</param>
+        /// <returns>List of user's workflows.</returns>
+        public List<Workflow> GetUsersAppWorkflows(string userID) => _dataContext.Workflows.Where(i => i.UserID.Equals(userID)).ToList();
     }
 }

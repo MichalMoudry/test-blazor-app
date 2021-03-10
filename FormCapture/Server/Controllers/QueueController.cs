@@ -107,5 +107,23 @@ namespace FormCapture.Server.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> Update([FromBody] Queue queue)
+        {
+            if (queue == null)
+            {
+                return BadRequest();
+            }
+            bool res = await _queueOperations.EditQueue(queue);
+            if (res)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

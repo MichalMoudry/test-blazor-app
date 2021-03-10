@@ -104,10 +104,46 @@
                 <div id="exportTasks" class="mt-4">
                     <h4><span class="oi oi-expand-left"></span> Export tasks</h4>
                     <ul class="list-group">
+                        @if (exportTaskProgression != null)
+                        {
+                            @foreach (var task in exportTaskProgression)
+                            {
+                                @if (exportTaskProgression.Last().Equals(task))
+                                {
+                                    <li class="list-group-item active">
+                                        @task.Key - @if (task.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">
+                                        @task.Key - @if (task.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
+                                }
+                            }
+                        }
                     </ul>
                 </div>
             </div>
         </div>
+
+        <button type="button" class="btn btn-success mt-3 mb-3 @BackButtonCssClass">
+            <span class="oi oi-arrow-thick-left"></span> Back to app's details
+        </button>
 
         <!--Result modal-->
         <div class="modal" tabindex="-1" role="dialog" id="resultModal">
@@ -198,7 +234,16 @@
                     </div>
 
                     <div class="modal-body">
-
+                        @if (processedFiles != null)
+                        {
+                            @if (processedFiles.Count > 0)
+                            {
+                                @foreach (var file in processedFiles.Where(i => i.TemplateID == null))
+                                {
+                                    <img src="@SetImageSource(file.Content, file.Type)" alt="@file.Name" />
+                                }
+                            }
+                        }
                     </div>
 
                     <div class="modal-footer">
@@ -244,6 +289,10 @@
             private bool isDisplayResultsButtonHidden = true;
 
             private string DisplayResultsButtonCssClass => isDisplayResultsButtonHidden ? "d-none" : null;
+
+            private bool isBackButtonHidden = true;
+
+            private string BackButtonCssClass => isBackButtonHidden ? "d-none" : null;
 
             private string SetImageSource(byte[] data, string contentType)
             {
@@ -299,6 +348,8 @@
 
             private async Task ExecuteRecognitionTasks()
             {
+                queue.AppWorkflowTaskGroupID = TaskGroupID.Recognition;
+                await HttpClient.PostAsJsonAsync("/api/queue/update", queue);
                 recognitionTaskProgression.Add("Obtaining app's templates", false);
                 //Pull templates
                 var templatesResponse = await HttpClient.GetAsync($"/api/templates/{queue.AppID}");
@@ -412,11 +463,26 @@
                 await Task.Delay(100);
             }
 
+            private async Task ExecuteExportTasks()
+            {
+                queue.Status = QueueStatus.Finished;
+                await HttpClient.PostAsJsonAsync("/api/queue/update", queue);
+
+                exportTaskProgression.Add("Sending field values to database", false);
+                var fieldValuesApiResponse = await HttpClient.PostAsJsonAsync("/api/fieldvalues/add", fieldValues);
+                if (fieldValuesApiResponse.IsSuccessStatusCode)
+                {
+                    exportTaskProgression["Sending field values to database"] = true;
+                }
+                isBackButtonHidden = false;
+            }
+
             private async Task ContinueProcessing()
             {
                 isContinueButtonHidden = true;
                 await ExecuteRecognitionTasks();
                 await ExecuteVerificationTasks();
+                await ExecuteExportTasks();
             }
 
             protected override async Task OnInitializedAsync()
