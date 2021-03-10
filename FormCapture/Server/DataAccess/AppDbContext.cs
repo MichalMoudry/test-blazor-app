@@ -27,6 +27,7 @@ namespace FormCapture.Server.DataAccess
             //Value conversion config
             builder.Entity<Queue>().Property(e => e.Status).HasConversion(i => i.ToString(), i => (QueueStatus)Enum.Parse(typeof(QueueStatus), i));
             builder.Entity<Notification>().Property(e => e.NotificationType).HasConversion(i => i.ToString(), i => (NotificationType)Enum.Parse(typeof(NotificationType), i));
+            builder.Entity<Queue>().Property(e => e.AppWorkflowTaskGroupID).HasConversion(i => i.ToString(), i => (TaskGroupID)Enum.Parse(typeof(TaskGroupID), i));
         }
 
         public DbSet<CaptureApplication> CaptureApplications { get; set; }
@@ -54,5 +55,7 @@ namespace FormCapture.Server.DataAccess
         public DbSet<Field> Fields { get; set; }
 
         public DbSet<WorkflowTaskParameter> WorkflowTaskParameters { get; set; }
+
+        public DbSet<FieldValue> FieldValues { get; set; }
     }
 }

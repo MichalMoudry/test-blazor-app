@@ -122,9 +122,9 @@
                     queue.AppID = ApplicationID;
                     queue.Added = DateTime.Now;
                     queue.Updated = DateTime.Now;
-                    queue.AppWorkflowTaskGroupID = "scan";
+                    queue.AppWorkflowTaskGroupID = TaskGroupID.Scan;
                     queue.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
-                    queue.Status = FormCapture.Shared.Util.Enums.QueueStatus.Start;
+                    queue.Status = QueueStatus.Start;
                     if (string.IsNullOrEmpty(workflowID))
                     {
                         workflowID = appWorkflows.FirstOrDefault().WorkflowID;

@@ -11,7 +11,7 @@ namespace FormCapture.Shared.DbModels
         /// <summary>
         /// ID of a group of tasks that will be executed next.
         /// </summary>
-        public string AppWorkflowTaskGroupID { get; set; }
+        public TaskGroupID AppWorkflowTaskGroupID { get; set; }
 
         /// <summary>
         /// Status of the specific queue.

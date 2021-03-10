@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 @page "/formcapture/apps"
 
-<h3>Apps</h3>
+<h3><span class="oi oi-aperture mr-1"></span> Apps</h3>
 
 <hr />
 
@@ -36,27 +36,29 @@
             }
             else
             {
-                <table class="table table-bordered">
-                    <thead class="thead-dark">
-                        <tr>
-                            <td>Name</td>
-                            <td>Locale</td>
-                            <td>Added</td>
-                            <td>Delete</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (CaptureApplication application in captureApplications)
-                        {
-                            <tr @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">
-                                <td>@application.Name</td>
-                                <td>@application.Locale</td>
-                                <td>@application.Added</td>
-                                <td><span class="oi oi-trash"></span></td>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <td>Name</td>
+                                <td>Locale</td>
+                                <td>Added</td>
+                                <td>Delete</td>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (CaptureApplication application in captureApplications)
+                            {
+                                <tr @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">
+                                    <td>@application.Name</td>
+                                    <td>@application.Locale</td>
+                                    <td>@application.Added</td>
+                                    <td><span class="oi oi-trash"></span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
                 <div class="d-flex justify-content-center">
                     <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
                         <span class="sr-only">Loading...</span>

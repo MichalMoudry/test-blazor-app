@@ -27,27 +27,29 @@
             }
             else
             {
-                <table class="table table-bordered">
-                    <thead class="thead-dark">
-                        <tr>
-                            <td>Name</td>
-                            <td>Added</td>
-                            <td>Edit</td>
-                            <td>Delete</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach  (WorkflowTask task in tasks)
-                        {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark">
                             <tr>
-                                <td>@task.Name</td>
-                                <td>@task.Added</td>
-                                <td @onclick="@(e => Navigate($"/formcapture/tasks/{task.ID}"))"><span class="oi oi-pencil"></span></td>
-                                <td><span class="oi oi-trash"></span></td>
+                                <td>Name</td>
+                                <td>Added</td>
+                                <td>Edit</td>
+                                <td>Delete</td>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (WorkflowTask task in tasks)
+                            {
+                                <tr>
+                                    <td>@task.Name</td>
+                                    <td>@task.Added</td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/tasks/{task.ID}"))"><span class="oi oi-pencil"></span></td>
+                                    <td><span class="oi oi-trash"></span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
         </div>
 

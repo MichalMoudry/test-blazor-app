@@ -4,14 +4,16 @@ using FormCapture.Server.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FormCapture.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210310100448_FieldValueMigration")]
+    partial class FieldValueMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -118,12 +120,6 @@ namespace FormCapture.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FieldID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FieldName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileID")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Updated")
@@ -440,22 +436,22 @@ namespace FormCapture.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "93270bf8-ccde-424e-985a-6ea1f649ac60",
-                            ConcurrencyStamp = "d1147979-0b73-4fce-a283-15534e7af9f3",
+                            Id = "0dedd2ad-b8d1-45ee-852d-793dc9c40f54",
+                            ConcurrencyStamp = "c72335e8-f02a-4f78-9a42-32fc966ad4c3",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "b1748457-c2ec-4d9f-b694-ea4df968ef9c",
-                            ConcurrencyStamp = "793196b7-eac8-49f6-9cfb-021268fa4f30",
+                            Id = "e596e738-7c4d-46cc-9311-c4665ec5ae3e",
+                            ConcurrencyStamp = "accdb1d3-0dd2-4bd3-95be-29aa73519d8f",
                             Name = "Workflow admin",
                             NormalizedName = "WORKFLOW ADMIN"
                         },
                         new
                         {
-                            Id = "6af0db32-a52f-41b5-9c33-3baa7e694bf4",
-                            ConcurrencyStamp = "d48cb3ea-0f63-4889-9e03-7edaef8144ff",
+                            Id = "51d5167c-52ce-4011-9f88-531a7f1bcbce",
+                            ConcurrencyStamp = "e481501c-cce5-41da-acd5-45ff091ff0fe",
                             Name = "User",
                             NormalizedName = "USER"
                         });
