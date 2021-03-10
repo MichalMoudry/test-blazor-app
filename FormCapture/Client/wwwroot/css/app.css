@@ -255,6 +255,10 @@ app {
     height: 52vh;
 }
 
+.table-hover tbody tr:hover {
+    cursor: pointer;
+}
+
 .carousel-image {
     margin: 0 auto;
     max-height: 150px;

@@ -28,7 +28,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            List<WorkflowTask> tasks = _tasksOperations.GetUserTasks(userID).OrderBy(i => i.Added).ToList();
+            var tasks = _tasksOperations.GetUserTasks(userID).OrderBy(i => i.Added).ToList();
             if (tasks != null)
             {
                 return Ok(tasks);
@@ -46,7 +46,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            bool res = await _tasksOperations.AddTask(task);
+            var res = await _tasksOperations.AddTask(task);
             if (res)
             {
                 return Ok();
@@ -66,7 +66,7 @@ namespace FormCapture.Server.Controllers
                 {
                     return BadRequest();
                 }
-                bool res = await _tasksOperations.RemoveTask(task);
+                var res = await _tasksOperations.RemoveTask(task);
                 if (res)
                 {
                     return Ok();
@@ -82,14 +82,14 @@ namespace FormCapture.Server.Controllers
             }
         }
 
-        [HttpPost("Edit")]
+        [HttpPost("update")]
         public async Task<IActionResult> EditTask([FromBody] WorkflowTask task)
         {
             if (task == null)
             {
                 return BadRequest();
             }
-            bool res = await _tasksOperations.EditTask(task);
+            var res = await _tasksOperations.EditTask(task);
             if (res)
             {
                 return Ok();
@@ -100,14 +100,14 @@ namespace FormCapture.Server.Controllers
             }
         }
 
-        [HttpGet("task")]
-        public IActionResult GetTask([FromQuery] string taskID)
+        [HttpGet("get/{taskID}")]
+        public IActionResult GetTask(string taskID)
         {
             if (string.IsNullOrEmpty(taskID))
             {
                 return BadRequest();
             }
-            WorkflowTask tempTask = _tasksOperations.GetSpecificTask(taskID);
+            var tempTask = _tasksOperations.GetSpecificTask(taskID);
             if (tempTask != null)
             {
                 return Ok(tempTask);
@@ -125,7 +125,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            List<WorkflowTask> tasks = _tasksOperations.GetTasksFromGrouping(groupings);
+            var tasks = _tasksOperations.GetTasksFromGrouping(groupings);
             if (tasks.Count > 0)
             {
                 return Ok(tasks);

@@ -2,23 +2,36 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime IJSRuntime
-@page "/formcapture/tasks/add"
+@page "/formcapture/tasks/edit/{taskID}"
 
 <AuthorizeView Roles="Admin, Workflow admin">
     <Authorized>
-        <h3>Add a new task</h3>
+        @if (workflowTask != null)
+        {
+            <h3><span class="oi oi-pencil mr-2"></span> Edit @workflowTask.Name</h3>
+        }
+        else
+        {
+            <h3>Loading...</h3>
+        }
 
         <hr />
 
         <div>
             <div class="form-group">
                 <label for="task-name"><b>Task name</b>:</label>
-                <input type="text" name="task-name" id="task-name" placeholder="Enter a task name..." @bind-value="workflowTask.Name" class="form-control" />
+                @if (workflowTask != null)
+                {
+                    <input type="text" name="task-name" id="task-name" placeholder="Enter a task name..." @bind-value="workflowTask.Name" class="form-control" />
+                }
             </div>
 
             <div class="form-group">
                 <label for="task-description"><b>Task description</b>:</label>
-                <input type="text" name="task-description" id="task-description" placeholder="Enter a task description..." @bind-value="workflowTask.Description" class="form-control" />
+                @if (workflowTask != null)
+                {
+                    <input type="text" name="task-description" id="task-description" placeholder="Enter a task description..." @bind-value="workflowTask.Description" class="form-control" />
+                }
             </div>
 
             <div class="form-group">
@@ -42,7 +55,10 @@
 
         @code
         {
-            private WorkflowTask workflowTask = new WorkflowTask() { ID = Guid.NewGuid().ToString() };
+            [Parameter]
+            public string TaskID { get; set; }
+
+            private WorkflowTask workflowTask;
 
             /// <summary>
             /// Page field that contains content of the task.
@@ -51,16 +67,17 @@
 
             private async Task ConfirmForm()
             {
-                if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.Name))
+                if (workflowTask != null)
                 {
-                    workflowTask.Content = System.Text.Encoding.UTF8.GetBytes(taskContent);
-                    workflowTask.UserID = ClaimsHelper.Instance().GetEmailClaim().Value;
-                    workflowTask.Added = DateTime.Now;
-                    workflowTask.Updated = workflowTask.Added;
-                    var responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/add", workflowTask);
-                    if (responseMessage.IsSuccessStatusCode)
+                    if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.Name))
                     {
-                        NavigationManager.NavigateTo("/formcapture/tasks");
+                        workflowTask.Content = System.Text.Encoding.UTF8.GetBytes(taskContent);
+                        workflowTask.Updated = DateTime.Now;
+                        var responseMessage = await HttpClient.PostAsJsonAsync("api/tasks/update", workflowTask);
+                        if (responseMessage.IsSuccessStatusCode)
+                        {
+                            NavigationManager.NavigateTo("/formcapture/tasks");
+                        }
                     }
                 }
             }
@@ -70,11 +87,15 @@
                 await IJSRuntime.InvokeVoidAsync("executeJS", taskContent);
             }
 
-            protected override void OnInitialized()
+            protected override async Task OnInitializedAsync()
             {
-                taskContent = "";
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-                base.OnInitialized();
+                var taskApiResponse = await HttpClient.GetAsync($"/api/tasks/get/{TaskID}");
+                if (taskApiResponse.IsSuccessStatusCode)
+                {
+                    workflowTask = JsonConvert.DeserializeObject<WorkflowTask>(await taskApiResponse.Content.ReadAsStringAsync());
+                    taskContent = System.Text.Encoding.UTF8.GetString(workflowTask.Content);
+                }
             }
         }
     </Authorized>

@@ -37,8 +37,6 @@ namespace FormCapture.Server.DataAccess
 
         public DbSet<Workflow> Workflows { get; set; }
 
-        public DbSet<WorkflowTaskParameter> WorkflowTaskParameters { get; set; }
-
         public DbSet<WorkflowTask> WorkflowTasks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
