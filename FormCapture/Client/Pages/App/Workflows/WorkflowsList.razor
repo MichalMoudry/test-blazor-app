@@ -5,7 +5,7 @@
 
 <AuthorizeView Roles="Admin, Workflow admin">
     <Authorized>
-        <h3>Workflows</h3>
+        <h3><span class="oi oi-project"></span> Workflows</h3>
         <hr />
 
         <div class="row">
@@ -40,14 +40,19 @@
                             @foreach (Workflow workflow in workflows)
                             {
                                 <tr>
-                                    <td>@workflow.Name</td>
-                                    <td>@workflow.Added</td>
-                                    <td @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.ID}"))"><span class="oi oi-pencil"></span></td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.ID}/edit"))">@workflow.Name</td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.ID}/edit"))">@workflow.Added</td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.ID}/edit"))"><span class="oi oi-pencil"></span></td>
                                     <td><span class="oi oi-trash"></span></td>
                                 </tr>
                             }
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
                 </div>
             }
         </div>
@@ -56,6 +61,10 @@
         {
             private List<Workflow> workflows;
 
+            private bool isLoadingIndicatorHidden = true;
+
+            private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
+
             private void Navigate(string page)
             {
                 NavigationManager.NavigateTo(page);
@@ -63,12 +72,14 @@
 
             protected override async Task OnInitializedAsync()
             {
+                isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
                 HttpResponseMessage responseMessage = await HttpClient.PostAsJsonAsync("api/workflows/", ClaimsHelper.Instance().GetEmailClaim().Value);
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     workflows = JsonConvert.DeserializeObject<List<Workflow>>(await responseMessage.Content.ReadAsStringAsync());
                 }
+                isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
             }
         }
     </Authorized>

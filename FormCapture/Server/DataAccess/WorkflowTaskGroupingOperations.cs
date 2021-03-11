@@ -28,12 +28,9 @@ namespace FormCapture.Server.DataAccess
             {
                 foreach (var keyvalue in taskGroupings)
                 {
-                    foreach (WorkflowTaskGrouping grouping in keyvalue.Value)
-                    {
-                        grouping.Added = DateTime.Now;
-                        grouping.Updated = grouping.Added;
-                        _appDbContext.TaskGroupings.Add(grouping);
-                    }
+                    keyvalue.Value.ForEach(i => i.Added = DateTime.Now);
+                    keyvalue.Value.ForEach(i => i.Updated = i.Added);
+                    _appDbContext.TaskGroupings.AddRange(keyvalue.Value);
                 }
                 await _appDbContext.SaveChangesAsync();
                 return true;
@@ -47,19 +44,13 @@ namespace FormCapture.Server.DataAccess
         /// <summary>
         /// Method for removing a task grouping from db.
         /// </summary>
-        /// <param name="taskGroupings">Dictionary of new task grouping.</param>
+        /// <param name="taskGroupings">List of new task grouping.</param>
         /// <returns>True if groupings were removed. False if operation failed.</returns>
-        public async Task<bool> RemoveGrouping(Dictionary<string, List<WorkflowTaskGrouping>> taskGroupings)
+        public async Task<bool> RemoveGrouping(List<WorkflowTaskGrouping> taskGroupings)
         {
             try
             {
-                foreach (var keyvalue in taskGroupings)
-                {
-                    foreach (WorkflowTaskGrouping grouping in keyvalue.Value)
-                    {
-                        _appDbContext.TaskGroupings.Remove(grouping);
-                    }
-                }
+                _appDbContext.RemoveRange(taskGroupings);
                 await _appDbContext.SaveChangesAsync();
                 return true;
             }

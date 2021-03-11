@@ -36,7 +36,7 @@ namespace FormCapture.Server.Controllers
                 {
                     return BadRequest();
                 }
-                bool res = await _workflowOperations.AddWorkflow(workflow);
+                var res = await _workflowOperations.AddWorkflow(workflow);
                 if (res)
                 {
                     return Ok();
@@ -64,7 +64,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            List<Workflow> workflows = _workflowOperations.GetUsersAppWorkflows(userID)
+            var workflows = _workflowOperations.GetUsersAppWorkflows(userID)
                 .OrderBy(i => i.Added)
                 .ToList();
             if (workflows != null)
@@ -91,7 +91,7 @@ namespace FormCapture.Server.Controllers
                 {
                     return BadRequest();
                 }
-                bool res = await _workflowOperations.DeleteWorkflow(workflow);
+                var res = await _workflowOperations.DeleteWorkflow(workflow);
                 if (res)
                 {
                     return Ok();
@@ -112,14 +112,14 @@ namespace FormCapture.Server.Controllers
         /// </summary>
         /// <param name="appID">ID of an app workflow.</param>
         /// <returns>If ID is not supplied or workflow was not found then 400 status is returned. Else data is returned as JSON.</returns>
-        [HttpPost("Get")]
-        public IActionResult GetAppWorkflow([FromBody] string workflowID)
+        [HttpGet("get/{workflowID}")]
+        public IActionResult GetAppWorkflow(string workflowID)
         {
             if (string.IsNullOrEmpty(workflowID))
             {
                 return BadRequest();
             }
-            Workflow workflow = _workflowOperations.GetAppWorkflow(workflowID);
+            var workflow = _workflowOperations.GetAppWorkflow(workflowID);
             if (workflow != null)
             {
                 return Ok(workflow);
@@ -135,7 +135,7 @@ namespace FormCapture.Server.Controllers
         /// </summary>
         /// <param name="app">Instance of the AppWorkflow class with new data.</param>
         /// <returns>200 or 400 status code.</returns>
-        [HttpPost("Edit")]
+        [HttpPut("update")]
         public async Task<IActionResult> EditWorkflow([FromBody] Workflow workflow)
         {
             try
@@ -144,7 +144,7 @@ namespace FormCapture.Server.Controllers
                 {
                     return BadRequest();
                 }
-                bool res = await _workflowOperations.EditWorkflow(workflow);
+                var res = await _workflowOperations.EditWorkflow(workflow);
                 if (res)
                 {
                     return Ok();

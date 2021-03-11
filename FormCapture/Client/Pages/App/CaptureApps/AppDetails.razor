@@ -111,7 +111,7 @@
                                         <tbody>
                                             @foreach (var workflow in appWorkflows)
                                             {
-                                                <tr>
+                                                <tr @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.ID}/edit"))">
                                                     <td>@workflow.WorkflowName</td>
                                                     <td>@workflow.Added</td>
                                                 </tr>

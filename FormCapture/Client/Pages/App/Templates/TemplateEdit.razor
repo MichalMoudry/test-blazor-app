@@ -240,7 +240,7 @@
                     fields = JsonConvert.DeserializeObject<List<Field>>(await fieldsApiResponse.Content.ReadAsStringAsync());
                     identifyingField = fields.SingleOrDefault(i => i.IsIdentifying);
                     expectedValue = identifyingField.ExpectedValue;
-                    await IJSRuntime.InvokeVoidAsync("drawFields", fields);
+                    await IJSRuntime.InvokeVoidAsync("drawFields", fields, "template-canvas");
                 }
             }
         }

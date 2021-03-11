@@ -63,13 +63,13 @@ function getFieldProperties(fieldID) {
     }
 }
 
-function drawFields(fields) {
+function drawFields(fields, targetID) {
     var xposition;
     var yposition;
     var width;
     var height;
     var fieldRectangle;
-    var canvas = document.getElementById("template-canvas");
+    var canvas = document.getElementById(targetID);
     if (canvas != null) {
         for (var i = 0; i < fields.length; i++) {
             fieldRectangle = document.createElement("div");

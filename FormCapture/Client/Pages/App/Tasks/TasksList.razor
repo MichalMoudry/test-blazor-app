@@ -41,8 +41,8 @@
                             @foreach (WorkflowTask task in tasks)
                             {
                                 <tr>
-                                    <td>@task.Name</td>
-                                    <td>@task.Added</td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/tasks/edit/{task.ID}"))">@task.Name</td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/tasks/edit/{task.ID}"))">@task.Added</td>
                                     <td @onclick="@(e => Navigate($"/formcapture/tasks/edit/{task.ID}"))"><span class="oi oi-pencil"></span></td>
                                     <td><span class="oi oi-trash"></span></td>
                                 </tr>

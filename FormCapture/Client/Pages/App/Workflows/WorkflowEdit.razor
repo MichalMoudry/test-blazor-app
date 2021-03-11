@@ -2,16 +2,31 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject IJSRuntime IJSRuntime
-@page "/formcapture/workflows/add"
+@page "/formcapture/workflows/{workflowID}/edit"
 
-<AuthorizeView Roles="Admin, Workflow admin">
+<AuthorizeView>
     <Authorized>
-        <h3>Create a new workflow</h3>
+        @if (workflow != null)
+        {
+            <h3><span class="oi oi-pencil"></span> Edit workflow</h3>
+        }
+        else
+        {
+            <h3>Loading...</h3>
+        }
+
         <hr />
 
         <div class="form-group">
-            <label for="workflow-name">Workflow name:</label>
-            <input name="workflow-name" @bind-value="workflow.Name" placeholder="Enter a workflow name..." id="workflow-name" type="text" class="form-control" />
+            @if (workflow != null)
+            {
+                <label for="workflow-name">Workflow name:</label>
+                <input name="workflow-name" @bind-value="workflow.Name" placeholder="Enter a workflow name..." id="workflow-name" type="text" class="form-control" />
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
         </div>
 
         <div class="row">
@@ -21,18 +36,21 @@
                         <h5 class="card-title"><span class="oi oi-document"></span> Scan tasks</h5>
                     </div>
                     <div class="card-body">
-                        @if (groupings["scan"].Count != 0)
+                        @if (groupings.ContainsKey("scan"))
                         {
-                            @foreach (WorkflowTaskGrouping grouping in groupings["scan"])
+                            @if (groupings["scan"].Count != 0)
                             {
-                                <p class="card-text">
-                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["scan"], grouping))"></span></span>
-                                </p>
+                                @foreach (WorkflowTaskGrouping grouping in groupings["scan"])
+                                {
+                                    <p class="card-text">
+                                        <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["scan"], grouping))"></span></span>
+                                    </p>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <p class="card-text">This group has no tasks yet.</p>
+                            else
+                            {
+                                <p class="card-text">This group has no tasks yet.</p>
+                            }
                         }
                     </div>
                     <div class="card-footer">
@@ -47,18 +65,21 @@
                         <h5 class="card-title"><span class="oi oi-aperture"></span> Recognition tasks</h5>
                     </div>
                     <div class="card-body">
-                        @if (groupings["recognition"].Count != 0)
+                        @if (groupings.ContainsKey("recognition"))
                         {
-                            @foreach (WorkflowTaskGrouping grouping in groupings["recognition"])
+                            @if (groupings["recognition"].Count != 0)
                             {
-                                <p class="card-text">
-                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["recognition"], grouping))"></span></span>
-                                </p>
+                                @foreach (WorkflowTaskGrouping grouping in groupings["recognition"])
+                                {
+                                    <p class="card-text">
+                                        <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["recognition"], grouping))"></span></span>
+                                    </p>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <p class="card-text">This group has no tasks yet.</p>
+                            else
+                            {
+                                <p class="card-text">This group has no tasks yet.</p>
+                            }
                         }
                     </div>
                     <div class="card-footer">
@@ -73,18 +94,21 @@
                         <h5 class="card-title"><span class="oi oi-eye"></span> Verification tasks</h5>
                     </div>
                     <div class="card-body">
-                        @if (groupings["verification"].Count != 0)
+                        @if (groupings.ContainsKey("verification"))
                         {
-                            @foreach (WorkflowTaskGrouping grouping in groupings["verification"])
+                            @if (groupings["verification"].Count != 0)
                             {
-                                <p class="card-text">
-                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["verification"], grouping))"></span></span>
-                                </p>
+                                @foreach (WorkflowTaskGrouping grouping in groupings["verification"])
+                                {
+                                    <p class="card-text">
+                                        <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["verification"], grouping))"></span></span>
+                                    </p>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <p class="card-text">This group has no tasks yet.</p>
+                            else
+                            {
+                                <p class="card-text">This group has no tasks yet.</p>
+                            }
                         }
                     </div>
                     <div class="card-footer">
@@ -99,18 +123,21 @@
                         <h5 class="card-title"><span class="oi oi-expand-left"></span> Export tasks</h5>
                     </div>
                     <div class="card-body">
-                        @if (groupings["export"].Count != 0)
+                        @if (groupings.ContainsKey("export"))
                         {
-                            @foreach (WorkflowTaskGrouping grouping in groupings["export"])
+                            @if (groupings["export"].Count != 0)
                             {
-                                <p class="card-text">
-                                    <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["export"], grouping))"></span></span>
-                                </p>
+                                @foreach (WorkflowTaskGrouping grouping in groupings["export"])
+                                {
+                                    <p class="card-text">
+                                        <span class="badge badge-success">@tasks.SingleOrDefault(i => i.ID.Equals(grouping.TaskID)).Name <span class="oi oi-circle-x" @onclick="@(e => RemoveTaskFromGrouping(groupings["export"], grouping))"></span></span>
+                                    </p>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <p class="card-text">This group has no tasks yet.</p>
+                            else
+                            {
+                                <p class="card-text">This group has no tasks yet.</p>
+                            }
                         }
                     </div>
                     <div class="card-footer">
@@ -164,11 +191,13 @@
         </div>
 
         <div class="mt-3">
-            <button type="button" class="btn btn-success" @onclick="Submit"><span class="oi oi-check"></span> Confirm</button>
+            <button type="button" class="btn btn-success" @onclick="Submit"><span class="oi oi-check"></span> Edit</button>
         </div>
 
-        @code
-        {
+        @code {
+            [Parameter]
+            public string WorkflowID { get; set; }
+
             /// <summary>
             /// Field that contains groupings for each workflow group.
             /// </summary>
@@ -179,11 +208,13 @@
             /// </summary>
             private List<WorkflowTask> tasks;
 
-            private Workflow workflow = new Workflow() { ID = Guid.NewGuid().ToString(), UserID = ClaimsHelper.Instance().GetEmailClaim().Value };
+            private Workflow workflow;
 
             private string currentTaskGroup;
 
             private List<WorkflowTask> addedTasks;
+
+            private List<WorkflowTaskGrouping> groupingsToDelete = new List<WorkflowTaskGrouping>();
 
             private void SetCurrentTaskGroup(string taskGroup)
             {
@@ -203,15 +234,10 @@
                 }
             }
 
-            private void RemoveTaskFromGrouping(List<WorkflowTaskGrouping> groupings, WorkflowTaskGrouping grouping)
-            {
-                groupings.Remove(grouping);
-            }
-
             private async Task ConfirmModal()
             {
-                List<string> ids = new List<string>();
-                foreach (WorkflowTask task in addedTasks)
+                var ids = new List<string>();
+                foreach (var task in addedTasks)
                 {
                     groupings[currentTaskGroup].Add(new WorkflowTaskGrouping()
                     {
@@ -228,14 +254,19 @@
                 await IJSRuntime.InvokeVoidAsync("uncheckCheckboxes", ids);
             }
 
+            private void RemoveTaskFromGrouping(List<WorkflowTaskGrouping> groupings, WorkflowTaskGrouping grouping)
+            {
+                groupings.Remove(grouping);
+                groupingsToDelete.Add(grouping);
+            }
+
             private async Task Submit()
             {
                 if (!string.IsNullOrEmpty(workflow.Name))
                 {
-                    workflow.Added = DateTime.Now;
-                    workflow.Updated = workflow.Added;
-                    var addWorkflowMessage = await HttpClient.PostAsJsonAsync("api/workflows/add", workflow);
-                    var addTaskGroupingMessage = await HttpClient.PostAsJsonAsync("api/workflowtaskgrouping/add", groupings);
+                    workflow.Updated = DateTime.Now;
+                    var addWorkflowMessage = await HttpClient.PutAsJsonAsync("api/workflows/update", workflow);
+                    var addTaskGroupingMessage = await HttpClient.PutAsJsonAsync("api/workflowtaskgrouping/delete", groupingsToDelete);
                     if (addWorkflowMessage.IsSuccessStatusCode && addTaskGroupingMessage.IsSuccessStatusCode)
                     {
                         NavigationManager.NavigateTo("/formcapture/workflows");
@@ -246,15 +277,19 @@
             protected override async Task OnInitializedAsync()
             {
                 groupings = new Dictionary<string, List<WorkflowTaskGrouping>>();
-                groupings.Add("export", new List<WorkflowTaskGrouping>());
-                groupings.Add("scan", new List<WorkflowTaskGrouping>());
-                groupings.Add("verification", new List<WorkflowTaskGrouping>());
-                groupings.Add("recognition", new List<WorkflowTaskGrouping>());
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-                var responseMessage = await HttpClient.GetAsync($"api/tasks/{ClaimsHelper.Instance().GetEmailClaim().Value}");
-                if (responseMessage.IsSuccessStatusCode)
+                var tasksApiResponse = await HttpClient.GetAsync($"api/tasks/{ClaimsHelper.Instance().GetEmailClaim().Value}");
+                var workflowApiResponse = await HttpClient.GetAsync($"api/workflows/get/{WorkflowID}");
+                var workflowTaskGroupingApiResponse = await HttpClient.GetAsync($"api/workflowtaskgrouping/{WorkflowID}");
+                if (tasksApiResponse.IsSuccessStatusCode && workflowApiResponse.IsSuccessStatusCode && workflowTaskGroupingApiResponse.IsSuccessStatusCode)
                 {
-                    tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
+                    workflow = JsonConvert.DeserializeObject<Workflow>(await workflowApiResponse.Content.ReadAsStringAsync());
+                    var groupingsList = JsonConvert.DeserializeObject<List<WorkflowTaskGrouping>>(await workflowTaskGroupingApiResponse.Content.ReadAsStringAsync());
+                    groupings.Add("scan", groupingsList.Where(i => i.TaskGroupName.Equals("scan")).OrderBy(i => i.ExecutionOrderNumber).ToList());
+                    groupings.Add("recognition", groupingsList.Where(i => i.TaskGroupName.Equals("recognition")).OrderBy(i => i.ExecutionOrderNumber).ToList());
+                    groupings.Add("verification", groupingsList.Where(i => i.TaskGroupName.Equals("verification")).OrderBy(i => i.ExecutionOrderNumber).ToList());
+                    groupings.Add("export", groupingsList.Where(i => i.TaskGroupName.Equals("export")).OrderBy(i => i.ExecutionOrderNumber).ToList());
+                    tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksApiResponse.Content.ReadAsStringAsync());
                 }
             }
         }
