@@ -42,9 +42,10 @@ async function recog(fields, images, lang, contentTypes) {
             {
                 rectangle: { top: fields[x]["xposition"], left: fields[x]["yposition"], width: fields[x]["width"], height: fields[x]["height"] }
             });
-            results.push(text.replace(/\s/g, "") + "/" + fields[x]["id"]);
+            results.push(text.replace(/\s/g, "") + "/" + fields[x]["id"] + "/" + i);
         }
     }
+    console.log(results);
     await worker.terminate();
     return results;
 }

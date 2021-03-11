@@ -98,7 +98,43 @@
                 <div id="verificationTasks" class="mt-4">
                     <h4><span class="oi oi-eye"></span> Verification tasks</h4>
                     <ul class="list-group">
+                        @if (verificationTaskProgression != null)
+                        {
+                            @foreach (var task in verificationTaskProgression)
+                            {
+                                @if (verificationTaskProgression.Last().Equals(task))
+                                {
+                                    <li class="list-group-item active">
+                                        @task.Key - @if (task.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li class="list-group-item">
+                                        @task.Key - @if (task.Value)
+                                        {
+                                            <span><span class="oi oi-circle-check"></span></span>
+                                        }
+                                        else
+                                        {
+                                            <span>in progress</span>
+                                        }
+                                    </li>
+                                }
+                            }
+                        }
                     </ul>
+
+                    <button type="button" class="btn btn-danger mt-3 @DisplayVerificationButtonCssClass" data-toggle="modal" data-target="#verificationModal">
+                        <span class="oi oi-target"></span> View verification dialog
+                    </button>
                 </div>
 
                 <div id="exportTasks" class="mt-4">
@@ -141,7 +177,7 @@
             </div>
         </div>
 
-        <button type="button" class="btn btn-success mt-3 mb-3 @BackButtonCssClass">
+        <button type="button" class="btn btn-success mt-3 mb-3 @BackButtonCssClass" @onclick="NavigateBack">
             <span class="oi oi-arrow-thick-left"></span> Back to app's details
         </button>
 
@@ -170,6 +206,17 @@
                                                 <img src="@SetImageSource(file.Content, file.Type)" id="@file.ID" alt="@file.Name" class="d-block carousel-image" draggable="false" />
                                                 <div class="carousel-caption d-none d-md-block">
                                                     <h6>@file.Name</h6>
+                                                    @if (templates != null)
+                                                    {
+                                                        @if (templates.SingleOrDefault(i => i.ID.Equals(file.TemplateID)) != null)
+                                                        {
+                                                            <p>@templates.SingleOrDefault(i => i.ID.Equals(file.TemplateID)).Name</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p>File not recognized.</p>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
                                         }
@@ -179,6 +226,17 @@
                                                 <img src="@SetImageSource(file.Content, file.Type)" id="@file.ID" alt="@file.Name" class="d-block carousel-image" draggable="false" />
                                                 <div class="carousel-caption d-none d-md-block">
                                                     <h6>@file.Name</h6>
+                                                    @if (templates != null)
+                                                    {
+                                                        @if (templates.SingleOrDefault(i => i.ID.Equals(file.TemplateID)) != null)
+                                                        {
+                                                            <p>@templates.SingleOrDefault(i => i.ID.Equals(file.TemplateID)).Name</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p>File not recognized.</p>
+                                                        }
+                                                    }
                                                 </div>
                                             </div>
                                         }
@@ -234,19 +292,18 @@
                     </div>
 
                     <div class="modal-body">
-                        @if (processedFiles != null)
+                        @if (fieldValues != null)
                         {
-                            @if (processedFiles.Count > 0)
+                            @foreach (var value in fieldValues.Where(i => i.Value.Equals("Not recognized.")))
                             {
-                                @foreach (var file in processedFiles.Where(i => i.TemplateID == null))
-                                {
-                                    <img src="@SetImageSource(file.Content, file.Type)" alt="@file.Name" />
-                                }
+                                <label for="@value.ID">@value.FieldName</label>
+                                <input @bind-value="@value.Value" name="@value.ID" id="@value.ID" placeholder="Enter field value..." />
                             }
                         }
                     </div>
 
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal" @onclick="ContinueProcessingAfterVerification">Submit</button>
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -289,6 +346,10 @@
             private bool isDisplayResultsButtonHidden = true;
 
             private string DisplayResultsButtonCssClass => isDisplayResultsButtonHidden ? "d-none" : null;
+
+            private bool isDisplayVerificationButtonHidden = true;
+
+            private string DisplayVerificationButtonCssClass => isDisplayVerificationButtonHidden ? "d-none" : null;
 
             private bool isBackButtonHidden = true;
 
@@ -374,7 +435,7 @@
                 System.Text.Json.JsonElement recogResponse;
                 string[] recogResponseArray;
                 Field idField;
-                recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "ces", processedFiles.Select(i => i.Type));
+                recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "eng", processedFiles.Select(i => i.Type));
                 var recogResponseList = recogResponse.EnumerateArray().ToList();
                 foreach (var item in recogResponseList)
                 {
@@ -384,8 +445,8 @@
                     {
                         if (idField.ExpectedValue.Equals(recogResponseArray[0]))
                         {
-                            processedFiles[recogResponseList.IndexOf(item)].TemplateID = idField.TemplateID;
-                            fieldValues.Add(new FieldValue() { ID = Guid.NewGuid().ToString(), FileID = processedFiles[recogResponseList.IndexOf(item)].ID, FieldID = recogResponseArray[1], FieldName = idField.Name, Value = recogResponseArray[0], Added = DateTime.Now, Updated = DateTime.Now });
+                            processedFiles[Convert.ToInt32(recogResponseArray[2])].TemplateID = idField.TemplateID;
+                            fieldValues.Add(new FieldValue() { ID = Guid.NewGuid().ToString(), FileID = processedFiles[Convert.ToInt32(recogResponseArray[2])].ID, FieldID = recogResponseArray[1], FieldName = idField.Name, Value = recogResponseArray[0], Added = DateTime.Now, Updated = DateTime.Now });
                             recognitionTaskProgression["Applying identifying fields"] = true;
                         }
                     }
@@ -409,7 +470,7 @@
                 this.StateHasChanged();
                 foreach (var file in idedFiles)
                 {
-                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", nonIdFields[file.ID], new string[] { Convert.ToBase64String(file.Content) }, "ces", new string[] { file.Type });
+                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", nonIdFields[file.ID], new string[] { Convert.ToBase64String(file.Content) }, "eng", new string[] { file.Type });
                     foreach (var item in recogResponse.EnumerateArray())
                     {
                         recogResponseArray = item.ToString().Split("/");
@@ -450,17 +511,44 @@
 
             private async Task ExecuteVerificationTasks()
             {
-                var failedFiles = processedFiles.Where(i => i.TemplateID == null);
-                var failedFieldValues = fieldValues.Where(i => i.Value.Equals("Not recognized."));
-                foreach (var file in failedFiles)
+                verificationTaskProgression.Add("Checking if files or fields need user verification", false);
+                var failedFieldValues = fieldValues.Where(i => i.Value.Equals("Not recognized.")).ToList();
+                verificationTaskProgression["Checking if files or fields need user verification"] = true;
+                if (failedFieldValues.Count > 0)
                 {
-                    Console.WriteLine(file.Name);
+                    isDisplayVerificationButtonHidden = false;
                 }
-                foreach (var value in failedFieldValues)
+                //Execute custom js tasks
+                this.StateHasChanged();
+                bool executeJSRes;
+                foreach (var grouping in taskGroupings.OrderBy(i => i.ExecutionOrderNumber).Where(i => i.TaskGroupName.Equals(TaskGroupID.Verification.ToString().ToLower())))
                 {
-                    Console.WriteLine($"{value.FieldID} - {value.Value}");
+                    foreach (var task in tasks.Where(i => i.ID.Equals(grouping.TaskID)).ToList())
+                    {
+                        verificationTaskProgression.Add($"Executing custom task: {task.Name}", false);
+                        this.StateHasChanged();
+                        executeJSRes = await IJSRuntime.InvokeAsync<bool>("executeJS", System.Text.Encoding.UTF8.GetString(task.Content));
+                        if (executeJSRes)
+                        {
+                            verificationTaskProgression[$"Executing custom task: {task.Name}"] = true;
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
                 }
-                await Task.Delay(100);
+                if (failedFieldValues.Count == 0)
+                {
+                    verificationTaskProgression.Add("Verification complete", true);
+                    this.StateHasChanged();
+                    await ExecuteExportTasks();
+                }
+            }
+
+            private async Task ContinueProcessingAfterVerification()
+            {
+                await ExecuteExportTasks();
             }
 
             private async Task ExecuteExportTasks()
@@ -469,10 +557,29 @@
                 await HttpClient.PostAsJsonAsync("/api/queue/update", queue);
 
                 exportTaskProgression.Add("Sending field values to database", false);
-                var fieldValuesApiResponse = await HttpClient.PostAsJsonAsync("/api/fieldvalues/add", fieldValues);
+                var fieldValuesApiResponse = await HttpClient.PostAsJsonAsync("/api/fieldvalues/add", fieldValues.Where(i => !i.Value.Equals("Not recognized.")).ToList());
                 if (fieldValuesApiResponse.IsSuccessStatusCode)
                 {
                     exportTaskProgression["Sending field values to database"] = true;
+                }
+                //Execute custom js tasks
+                bool executeJSRes;
+                foreach (var grouping in taskGroupings.OrderBy(i => i.ExecutionOrderNumber).Where(i => i.TaskGroupName.Equals(TaskGroupID.Export.ToString().ToLower())))
+                {
+                    foreach (var task in tasks.Where(i => i.ID.Equals(grouping.TaskID)).ToList())
+                    {
+                        exportTaskProgression.Add($"Executing custom task: {task.Name}", false);
+                        this.StateHasChanged();
+                        executeJSRes = await IJSRuntime.InvokeAsync<bool>("executeJS", System.Text.Encoding.UTF8.GetString(task.Content));
+                        if (executeJSRes)
+                        {
+                            exportTaskProgression[$"Executing custom task: {task.Name}"] = true;
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
                 }
                 isBackButtonHidden = false;
             }
@@ -482,7 +589,11 @@
                 isContinueButtonHidden = true;
                 await ExecuteRecognitionTasks();
                 await ExecuteVerificationTasks();
-                await ExecuteExportTasks();
+            }
+
+            private void NavigateBack()
+            {
+                NavigationManager.NavigateTo($"/formcapture/apps/{queue.AppID}");
             }
 
             protected override async Task OnInitializedAsync()

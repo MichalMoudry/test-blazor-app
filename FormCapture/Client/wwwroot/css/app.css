@@ -264,6 +264,13 @@ app {
     max-height: 150px;
 }
 
+.carousel-caption {
+    background: #ffffffe6;
+    margin: 10px 35px -5px 35px;
+    color: black;
+    padding-bottom: 0px;
+}
+
 .pointer {
     cursor: pointer;
 }
