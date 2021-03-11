@@ -59,5 +59,24 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        public async Task<bool> UpdateTemplate(Template newTemplate)
+        {
+            try
+            {
+                var originalTemplate = _appDbContext.Templates.SingleOrDefault(i => i.ID.Equals(newTemplate.ID));
+                if (originalTemplate == null)
+                {
+                    return false;
+                }
+                _appDbContext.Entry(originalTemplate).CurrentValues.SetValues(newTemplate);
+                await _appDbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

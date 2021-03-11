@@ -110,5 +110,45 @@ namespace FormCapture.Server.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpGet("template")]
+        public IActionResult GetTemplateFields(string templateID)
+        {
+            if (string.IsNullOrEmpty(templateID))
+            {
+                return BadRequest();
+            }
+            var fields = _fieldOperations.GetTemplateFields(templateID);
+            if (fields != null)
+            {
+                return Ok(fields);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateFields([FromBody] List<Field> fields)
+        {
+            if (fields == null)
+            {
+                return BadRequest();
+            }
+            else if (fields.Count == 0)
+            {
+                return BadRequest("Input is empty.");
+            }
+            var res = await _fieldOperations.UpdateFields(fields);
+            if (res)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

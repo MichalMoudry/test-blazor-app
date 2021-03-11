@@ -68,5 +68,28 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        public async Task<bool> UpdateFields(List<Field> fields)
+        {
+            try
+            {
+                Field originalField;
+                foreach (var field in fields)
+                {
+                    originalField = _appDbContext.Fields.SingleOrDefault(i => i.ID.Equals(field.ID));
+                    if (originalField == null)
+                    {
+                        return false;
+                    }
+                    _appDbContext.Entry(originalField).CurrentValues.SetValues(field);
+                }
+                await _appDbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

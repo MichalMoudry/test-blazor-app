@@ -10,6 +10,10 @@ function executeJS(code) {
     }
 }
 
+function displayConfirm(message) {
+    return confirm(message);
+}
+
 function getImageProperties(imageID) {
     var img = document.getElementById(imageID);
     return img.naturalWidth + "|" + img.naturalHeight;
@@ -59,6 +63,34 @@ function getFieldProperties(fieldID) {
     }
 }
 
+function drawFields(fields) {
+    var xposition;
+    var yposition;
+    var width;
+    var height;
+    var fieldRectangle;
+    var canvas = document.getElementById("template-canvas");
+    if (canvas != null) {
+        for (var i = 0; i < fields.length; i++) {
+            fieldRectangle = document.createElement("div");
+            fieldRectangle.classList.add("template-field");
+            fieldRectangle.id = fields[i]["id"];
+            xposition = fields[i]["xposition"] + "px";
+            yposition = fields[i]["yposition"] + "px";
+            width = fields[i]["width"] + "px";
+            height = fields[i]["height"] + "px";
+
+            fieldRectangle.style.top = xposition;
+            fieldRectangle.style.left = yposition;
+            fieldRectangle.style.width = width;
+            fieldRectangle.style.height = height;
+
+            console.log(xposition + " - " + yposition + " - " + width + " - " + height);
+            canvas.appendChild(fieldRectangle);
+        }
+    }
+}
+
 function drawField(fieldID) {
     var existingField = document.getElementById(fieldID);
     if (existingField != null) {
@@ -86,13 +118,9 @@ function drawField(fieldID) {
                     fieldRectangle.style.left = startY + "px";
 
                     canvas.appendChild(fieldRectangle);
-
-                    //console.log("Drawing started. Start X: " + startX + " start Y: " + startY);
                 }
                 else {
                     fieldRectangle = null;
-                    //console.log("x: " + x + " | y: " + y);
-                    //console.log("Field was drawn.");
                     canvas.style.cursor = "pointer";
                     canvas.onclick = null;
                     canvas.onmousemove = null;

@@ -28,10 +28,28 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            List<Template> templates = _templateOperations.GetAppsTemplates(appID);
+            var templates = _templateOperations.GetAppsTemplates(appID);
             if (templates != null)
             {
                 return Ok(templates);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("template")]
+        public IActionResult GetTemplate(string templateID)
+        {
+            if (string.IsNullOrEmpty(templateID))
+            {
+                return BadRequest();
+            }
+            var template = _templateOperations.GetTemplate(templateID);
+            if (template != null)
+            {
+                return Ok(template);
             }
             else
             {
@@ -46,7 +64,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            bool res = await _templateOperations.AddTemplate(template);
+            var res = await _templateOperations.AddTemplate(template);
             if (res)
             {
                 return Ok();
@@ -64,7 +82,25 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            bool res = await _templateOperations.DeleteTemplate(template);
+            var res = await _templateOperations.DeleteTemplate(template);
+            if (res)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> Update([FromBody] Template template)
+        {
+            if (template == null)
+            {
+                return BadRequest();
+            }
+            var res = await _templateOperations.UpdateTemplate(template);
             if (res)
             {
                 return Ok();

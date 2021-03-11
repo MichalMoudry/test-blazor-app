@@ -72,7 +72,7 @@
                                         <tbody>
                                             @foreach (var template in templates)
                                             {
-                                                <tr>
+                                                <tr @onclick="@(e => Navigate($"/formcapture/apps/{template.ID}/edittemplate"))">
                                                     <td>@template.Name</td>
                                                     <td>@template.Added</td>
                                                 </tr>
@@ -169,7 +169,7 @@
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
         var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
         var getTemplatesMessage = await HttpClient.GetAsync($"api/templates/{AppID}");
-        var getWorkflowsMessage = await HttpClient.GetAsync($"/api/captureappworkflows/{AppID}");
+        var getWorkflowsMessage = await HttpClient.GetAsync($"api/captureappworkflows/{AppID}");
         if (getAppMessage.IsSuccessStatusCode && getTemplatesMessage.IsSuccessStatusCode && getWorkflowsMessage.IsSuccessStatusCode)
         {
             captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());

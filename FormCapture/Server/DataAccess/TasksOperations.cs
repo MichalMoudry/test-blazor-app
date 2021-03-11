@@ -47,7 +47,7 @@ namespace FormCapture.Server.DataAccess
             try
             {
                 //Trying to find original entry.
-                WorkflowTask origTask = _datacontext.WorkflowTasks.SingleOrDefault(i => i.ID.Equals(newTask.ID));
+                var origTask = _datacontext.WorkflowTasks.SingleOrDefault(i => i.ID.Equals(newTask.ID));
                 if (origTask == null)
                 {
                     return false;

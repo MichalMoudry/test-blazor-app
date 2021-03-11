@@ -1,0 +1,252 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
+@page "/formcapture/apps/{TemplateID}/edittemplate"
+
+<AuthorizeView>
+    <Authorized>
+        @if (template != null)
+        {
+            <h3><span class="oi oi-pencil"></span> Edit @template.Name template</h3>
+        }
+        else
+        {
+            <h3>Loading...</h3>
+        }
+
+        <hr />
+
+        <div>
+            @if (template != null)
+            {
+                <label for="template-name">Template name:</label>
+                <input name="template-name" @bind-value="template.Name" placeholder="Enter a template name..." id="template-name" type="text" class="form-control" />
+            }
+            else
+            {
+                <p>Loading...</p>
+            }
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md">
+                <div class="card">
+                    <div class="card-header">
+                        <h4><span class="oi oi-image"></span> Template image</h4>
+                    </div>
+
+                    <div class="card-body">
+                        <div id="template-canvas">
+                            <img id="template-preview-image" draggable="false" src="@fileContent" />
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <InputFile OnChange="@FileSelected" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <h4>Fields</h4>
+                                </div>
+                                <div class="col-1">
+                                    <span class="oi oi-plus pointer mt-2" @onclick="AddNewField"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div id="field-list">
+                                @if (fields != null)
+                                {
+                                    @if (fields.Count > 0)
+                                    {
+                                        @foreach (Field field in fields)
+                                        {
+                                            <div class="field-list-item mt-1 pr-3 pl-3 pt-2 pb-2">
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <input class="field-input" @bind-value="field.Name" placeholder="Enter a field name..." />
+                                                    </div>
+
+                                                    <div class="col-1 pointer" @onclick="@(e => DrawField(field.ID))">
+                                                        <span class="oi oi-pencil mt-2"></span>
+                                                    </div>
+
+                                                    <div class="col-1 pointer" @onclick="@(e => SetFieldToIdentifying(field))">
+                                                        <span class="oi oi-star mt-2"></span>
+                                                    </div>
+
+                                                    <div class="col-1 pointer" @onclick="@(e => RemoveField(field))">
+                                                        <span class="oi oi-trash mt-2"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p class="card-text">This template has no fields.</p>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h4><span class="oi oi-star"></span> Identifying field</h4>
+                        </div>
+
+                        <div class="card-body">
+                            @if (identifyingField != null)
+                            {
+                                <div class="field-list-item">
+                                    <p>@identifyingField.Name</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="field-list-item">
+                                    <p>Select a identifying field</p>
+                                </div>
+                            }
+                            <div>
+                                <input @bind="expectedValue" name="expected-value" id="expected-value" type="text" placeholder="Enter field's expected value..." class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--mt-3 mb-3 bottom-row-->
+        <div class="mt-2 mb-2">
+            <button class="btn btn-success" @onclick="Confirm">
+                <span class="oi oi-check"></span> Edit
+            </button>
+        </div>
+
+        @code
+        {
+            [Parameter]
+            public string TemplateID { get; set; }
+
+            private Template template;
+
+            private List<Field> fields;
+
+            private Field identifyingField;
+
+            private string fileContent;
+
+            private string expectedValue;
+
+            private async Task FileSelected(InputFileChangeEventArgs e)
+            {
+                if (e.FileCount > 1 || e.File.ContentType.Equals("application/pdf"))
+                {
+                    return;
+                }
+                fileContent = $"data:{e.File.ContentType};base64,";
+                var buffer = new byte[e.File.Size];
+                await e.File.OpenReadStream().ReadAsync(buffer);
+                template.Image = buffer;
+                fileContent += Convert.ToBase64String(buffer);
+            }
+
+            private void AddNewField()
+            {
+                fields.Add(new Field()
+                {
+                    ID = Guid.NewGuid().ToString(),
+                    Name = "New field",
+                    Added = DateTime.Now,
+                    Updated = DateTime.Now,
+                    IsIdentifying = false,
+                    TemplateID = template.ID
+                });
+            }
+
+            private async Task Confirm()
+            {
+                if (fields.Count > 0 && !string.IsNullOrEmpty(template.Name) && template.Image != null && identifyingField != null && !string.IsNullOrEmpty(expectedValue))
+                {
+                    template.Updated = DateTime.Now;
+                    fields.SingleOrDefault(i => i.IsIdentifying).ExpectedValue = expectedValue;
+                    var imageDimensions = await IJSRuntime.InvokeAsync<string>("getImageProperties", "template-preview-image");
+                    var imageDimensionsSplit = imageDimensions.Split("|");
+                    template.Xdimension = Convert.ToInt32(imageDimensionsSplit[0]);
+                    template.Ydimension = Convert.ToInt32(imageDimensionsSplit[1]);
+                    string fieldProperties;
+                    string[] fieldPropertiesSplit;
+                    foreach (var field in fields)
+                    {
+                        fieldProperties = await IJSRuntime.InvokeAsync<string>("getFieldProperties", field.ID);
+                        fieldPropertiesSplit = fieldProperties.Split(",");
+                        field.Width = Convert.ToInt32(fieldPropertiesSplit[0]);
+                        field.Height = Convert.ToInt32(fieldPropertiesSplit[1]);
+                        field.Xposition = Convert.ToInt32(fieldPropertiesSplit[2]);
+                        field.Yposition = Convert.ToInt32(fieldPropertiesSplit[3]);
+                    }
+                    var httpResponseMessage = await HttpClient.PutAsJsonAsync("api/templates/update", template);
+                    var fieldsResponseMessage = await HttpClient.PutAsJsonAsync("api/fields/update", fields);
+                    if (httpResponseMessage.IsSuccessStatusCode && fieldsResponseMessage.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo($"/formcapture/apps/{template.AppID}");
+                    }
+                    else
+                    {
+                    }
+                }
+            }
+
+            private void SetFieldToIdentifying(Field field)
+            {
+                if (identifyingField != null)
+                {
+                    identifyingField.IsIdentifying = false;
+                }
+                field.IsIdentifying = true;
+                identifyingField = field;
+            }
+
+            private void RemoveField(Field field)
+            {
+                fields.Remove(field);
+            }
+
+            private async Task DrawField(string fieldID)
+            {
+                await IJSRuntime.InvokeVoidAsync("drawField", fieldID);
+            }
+
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                var templatesApiResponse = await HttpClient.GetAsync($"api/templates/template?templateID={TemplateID}");
+                var fieldsApiResponse = await HttpClient.GetAsync($"api/fields/template?templateID={TemplateID}");
+                if (templatesApiResponse.IsSuccessStatusCode && fieldsApiResponse.IsSuccessStatusCode)
+                {
+                    template = JsonConvert.DeserializeObject<Template>(await templatesApiResponse.Content.ReadAsStringAsync());
+                    fileContent = $"data:image/png;base64,{Convert.ToBase64String(template.Image)}";
+                    fields = JsonConvert.DeserializeObject<List<Field>>(await fieldsApiResponse.Content.ReadAsStringAsync());
+                    identifyingField = fields.SingleOrDefault(i => i.IsIdentifying);
+                    expectedValue = identifyingField.ExpectedValue;
+                    await IJSRuntime.InvokeVoidAsync("drawFields", fields);
+                }
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to be here.</h3>
+    </NotAuthorized>
+</AuthorizeView>
