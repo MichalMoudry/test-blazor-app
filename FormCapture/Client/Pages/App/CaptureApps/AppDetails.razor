@@ -39,7 +39,33 @@
                         </div>
 
                         <div class="card-body" id="queue-list-container">
-
+                            @if (queues != null && appWorkflows != null)
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <td><b>Workflow ID</b></td>
+                                                <td><b>Status</b></td>
+                                                <td><b>Added</b></td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var queue in queues.Where(i => i.Status.Equals(QueueStatus.Finished)).TakeLast(5))
+                                            {
+                                                <tr>
+                                                    @if (appWorkflows != null)
+                                                    {
+                                                        <td>@appWorkflows.SingleOrDefault(i => i.WorkflowID.Equals(queue.WorkflowID)).WorkflowName</td>
+                                                    }
+                                                    <td>@queue.Status</td>
+                                                    <td>@queue.Added</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
                         </div>
 
                         <div class="card-footer">
@@ -159,6 +185,8 @@
 
     private List<CaptureAppWorkflows> appWorkflows;
 
+    private List<Queue> queues;
+
     private void Navigate(string page)
     {
         NavigationManager.NavigateTo(page);
@@ -170,11 +198,13 @@
         var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
         var getTemplatesMessage = await HttpClient.GetAsync($"api/templates/{AppID}");
         var getWorkflowsMessage = await HttpClient.GetAsync($"api/captureappworkflows/{AppID}");
+        var queueApiMesseage = await HttpClient.GetAsync($"api/queue/{AppID}");
         if (getAppMessage.IsSuccessStatusCode && getTemplatesMessage.IsSuccessStatusCode && getWorkflowsMessage.IsSuccessStatusCode)
         {
             captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
             templates = JsonConvert.DeserializeObject<List<Template>>(await getTemplatesMessage.Content.ReadAsStringAsync());
             appWorkflows = JsonConvert.DeserializeObject<List<CaptureAppWorkflows>>(await getWorkflowsMessage.Content.ReadAsStringAsync());
+            queues = JsonConvert.DeserializeObject<List<Queue>>(await queueApiMesseage.Content.ReadAsStringAsync());
         }
     }
 }
