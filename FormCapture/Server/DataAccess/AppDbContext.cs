@@ -21,8 +21,6 @@ namespace FormCapture.Server.DataAccess
 
         public DbSet<FieldValue> FieldValues { get; set; }
 
-        public DbSet<Notification> Notifications { get; set; }
-
         public DbSet<ProcessedFile> ProcessedFiles { get; set; }
 
         public DbSet<Queue> Queue { get; set; }
@@ -48,7 +46,6 @@ namespace FormCapture.Server.DataAccess
 
             //Value conversion config
             builder.Entity<Queue>().Property(e => e.Status).HasConversion(i => i.ToString(), i => (QueueStatus)Enum.Parse(typeof(QueueStatus), i));
-            builder.Entity<Notification>().Property(e => e.NotificationType).HasConversion(i => i.ToString(), i => (NotificationType)Enum.Parse(typeof(NotificationType), i));
             builder.Entity<Queue>().Property(e => e.AppWorkflowTaskGroupID).HasConversion(i => i.ToString(), i => (TaskGroupID)Enum.Parse(typeof(TaskGroupID), i));
         }
     }
