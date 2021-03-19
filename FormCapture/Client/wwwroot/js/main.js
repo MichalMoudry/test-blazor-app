@@ -26,26 +26,26 @@ function uncheckCheckboxes(checkboxIdArray) {
 }
 
 async function recog(fields, images, lang, contentTypes) {
-    //fields["height"] = fields["height"] + "px";
-    //fields["width"] = fields["width"] + "px";
-    //fields["xposition"] = fields["xposition"] + "px";
-    //fields["yposition"] = fields["yposition"] + "px";
+    // Initialize variables
     const worker = createWorker();
     await worker.load();
     await worker.loadLanguage(lang);
     await worker.initialize(lang);
     var results = [];
 
+    // Iterate for each input image
     for (var i = 0; i < images.length; i++) {
         for (var x = 0; x < fields.length; x++) {
             const { data: { text } } = await worker.recognize("data:" + contentTypes[i] + ";base64," + images[i],
             {
                 rectangle: { top: fields[x]["xposition"], left: fields[x]["yposition"], width: fields[x]["width"], height: fields[x]["height"] }
             });
+            // Push recognition result to array in this format: [result]/[fieldID]/[fileIndex]
             results.push(text.replace(/\s/g, "") + "/" + fields[x]["id"] + "/" + i);
         }
     }
-    console.log(results);
+    
+    // Finish recognition and return results
     await worker.terminate();
     return results;
 }
