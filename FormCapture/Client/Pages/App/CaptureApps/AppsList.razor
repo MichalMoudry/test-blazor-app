@@ -43,18 +43,20 @@
                                 <td>Name</td>
                                 <td>Locale</td>
                                 <td>Added</td>
+                                <td>Edit</td>
                                 <td>Delete</td>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (CaptureApplication application in captureApplications)
                             {
-                                <tr @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">
-                                    <td>@application.Name</td>
-                                    <td>@application.Locale</td>
-                                    <td>@application.Added</td>
-                                    <td><span class="oi oi-trash"></span></td>
-                                </tr>
+                            <tr @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">
+                                <td>@application.Name</td>
+                                <td>@application.Locale</td>
+                                <td>@application.Added</td>
+                                <td><span class="oi oi-pencil"></span></td>
+                                <td><span class="oi oi-trash"></span></td>
+                            </tr>
                             }
                         </tbody>
                     </table>
