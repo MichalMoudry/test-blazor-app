@@ -31,8 +31,6 @@ namespace FormCapture.Server.DataAccess
 
         public DbSet<UserApps> UserApps { get; set; }
 
-        public DbSet<UserSetting> UserSettings { get; set; }
-
         public DbSet<Workflow> Workflows { get; set; }
 
         public DbSet<WorkflowTask> WorkflowTasks { get; set; }
