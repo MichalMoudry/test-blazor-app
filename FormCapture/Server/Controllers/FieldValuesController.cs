@@ -38,5 +38,23 @@ namespace FormCapture.Server.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPost("delete")]
+        public async Task<IActionResult> DeleteFieldValues([FromBody] List<FieldValue> fieldValues)
+        {
+            if (fieldValues == null || fieldValues.Count == 0)
+            {
+                return BadRequest();
+            }
+            var res = await _fieldValuesOperations.RemoveRangeOfFieldValues(fieldValues);
+            if (res)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }
