@@ -89,8 +89,8 @@
                         <div class="form-group">
                             <label for="lang-codes">Capture language:</label>
                             <select @bind="appLocale" class="form-control" id="lang-codes" name="lang-codes">
-                                <option value="en-US">en-US</option>
-                                <option value="cz-CS">cz-CS</option>
+                                <option value="eng">en-US</option>
+                                <option value="ces">cz-CS</option>
                             </select>
                         </div>
                     </div>
@@ -147,7 +147,7 @@
     {
         if (string.IsNullOrEmpty(appLocale))
         {
-            appLocale = "en-US";
+            appLocale = "eng";
         }
         if (!string.IsNullOrEmpty(appName) && !string.IsNullOrEmpty(appLocale))
         {
@@ -165,7 +165,7 @@
                 captureApplications.Add(captureApplication);
             }
             appName = string.Empty;
-            appLocale = "en-US";
+            appLocale = "eng";
         }
     }
 
