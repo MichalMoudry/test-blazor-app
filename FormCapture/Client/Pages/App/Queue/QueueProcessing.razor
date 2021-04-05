@@ -437,7 +437,7 @@
                 System.Text.Json.JsonElement recogResponse;
                 string[] recogResponseArray;
                 Field idField;
-                recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), "eng", processedFiles.Select(i => i.Type));
+                recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", idFields, processedFiles.Select(i => Convert.ToBase64String(i.Content)), captureApplication.Locale, processedFiles.Select(i => i.Type));
                 var recogResponseList = recogResponse.EnumerateArray().ToList();
                 foreach (var item in recogResponseList)
                 {
@@ -472,7 +472,7 @@
                 this.StateHasChanged();
                 foreach (var file in idedFiles)
                 {
-                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", nonIdFields[file.ID], new string[] { Convert.ToBase64String(file.Content) }, "eng", new string[] { file.Type });
+                    recogResponse = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recog", nonIdFields[file.ID], new string[] { Convert.ToBase64String(file.Content) }, captureApplication.Locale, new string[] { file.Type });
                     foreach (var item in recogResponse.EnumerateArray())
                     {
                         recogResponseArray = item.ToString().Split("/");
@@ -610,9 +610,14 @@
                 {
                     processedFiles = JsonConvert.DeserializeObject<List<ProcessedFile>>(await filesResponse.Content.ReadAsStringAsync());
                     queue = JsonConvert.DeserializeObject<Queue>(await queueResponse.Content.ReadAsStringAsync());
-                    scanTaskProgression["Obtaining files..."] = true;
-                    await ExecuteScanTasks();
-                    isContinueButtonHidden = false;
+                    var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", queue.AppID);
+                    if (getAppMessage.IsSuccessStatusCode)
+                    {
+                        captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
+                        scanTaskProgression["Obtaining files..."] = true;
+                        await ExecuteScanTasks();
+                        isContinueButtonHidden = false;
+                    }
                 }
             }
         }

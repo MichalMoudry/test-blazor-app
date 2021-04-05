@@ -25,6 +25,49 @@ function uncheckCheckboxes(checkboxIdArray) {
     }
 }
 
+async function recogSingleField(field, image, lang, contentType) {
+    // Initialize variables
+    const worker = createWorker();
+    await worker.load();
+    await worker.loadLanguage(lang);
+    await worker.initialize(lang);
+    var results = [];
+
+    // Iterate for each input image
+    const {
+        data: { text }
+    } = await worker.recognize("data:" + contentType + ";base64," + image,
+    {
+        rectangle: {
+            top: field["xposition"],
+            left: field["yposition"],
+            width: field["width"],
+            height: field["height"]
+        }
+    });
+    // Push recognition result to array in this format:
+    // [result] / [fieldID]
+    results.push(text.replace(/\s/g, "") + "/" + field["id"]);
+
+    // Finish recognition and return results
+    await worker.terminate();
+    return results;
+}
+
+function displayTemplateTestResult(recognizedValue, expectedValue) {
+    if (expectedValue == null || expectedValue == "") {
+        expectedValue = "none";
+    }
+    var message = "Identifying field test:\n\n" + "Recognized value: " + recognizedValue + "\n" + "Expected value: " + expectedValue + "\n\n" + "Are files going to be identified? ";
+    if (expectedValue == recognizedValue) {
+        message += "Yes";
+    }
+    else {
+        message += "No";
+    }
+    alert(message);
+}
+
 async function recog(fields, images, lang, contentTypes) {
     // Initialize variables
     const worker = createWorker();
@@ -94,7 +137,6 @@ function drawFields(fields, targetID) {
             fieldRectangle.style.width = width;
             fieldRectangle.style.height = height;
 
-            console.log(xposition + " - " + yposition + " - " + width + " - " + height);
             canvas.appendChild(fieldRectangle);
         }
     }

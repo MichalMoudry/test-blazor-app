@@ -39,33 +39,6 @@
                         </div>
 
                         <div class="card-body" id="queue-list-container">
-                            @if (queues != null && appWorkflows != null)
-                            {
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <td><b>Workflow ID</b></td>
-                                                <td><b>Status</b></td>
-                                                <td><b>Added</b></td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var queue in queues.Where(i => i.Status.Equals(QueueStatus.Finished)).TakeLast(5))
-                                            {
-                                                <tr>
-                                                    @if (appWorkflows != null)
-                                                    {
-                                                        <td>@appWorkflows.SingleOrDefault(i => i.WorkflowID.Equals(queue.WorkflowID)).WorkflowName</td>
-                                                    }
-                                                    <td>@queue.Status</td>
-                                                    <td>@queue.Added</td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
                         </div>
 
                         <div class="card-footer">

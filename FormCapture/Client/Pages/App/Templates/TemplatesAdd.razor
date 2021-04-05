@@ -89,25 +89,27 @@
                         </div>
 
                         <div class="card-body">
-                            @if (identifyingField != null)
-                            {
-                                <div class="field-list-item">
-                                    <p>@identifyingField.Name</p>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="field-list-item">
-                                    <p>Select a identifying field</p>
-                                </div>
-                            }
+                            <div class="col">
+                                @if (identifyingField != null)
+                                {
+                                    <div class="field-list-item">
+                                        <p class="mt-3 ml-3">@identifyingField.Name</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="field-list-item">
+                                        <p class="mt-3 ml-3">Select a identifying field</p>
+                                    </div>
+                                }
+                            </div>
                             <div>
-                                <div class="col">
+                                <div class="col mt-2">
                                     <input @bind="expectedValue" name="expected-value" id="expected-value" type="text" placeholder="Enter field's expected value..." class="form-control" />
                                 </div>
 
-                                <div class="col">
-                                    <button class="btn btn-warning"><span class="oi oi-beaker"></span> Test ID field</button>
+                                <div class="col mt-2">
+                                    <button class="btn btn-warning" disabled="@isTestButtonDisabled" @onclick="TestIdFieldRecognition"><span class="oi oi-beaker"></span> Test ID field</button>
                                 </div>
                             </div>
                         </div>
@@ -142,10 +144,23 @@
 
             private Field identifyingField;
 
+            private bool isTestButtonDisabled = false;
+
             private async Task TestIdFieldRecognition()
             {
-                var response = await IJSRuntime.InvokeAsync<object>("recog", identifyingField, Convert.ToBase64String(template.Image), captureApplication.Locale, contentType);
-                Console.WriteLine(response);
+                if (identifyingField != null)
+                {
+                    isTestButtonDisabled = true;
+                    var fieldProperties = await IJSRuntime.InvokeAsync<string>("getFieldProperties", identifyingField.ID);
+                    var fieldPropertiesSplit = fieldProperties.Split(",");
+                    identifyingField.Width = Convert.ToInt32(fieldPropertiesSplit[0]);
+                    identifyingField.Height = Convert.ToInt32(fieldPropertiesSplit[1]);
+                    identifyingField.Xposition = Convert.ToInt32(fieldPropertiesSplit[2]);
+                    identifyingField.Yposition = Convert.ToInt32(fieldPropertiesSplit[3]);
+                    var response = await IJSRuntime.InvokeAsync<System.Text.Json.JsonElement>("recogSingleField", identifyingField, Convert.ToBase64String(template.Image), captureApplication.Locale, contentType);
+                    await IJSRuntime.InvokeVoidAsync("displayTemplateTestResult", response.EnumerateArray().FirstOrDefault().GetString().Split("/")[0], expectedValue);
+                    isTestButtonDisabled = false;
+                }
             }
 
             private async Task FileSelected(InputFileChangeEventArgs e)
