@@ -1,6 +1,7 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
 @page "/formcapture/apps/{appID}/addworkflow"
 
 <AuthorizeView Roles="Admin, Workflow admin">
@@ -41,6 +42,17 @@
             <button type="button" class="btn btn-success" @onclick="Submit"><span class="oi oi-check"></span> Confirm</button>
         </div>
 
+        <div class="toast-area">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="workflow-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>At least one workflow must be selected.</p>
+                <button type="button" class="close" onclick="closeAlert('workflow-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
         @code
         {
             [Parameter]
@@ -76,23 +88,31 @@
             {
                 if (appWorkflows.Count > 0)
                 {
-                    HttpResponseMessage addResponseMessage = await HttpClient.PostAsJsonAsync("api/captureappworkflows/add", appWorkflows);
+                    var addResponseMessage = await HttpClient.PostAsJsonAsync("api/captureappworkflows/add", appWorkflows);
                     if (addResponseMessage.IsSuccessStatusCode)
                     {
                         NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
                     }
+                }
+                else
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "workflow-error-toast");
                 }
             }
 
             protected override async Task OnInitializedAsync()
             {
                 HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
-                HttpResponseMessage httpResponseMessage = await HttpClient.PostAsJsonAsync("/api/captureApps/get", AppID);
-                HttpResponseMessage workflowsResponseMessage = await HttpClient.PostAsJsonAsync("api/workflows/", ClaimsHelper.Instance().GetEmailClaim().Value);
+                var httpResponseMessage = await HttpClient.PostAsJsonAsync("/api/captureApps/get", AppID);
+                var workflowsResponseMessage = await HttpClient.PostAsJsonAsync("api/workflows/", ClaimsHelper.Instance().GetEmailClaim().Value);
                 if (httpResponseMessage.IsSuccessStatusCode && workflowsResponseMessage.IsSuccessStatusCode)
                 {
                     application = JsonConvert.DeserializeObject<CaptureApplication>(await httpResponseMessage.Content.ReadAsStringAsync());
                     workflows = JsonConvert.DeserializeObject<List<Workflow>>(await workflowsResponseMessage.Content.ReadAsStringAsync());
+                }
+                else
+                {
+                    NavigationManager.NavigateTo("/");
                 }
             }
         }

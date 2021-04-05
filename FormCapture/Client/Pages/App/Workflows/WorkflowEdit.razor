@@ -194,6 +194,17 @@
             <button type="button" class="btn btn-success" @onclick="Submit"><span class="oi oi-check"></span> Edit</button>
         </div>
 
+        <div class="toast-area">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="workflow-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>A workflow must have a name.</p>
+                <button type="button" class="close" onclick="closeAlert('workflow-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
         @code {
             [Parameter]
             public string WorkflowID { get; set; }
@@ -272,6 +283,10 @@
                         NavigationManager.NavigateTo("/formcapture/workflows");
                     }
                 }
+                else
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "workflow-error-toast");
+                }
             }
 
             protected override async Task OnInitializedAsync()
@@ -290,6 +305,10 @@
                     groupings.Add("verification", groupingsList.Where(i => i.TaskGroupName.Equals("verification")).OrderBy(i => i.ExecutionOrderNumber).ToList());
                     groupings.Add("export", groupingsList.Where(i => i.TaskGroupName.Equals("export")).OrderBy(i => i.ExecutionOrderNumber).ToList());
                     tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await tasksApiResponse.Content.ReadAsStringAsync());
+                }
+                else if (tasksApiResponse.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized) || workflowApiResponse.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized) || workflowTaskGroupingApiResponse.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+                {
+                    NavigationManager.NavigateTo("/");
                 }
             }
         }

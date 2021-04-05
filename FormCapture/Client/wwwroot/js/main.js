@@ -193,3 +193,17 @@ function drawField(fieldID) {
         }
     }
 }
+
+function displayToast(toastID) {
+    document.getElementById(toastID).classList.remove("d-none");
+    $("#" + toastID).show();
+}
+
+function confirmDialog(message) {
+    var res = confirm(message);
+    return res;
+}
+
+function closeAlert(alertID) {
+    $("#" + alertID).hide();
+}

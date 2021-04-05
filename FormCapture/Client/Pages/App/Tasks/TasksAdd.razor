@@ -40,6 +40,17 @@
             </div>
         </div>
 
+        <div class="toast-area">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="task-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>Form for adding tasks contained an error or required fields are empty.</p>
+                <button type="button" class="close" onclick="closeAlert('task-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
         @code
         {
             private WorkflowTask workflowTask = new WorkflowTask() { ID = Guid.NewGuid().ToString() };
@@ -62,6 +73,14 @@
                     {
                         NavigationManager.NavigateTo("/formcapture/tasks");
                     }
+                    else if (responseMessage.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+                    {
+                        NavigationManager.NavigateTo("/");
+                    }
+                }
+                else
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "task-error-toast");
                 }
             }
 

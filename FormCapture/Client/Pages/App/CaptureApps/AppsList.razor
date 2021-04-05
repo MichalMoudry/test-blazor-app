@@ -1,6 +1,7 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
 @page "/formcapture/apps"
 
 <h3><span class="oi oi-aperture mr-1"></span> Apps</h3>
@@ -32,20 +33,18 @@
                                 <td>Name</td>
                                 <td>Locale</td>
                                 <td>Added</td>
-                                <td>Edit</td>
                                 <td>Delete</td>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (CaptureApplication application in captureApplications)
                             {
-                            <tr @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">
-                                <td>@application.Name</td>
-                                <td>@application.Locale</td>
-                                <td>@application.Added</td>
-                                <td><span class="oi oi-pencil"></span></td>
-                                <td><span class="oi oi-trash"></span></td>
-                            </tr>
+                                <tr>
+                                    <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Name</td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Locale</td>
+                                    <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Added</td>
+                                    <td @onclick="@(e => DeleteApp(application))"><span class="oi oi-trash"></span></td>
+                                </tr>
                             }
                         </tbody>
                     </table>
@@ -99,6 +98,34 @@
 <!--Block for apps that user is part of-->
 <div>
     <h4><span class="oi oi-chevron-bottom"></span> Apps that you are part of</h4>
+</div>
+
+<div class="toast-area">
+    <div class="alert alert-success alert-dismissible fade show d-none" id="app-added-toast" role="alert">
+        <strong class="mr-auto">Capture application added</strong>
+        <hr />
+        <p>Capture application has been successfully added.</p>
+        <button type="button" class="close" onclick="closeAlert('app-added-toast');" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="alert alert-info alert-dismissible fade show d-none" id="app-deleted-toast" role="alert">
+        <strong class="mr-auto">Capture application deleted</strong>
+        <p>Capture application has been successfully deleted.</p>
+        <button type="button" class="close" onclick="closeAlert('app-deleted-toast');" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div class="alert alert-danger alert-dismissible fade show d-none" id="app-error-toast" role="alert">
+        <strong class="mr-auto">Form error</strong>
+        <hr />
+        <p>Form for adding apps contained an error.</p>
+        <button type="button" class="close" onclick="closeAlert('app-error-toast');" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 </div>
 
 @code
@@ -155,7 +182,23 @@
             }
             appName = string.Empty;
             appLocale = "eng";
+            await IJSRuntime.InvokeVoidAsync("displayToast", "app-added-toast");
         }
+        else
+        {
+            await IJSRuntime.InvokeVoidAsync("displayToast", "app-error-toast");
+        }
+    }
+
+    private async Task DeleteApp(CaptureApplication application)
+    {
+        var res = await IJSRuntime.InvokeAsync<bool>("confirmDialog", $"Do you want to delete '{application.Name}' app?");
+        if (res)
+        {
+            captureApplications.Remove(application);
+            await IJSRuntime.InvokeVoidAsync("displayToast", "app-deleted-toast");
+        }
+        //TODO: Přidat volání pro mazání
     }
 
     /// <summary>

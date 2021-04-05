@@ -167,6 +167,17 @@
             <button type="button" class="btn btn-success" @onclick="Submit"><span class="oi oi-check"></span> Confirm</button>
         </div>
 
+        <div class="toast-area">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="workflow-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>A workflow must have a name.</p>
+                <button type="button" class="close" onclick="closeAlert('workflow-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
         @code
         {
             /// <summary>
@@ -241,6 +252,10 @@
                         NavigationManager.NavigateTo("/formcapture/workflows");
                     }
                 }
+                else
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "workflow-error-toast");
+                }
             }
 
             protected override async Task OnInitializedAsync()
@@ -255,6 +270,10 @@
                 if (responseMessage.IsSuccessStatusCode)
                 {
                     tasks = JsonConvert.DeserializeObject<List<WorkflowTask>>(await responseMessage.Content.ReadAsStringAsync());
+                }
+                else if (responseMessage.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+                {
+                    NavigationManager.NavigateTo("/");
                 }
             }
         }

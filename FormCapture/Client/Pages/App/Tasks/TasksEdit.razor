@@ -53,6 +53,17 @@
             </div>
         </div>
 
+        <div class="toast-area">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="task-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>Form for adding apps contained an error.</p>
+                <button type="button" class="close" onclick="closeAlert('task-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
         @code
         {
             [Parameter]
@@ -69,7 +80,7 @@
             {
                 if (workflowTask != null)
                 {
-                    if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.Name))
+                    if (!string.IsNullOrEmpty(taskContent) && !string.IsNullOrEmpty(workflowTask.Name) && !string.IsNullOrEmpty(workflowTask.Description))
                     {
                         workflowTask.Content = System.Text.Encoding.UTF8.GetBytes(taskContent);
                         workflowTask.Updated = DateTime.Now;
@@ -79,6 +90,14 @@
                             NavigationManager.NavigateTo("/formcapture/tasks");
                         }
                     }
+                    else
+                    {
+                        await IJSRuntime.InvokeVoidAsync("displayToast", "task-error-toast");
+                    }
+                }
+                else
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "task-error-toast");
                 }
             }
 
@@ -95,6 +114,10 @@
                 {
                     workflowTask = JsonConvert.DeserializeObject<WorkflowTask>(await taskApiResponse.Content.ReadAsStringAsync());
                     taskContent = System.Text.Encoding.UTF8.GetString(workflowTask.Content);
+                }
+                else if (taskApiResponse.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+                {
+                    NavigationManager.NavigateTo("/");
                 }
             }
         }

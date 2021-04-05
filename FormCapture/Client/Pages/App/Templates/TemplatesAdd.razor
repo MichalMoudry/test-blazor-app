@@ -125,6 +125,53 @@
             </button>
         </div>
 
+        <div class="toast-area">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="template-name-error-toast" role="alert">
+                <strong class="mr-auto">Template name error</strong>
+                <hr />
+                <p>A template must have a name.</p>
+                <button type="button" class="close" onclick="closeAlert('template-name-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="fields-error-toast" role="alert">
+                <strong class="mr-auto">Fields error</strong>
+                <hr />
+                <p>Entered fields contain an error or are missing.</p>
+                <button type="button" class="close" onclick="closeAlert('fields-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="image-error-toast" role="alert">
+                <strong class="mr-auto">Image error</strong>
+                <hr />
+                <p>A template image must be uploaded.</p>
+                <button type="button" class="close" onclick="closeAlert('image-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="id-error-toast" role="alert">
+                <strong class="mr-auto">Identifying field error</strong>
+                <hr />
+                <p>An identifying field must be selected.</p>
+                <button type="button" class="close" onclick="closeAlert('id-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="val-error-toast" role="alert">
+                <strong class="mr-auto">Expected value error</strong>
+                <hr />
+                <p>An expected value must be set.</p>
+                <button type="button" class="close" onclick="closeAlert('val-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
         @code
         {
             [Parameter]
@@ -194,6 +241,11 @@
                     string[] fieldPropertiesSplit;
                     foreach (var field in fields)
                     {
+                        if (field.Name.Length <= 0)
+                        {
+                            await IJSRuntime.InvokeVoidAsync("displayToast", "fields-error-toast");
+                            return;
+                        }
                         fieldProperties = await IJSRuntime.InvokeAsync<string>("getFieldProperties", field.ID);
                         fieldPropertiesSplit = fieldProperties.Split(",");
                         field.Width = Convert.ToInt32(fieldPropertiesSplit[0]);
@@ -207,10 +259,26 @@
                     {
                         NavigationManager.NavigateTo($"/formcapture/apps/{ApplicationID}");
                     }
-                    else
-                    {
-                        //TODO: Add notification display
-                    }
+                }
+                else if (fields.Count <= 0)
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "fields-error-toast");
+                }
+                else if (string.IsNullOrEmpty(template.Name))
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "template-name-error-toast");
+                }
+                else if (template.Image == null)
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "image-error-toast");
+                }
+                else if (identifyingField == null)
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "id-error-toast");
+                }
+                else if (string.IsNullOrEmpty(expectedValue))
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "val-error-toast");
                 }
             }
 
