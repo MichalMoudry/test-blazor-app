@@ -1,10 +1,76 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
 @page "/formcapture/profile"
 
-<h3>Profile</h3>
+<AuthorizeView>
+    <Authorized>
+        <h3><span class="oi oi-person"></span> Profile</h3>
 
-@code {
+        <hr />
 
-}
+        <h4>@ClaimsHelper.Instance().GetEmailClaim().Value</h4>
+
+        <div class="form-group">
+            <label for="new-password-input"><b>New password</b>:</label>
+            <input type="password" name="new-password-input" id="new-password-input" @bind-value="profileModel.NewPassword" class="form-control" placeholder="Enter new password..." />
+        </div>
+
+        <div class="form-group">
+            <button @onclick="Confirm" class="btn btn-success"><span class="oi oi-check"></span> Confirm password update</button>
+        </div>
+
+        <div class="toast-area mt-2">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="password-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>Form for updating password contained an error.</p>
+                <button type="button" class="close" onclick="closeAlert('password-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
+        @code {
+            private ProfileModel profileModel = new ProfileModel() { Email = ClaimsHelper.Instance().GetEmailClaim().Value };
+
+            private void Navigate(string page)
+            {
+                NavigationManager.NavigateTo(page);
+            }
+
+            private async Task Confirm()
+            {
+                if (!string.IsNullOrEmpty(profileModel.Email) && !string.IsNullOrEmpty(profileModel.NewPassword))
+                {
+                    var res = await HttpClient.PutAsJsonAsync("api/users/newpassword", profileModel);
+                    if (res.IsSuccessStatusCode)
+                    {
+                        Navigate("/logout");
+                    }
+                    else if (res.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+                    {
+                        NavigationManager.NavigateTo("/");
+                    }
+                    else
+                    {
+                        await IJSRuntime.InvokeVoidAsync("displayToast", "password-error-toast");
+                    }
+                }
+                else
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "password-error-toast");
+                }
+            }
+
+            protected override void OnInitialized()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        <h3>You are not authorized to be here.</h3>
+    </NotAuthorized>
+</AuthorizeView>

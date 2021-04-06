@@ -79,5 +79,29 @@ namespace FormCapture.Server.Controllers
             JwtSecurityToken token = new JwtSecurityToken(_configuration["Issuer"], _configuration["Audience"], claims, expires: DateTime.Now.AddDays(1), signingCredentials: credentials);
             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
+
+        [HttpPut("newpassword")]
+        public async Task<IActionResult> UpdatePassword([FromBody] ProfileModel profileModel)
+        {
+            if (profileModel == null)
+            {
+                return BadRequest();
+            }
+            IdentityUser usr = await _userManager.FindByEmailAsync(profileModel.Email);
+            if (usr == null)
+            {
+                return BadRequest("No user was found.");
+            }
+            var token = await _userManager.GeneratePasswordResetTokenAsync(usr);
+            var res = await _userManager.ResetPasswordAsync(usr, token, profileModel.NewPassword);
+            if (res.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }
