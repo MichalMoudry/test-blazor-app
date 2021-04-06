@@ -1,8 +1,8 @@
-﻿using System;
+﻿using FormCapture.Shared.DbModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FormCapture.Shared.DbModels;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -14,13 +14,6 @@ namespace FormCapture.Server.DataAccess
         {
             _dataContext = dataContext;
         }
-
-        /// <summary>
-        /// Method for obtaining list of files in a specific batch.
-        /// </summary>
-        /// <param name="queueID">ID of the batch.</param>
-        /// <returns>List of files in a specific batch.</returns>
-        public List<ProcessedFile> GetQueueFiles(string queueID) => _dataContext.ProcessedFiles.Where(i => i.QueueID.Equals(queueID)).ToList();
 
         /// <summary>
         /// Method for adding a new entry to db table with processed files.
@@ -65,5 +58,12 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        /// <summary>
+        /// Method for obtaining list of files in a specific batch.
+        /// </summary>
+        /// <param name="queueID">ID of the batch.</param>
+        /// <returns>List of files in a specific batch.</returns>
+        public List<ProcessedFile> GetQueueFiles(string queueID) => _dataContext.ProcessedFiles.Where(i => i.QueueID.Equals(queueID)).ToList();
     }
 }

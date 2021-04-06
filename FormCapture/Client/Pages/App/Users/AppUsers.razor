@@ -1,0 +1,121 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
+@page "/formcapture/apps/{appid}/users"
+
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        @if (captureApplication != null)
+        {
+            <h3>Users that are port of '@captureApplication.Name' app</h3>
+        }
+        else
+        {
+            <h3>Loading...</h3>
+        }
+
+        <hr />
+
+        @if (userApps != null)
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <td>User name</td>
+                            <td>Added to app</td>
+                            <td>Delete association</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userApp in userApps)
+                        {
+                            <tr>
+                                <td>@userApp.UserID</td>
+                                <td>@userApp.Added</td>
+                                <td @onclick="@(e => DeleteUser(userApp))"><span class="oi oi-trash"></span></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <button @onclick="Confirm" class="btn btn-success mt-2"><span class="oi oi-check"></span> Confirm</button>
+
+        <div class="toast-area mt-4">
+            <div class="alert alert-info alert-dismissible fade show d-none" id="user-deleted-toast" role="alert">
+                <strong class="mr-auto">User deleted</strong>
+                <hr />
+                <p>User or users has been successfully deleted.</p>
+                <button type="button" class="close" onclick="closeAlert('user-deleted-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="user-error-toast" role="alert">
+                <strong class="mr-auto">User deletion error</strong>
+                <hr />
+                <p>No user has been selected for deletion.</p>
+                <button type="button" class="close" onclick="closeAlert('user-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
+        @code
+        {
+            [Parameter]
+            public string AppID { get; set; }
+
+            private CaptureApplication captureApplication;
+
+            private List<UserApps> userApps;
+
+            private List<UserApps> userAppsToDelete = new List<UserApps>();
+
+            private void DeleteUser(UserApps userApp)
+            {
+                userApps.Remove(userApp);
+                userAppsToDelete.Add(userApp);
+            }
+
+            private async Task Confirm()
+            {
+                if (userAppsToDelete.Count > 0)
+                {
+                    var addUserAppsApiResponse = await HttpClient.PostAsJsonAsync("api/userapps/delete", userAppsToDelete);
+                    if (addUserAppsApiResponse.IsSuccessStatusCode)
+                    {
+                        await IJSRuntime.InvokeVoidAsync("displayToast", "user-deleted-toast");
+                    }
+                }
+                else
+                {
+                    await IJSRuntime.InvokeVoidAsync("displayToast", "user-error-toast");
+                }
+            }
+
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
+                var getAppUsersIdsResponse = await HttpClient.GetAsync($"api/userapps/{AppID}");
+                if (getAppMessage.IsSuccessStatusCode && getAppUsersIdsResponse.IsSuccessStatusCode)
+                {
+                    captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
+                    userApps = JsonConvert.DeserializeObject<List<UserApps>>(await getAppUsersIdsResponse.Content.ReadAsStringAsync());
+                }
+                else if (getAppMessage.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+                {
+                    NavigationManager.NavigateTo("/");
+                }
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>

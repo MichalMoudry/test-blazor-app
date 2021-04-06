@@ -1,8 +1,8 @@
-﻿using System;
+﻿using FormCapture.Shared.DbModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FormCapture.Shared.DbModels;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -14,20 +14,6 @@ namespace FormCapture.Server.DataAccess
         {
             _dataContext = dataContext;
         }
-
-        /// <summary>
-        /// Method for obtaining list app's queues.
-        /// </summary>
-        /// <param name="appID">ID of the specific queue.</param>
-        /// <returns>List app's queues.</returns>
-        public List<Queue> GetAppsQueues(string appID) => _dataContext.Queue.Where(i => i.AppID.Equals(appID)).ToList();
-
-        /// <summary>
-        /// Method for obtaining a specific queue.
-        /// </summary>
-        /// <param name="queueID">ID of the specific queue.</param>
-        /// <returns>A specific queue.</returns>
-        public Queue GetQueue(string queueID) => _dataContext.Queue.SingleOrDefault(i => i.ID.Equals(queueID));
 
         /// <summary>
         /// Method for add a new entry to db table with queues.
@@ -93,5 +79,19 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        /// <summary>
+        /// Method for obtaining list app's queues.
+        /// </summary>
+        /// <param name="appID">ID of the specific queue.</param>
+        /// <returns>List app's queues.</returns>
+        public List<Queue> GetAppsQueues(string appID) => _dataContext.Queue.Where(i => i.AppID.Equals(appID)).ToList();
+
+        /// <summary>
+        /// Method for obtaining a specific queue.
+        /// </summary>
+        /// <param name="queueID">ID of the specific queue.</param>
+        /// <returns>A specific queue.</returns>
+        public Queue GetQueue(string queueID) => _dataContext.Queue.SingleOrDefault(i => i.ID.Equals(queueID));
     }
 }

@@ -43,7 +43,7 @@
 
                         <div class="card-footer">
                             <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/startqueue"))">
-                                <span class="oi oi-play-circle"></span> Start a new queue
+                                <span class="oi oi-play-circle mr-2"></span> Start a new queue
                             </button>
                         </div>
                     </div>
@@ -84,7 +84,7 @@
 
                         <div class="card-footer">
                             <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/addtemplate"))">
-                                <span class="oi oi-plus"></span> Add a template
+                                <span class="oi oi-plus mr-2"></span> Add a template
                             </button>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
 
                         <div class="card-footer">
                             <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/addworkflow"))">
-                                <span class="oi oi-plus"></span> Associate a workflow
+                                <span class="oi oi-plus mr-2"></span> Associate a workflow
                             </button>
                         </div>
                     </div>
@@ -135,6 +135,15 @@
                     <div class="card m-1">
                         <div class="card-header">
                             <h4><span class="oi oi-people"></span> Users</h4>
+                        </div>
+                        <div class="card-body" id="app-details-users-body">
+                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/add/users"))">
+                                <span class="oi oi-plus mr-2"></span> Add users
+                            </button>
+
+                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/users"))">
+                                <span class="mr-2">View users</span> <span class="oi oi-chevron-right"></span>
+                            </button>
                         </div>
                     </div>
                 </div>

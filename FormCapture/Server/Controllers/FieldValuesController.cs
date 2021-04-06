@@ -1,11 +1,9 @@
-﻿using System;
+﻿using FormCapture.Server.DataAccess;
+using FormCapture.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using FormCapture.Server.DataAccess;
-using Microsoft.AspNetCore.Mvc;
-using FormCapture.Shared.DbModels;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {

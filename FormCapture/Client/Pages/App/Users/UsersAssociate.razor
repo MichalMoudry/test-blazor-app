@@ -1,5 +1,140 @@
-﻿<h3>UsersAssociate</h3>
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
+@page "/formcapture/apps/{appid}/add/users"
 
-@code {
+<AuthorizeView Roles="Admin, Workflow admin">
+    <Authorized>
+        @if (captureApplication == null)
+        {
+            <h3>Loading...</h3>
+        }
+        else
+        {
+            <h3>Add user to '@captureApplication.Name' app</h3>
+        }
 
-}
+        <hr />
+
+        @if (userApps != null)
+        {
+            @foreach (var userApp in userApps)
+            {
+                <div class="form-group">
+                    <label for="@userApp.ID-user-name"><b>User name</b>:</label>
+                    <input type="text" name="user-name" id="@userApp.ID-user-name" @bind-value="userApp.UserID" placeholder="Enter a user's name..." class="form-control" />
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <button class="btn btn-primary mt-2" @onclick="AddNewUserApp">
+                                <span class="oi oi-plus mr-2"></span> Add new
+                            </button>
+                        </div>
+                        @if (!userApp.Equals(userApps.FirstOrDefault()))
+                        {
+                            <div class="col-sm">
+                                <button class="btn btn-danger mt-2" @onclick="@(e => RemoveUserApp(userApp))">
+                                    <span class="oi oi-minus mr-2"></span> Remove
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
+
+        <button @onclick="Confirm" class="btn btn-success mt-2"><span class="oi oi-check"></span> Confirm</button>
+
+        <div class="toast-area mt-4">
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="form-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>One or more fields in the form are empty.</p>
+                <button type="button" class="close" onclick="closeAlert('form-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="duplicate-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>One or more fields in the form contain a duplicate.</p>
+                <button type="button" class="close" onclick="closeAlert('duplicate-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+
+        @code {
+            [Parameter]
+            public string AppID { get; set; }
+
+            private CaptureApplication captureApplication;
+
+            private List<UserApps> userApps = new List<UserApps>();
+
+            private void AddNewUserApp()
+            {
+                userApps.Add(new UserApps() { ID = Guid.NewGuid().ToString(), ApplicationID = AppID, ApplicationName = captureApplication.Name, Added = DateTime.Now, Updated = DateTime.Now });
+            }
+
+            private void RemoveUserApp(UserApps userApp)
+            {
+                userApps.Remove(userApp);
+            }
+
+            private async Task Confirm()
+            {
+                if (userApps.Count > 0)
+                {
+                    foreach (var app in userApps)
+                    {
+                        if (string.IsNullOrEmpty(app.UserID))
+                        {
+                            await IJSRuntime.InvokeVoidAsync("displayToast", "form-error-toast");
+                            return;
+                        }
+                        else if (userApps.Any(i => i.UserID.Equals(app.UserID)))
+                        {
+                            await IJSRuntime.InvokeVoidAsync("displayToast", "duplicate-error-toast");
+                            return;
+                        }
+                    }
+                }
+                var addUserAppsApiResponse = await HttpClient.PostAsJsonAsync("api/userapps/add", userApps);
+                if (addUserAppsApiResponse.IsSuccessStatusCode)
+                {
+                    NavigationManager.NavigateTo($"/formcapture/apps/{AppID}");
+                }
+            }
+
+            protected override async Task OnInitializedAsync()
+            {
+                HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+                var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
+                if (getAppMessage.IsSuccessStatusCode)
+                {
+                    captureApplication = JsonConvert.DeserializeObject<CaptureApplication>
+                        (await getAppMessage.Content.ReadAsStringAsync());
+                    userApps.Add(new UserApps() { ID = Guid.NewGuid().ToString(), ApplicationID = AppID, ApplicationName = captureApplication.Name, Added = DateTime.Now, Updated = DateTime.Now });
+                }
+                else if (getAppMessage.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+                {
+                    NavigationManager.NavigateTo("/");
+                }
+            }
+        }
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using FormCapture.Server.DataAccess;
 using FormCapture.Shared.DbModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
-    [Authorize(Roles = "Admin, Workflow admin")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CaptureAppsController : ControllerBase
@@ -45,31 +44,6 @@ namespace FormCapture.Server.Controllers
         }
 
         /// <summary>
-        /// Method for obtaining list of user's apps.
-        /// </summary>
-        /// <param name="userID">ID of a user.</param>
-        /// <returns>List of user's apps (in JSON format) or 400 status code.</returns>
-        [HttpPost("")]
-        public IActionResult GetUsersApps([FromBody] string userID)
-        {
-            if (string.IsNullOrEmpty(userID))
-            {
-                return BadRequest();
-            }
-            List<CaptureApplication> captureApplications = _captureApplicationsOps.GetUsersCaptureApplications(userID)
-                .OrderBy(i => i.Added)
-                .ToList();
-            if (captureApplications != null)
-            {
-                return Ok(captureApplications);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        /// <summary>
         /// Method for deleting a capture app.
         /// </summary>
         /// <param name="app">A capture app.</param>
@@ -82,6 +56,29 @@ namespace FormCapture.Server.Controllers
                 return BadRequest();
             }
             bool res = await _captureApplicationsOps.DeleteApp(app);
+            if (res)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Method for handling of app editing.
+        /// </summary>
+        /// <param name="app">Instance of the CaptureApplication class with new data.</param>
+        /// <returns>200 or 400 status code.</returns>
+        [HttpPost("Edit")]
+        public async Task<IActionResult> EditApp([FromBody] CaptureApplication app)
+        {
+            if (app == null)
+            {
+                return BadRequest();
+            }
+            bool res = await _captureApplicationsOps.EditApplication(app);
             if (res)
             {
                 return Ok();
@@ -116,21 +113,23 @@ namespace FormCapture.Server.Controllers
         }
 
         /// <summary>
-        /// Method for handling of app editing.
+        /// Method for obtaining list of user's apps.
         /// </summary>
-        /// <param name="app">Instance of the CaptureApplication class with new data.</param>
-        /// <returns>200 or 400 status code.</returns>
-        [HttpPost("Edit")]
-        public async Task<IActionResult> EditApp([FromBody] CaptureApplication app)
+        /// <param name="userID">ID of a user.</param>
+        /// <returns>List of user's apps (in JSON format) or 400 status code.</returns>
+        [HttpPost("")]
+        public IActionResult GetUsersApps([FromBody] string userID)
         {
-            if (app == null)
+            if (string.IsNullOrEmpty(userID))
             {
                 return BadRequest();
             }
-            bool res = await _captureApplicationsOps.EditApplication(app);
-            if (res)
+            List<CaptureApplication> captureApplications = _captureApplicationsOps.GetUsersCaptureApplications(userID)
+                .OrderBy(i => i.Added)
+                .ToList();
+            if (captureApplications != null)
             {
-                return Ok();
+                return Ok(captureApplications);
             }
             else
             {

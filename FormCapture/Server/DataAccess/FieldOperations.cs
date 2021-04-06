@@ -1,8 +1,8 @@
-﻿using System;
+﻿using FormCapture.Shared.DbModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FormCapture.Shared.DbModels;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -15,7 +15,19 @@ namespace FormCapture.Server.DataAccess
             _appDbContext = appDbContext;
         }
 
-        public List<Field> GetTemplateFields(string templateID) => _appDbContext.Fields.Where(i => i.TemplateID.Equals(templateID)).ToList();
+        public async Task<bool> AddFields(List<Field> fields)
+        {
+            try
+            {
+                _appDbContext.AddRange(fields);
+                await _appDbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
 
         public List<Field> GetIdentifyingFields(List<Template> templates)
         {
@@ -41,19 +53,7 @@ namespace FormCapture.Server.DataAccess
             return res;
         }
 
-        public async Task<bool> AddFields(List<Field> fields)
-        {
-            try
-            {
-                _appDbContext.AddRange(fields);
-                await _appDbContext.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+        public List<Field> GetTemplateFields(string templateID) => _appDbContext.Fields.Where(i => i.TemplateID.Equals(templateID)).ToList();
 
         public async Task<bool> RemoveFields(List<Field> fields)
         {

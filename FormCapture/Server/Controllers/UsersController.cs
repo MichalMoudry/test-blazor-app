@@ -1,14 +1,14 @@
-﻿using System;
+﻿using FormCapture.Shared;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using FormCapture.Shared;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 
 namespace FormCapture.Server.Controllers
 {
@@ -16,37 +16,15 @@ namespace FormCapture.Server.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-
         private readonly IConfiguration _configuration;
-
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager;
 
         public UsersController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager)
         {
             _userManager = userManager;
             _configuration = configuration;
             _signInManager = signInManager;
-        }
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegistrationModel registration)
-        {
-            if (registration == null || string.IsNullOrEmpty(registration.Password) || string.IsNullOrEmpty(registration.Email) || string.IsNullOrEmpty(registration.ConfirmationPassword))
-            {
-                return BadRequest();
-            }
-            IdentityUser user = new IdentityUser() { Email = registration.Email, UserName = registration.Email };
-            IdentityResult res = await _userManager.CreateAsync(user, registration.Password);
-            if (res.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(user, registration.Role);
-                return Ok();
-            }
-            else
-            {
-                return BadRequest(res.Errors);
-            }
         }
 
         [HttpPost("login")]
@@ -78,6 +56,26 @@ namespace FormCapture.Server.Controllers
             SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
             JwtSecurityToken token = new JwtSecurityToken(_configuration["Issuer"], _configuration["Audience"], claims, expires: DateTime.Now.AddDays(1), signingCredentials: credentials);
             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegistrationModel registration)
+        {
+            if (registration == null || string.IsNullOrEmpty(registration.Password) || string.IsNullOrEmpty(registration.Email) || string.IsNullOrEmpty(registration.ConfirmationPassword))
+            {
+                return BadRequest();
+            }
+            IdentityUser user = new IdentityUser() { Email = registration.Email, UserName = registration.Email };
+            IdentityResult res = await _userManager.CreateAsync(user, registration.Password);
+            if (res.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, registration.Role);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(res.Errors);
+            }
         }
 
         [HttpPut("newpassword")]

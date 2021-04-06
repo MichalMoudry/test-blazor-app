@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using FormCapture.Server.DataAccess;
-using Microsoft.AspNetCore.Mvc;
+﻿using FormCapture.Server.DataAccess;
 using FormCapture.Shared.DbModels;
-using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
@@ -19,42 +19,6 @@ namespace FormCapture.Server.Controllers
         public QueueController(AppDbContext dataContext)
         {
             _queueOperations = new QueueOperations(dataContext);
-        }
-
-        [HttpGet("{appID}")]
-        public IActionResult GetAppsQueue(string appID)
-        {
-            if (string.IsNullOrEmpty(appID))
-            {
-                return BadRequest();
-            }
-            List<Queue> queues = _queueOperations.GetAppsQueues(appID).OrderBy(i => i.Added).ToList();
-            if (queues != null)
-            {
-                return Ok(queues);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpGet("queue")]
-        public IActionResult GetQueue(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                return BadRequest();
-            }
-            Queue queue = _queueOperations.GetQueue(id);
-            if (queue != null)
-            {
-                return Ok(queue);
-            }
-            else
-            {
-                return BadRequest();
-            }
         }
 
         [HttpPost("Add")]
@@ -103,6 +67,42 @@ namespace FormCapture.Server.Controllers
                 }
             }
             catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("{appID}")]
+        public IActionResult GetAppsQueue(string appID)
+        {
+            if (string.IsNullOrEmpty(appID))
+            {
+                return BadRequest();
+            }
+            List<Queue> queues = _queueOperations.GetAppsQueues(appID).OrderBy(i => i.Added).ToList();
+            if (queues != null)
+            {
+                return Ok(queues);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("queue")]
+        public IActionResult GetQueue(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return BadRequest();
+            }
+            Queue queue = _queueOperations.GetQueue(id);
+            if (queue != null)
+            {
+                return Ok(queue);
+            }
+            else
             {
                 return BadRequest();
             }

@@ -1,7 +1,7 @@
 using FormCapture.Shared.DbModels;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FormCapture.Server.DataAccess
@@ -14,13 +14,6 @@ namespace FormCapture.Server.DataAccess
         {
             _datacontext = dataContext;
         }
-
-        /// <summary>
-        /// Method for obtaining list of CaptureAppWorkflow instances.
-        /// </summary>
-        /// <param name="appID">ID of a capture app.</param>
-        /// <returns>List of CaptureAppWorkflow instances</returns>
-        public List<CaptureAppWorkflows> GetCaptureAppWorkflows(string appID) => _datacontext.AppWorkflows.Where(i => i.AppID.Equals(appID)).ToList();
 
         /// <summary>
         /// Method for adding a new row to CaptureAppWorkflows table.
@@ -46,6 +39,13 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        /// <summary>
+        /// Method for obtaining list of CaptureAppWorkflow instances.
+        /// </summary>
+        /// <param name="appID">ID of a capture app.</param>
+        /// <returns>List of CaptureAppWorkflow instances</returns>
+        public List<CaptureAppWorkflows> GetCaptureAppWorkflows(string appID) => _datacontext.AppWorkflows.Where(i => i.AppID.Equals(appID)).ToList();
 
         /// <summary>
         /// Method for removing a row in CaptureAppWorkflows table.

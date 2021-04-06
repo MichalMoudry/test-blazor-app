@@ -1,8 +1,7 @@
-﻿using System;
+﻿using FormCapture.Shared.DbModels;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using FormCapture.Shared.DbModels;
 
 namespace FormCapture.Server.DataAccess
 {

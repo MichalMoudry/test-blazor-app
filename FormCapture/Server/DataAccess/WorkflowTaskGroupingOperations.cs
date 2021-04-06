@@ -15,8 +15,6 @@ namespace FormCapture.Server.DataAccess
             _appDbContext = appDbContext;
         }
 
-        public List<WorkflowTaskGrouping> GetWorkflowTaskGroupings(string workflowID) => _appDbContext.TaskGroupings.Where(i => i.WorkflowID.Equals(workflowID)).ToList();
-
         /// <summary>
         /// Method for adding a new task grouping to db.
         /// </summary>
@@ -40,6 +38,8 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        public List<WorkflowTaskGrouping> GetWorkflowTaskGroupings(string workflowID) => _appDbContext.TaskGroupings.Where(i => i.WorkflowID.Equals(workflowID)).ToList();
 
         /// <summary>
         /// Method for removing a task grouping from db.

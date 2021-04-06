@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using FormCapture.Server.DataAccess;
+﻿using FormCapture.Server.DataAccess;
 using FormCapture.Shared.DbModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
@@ -53,31 +51,6 @@ namespace FormCapture.Server.Controllers
         }
 
         /// <summary>
-        /// Method for obtaining list of user's workflows.
-        /// </summary>
-        /// <param name="userID">ID of a user.</param>
-        /// <returns>List of user's workflows (in JSON format) or 400 status code.</returns>
-        [HttpPost("")]
-        public IActionResult GetUsersWorkflows([FromBody] string userID)
-        {
-            if (string.IsNullOrEmpty(userID))
-            {
-                return BadRequest();
-            }
-            var workflows = _workflowOperations.GetUsersAppWorkflows(userID)
-                .OrderBy(i => i.Added)
-                .ToList();
-            if (workflows != null)
-            {
-                return Ok(workflows);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        /// <summary>
         /// Method for deleting an app workflow.
         /// </summary>
         /// <param name="app">An app workflow.</param>
@@ -92,6 +65,36 @@ namespace FormCapture.Server.Controllers
                     return BadRequest();
                 }
                 var res = await _workflowOperations.DeleteWorkflow(workflow);
+                if (res)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Method for handling of app workflow editing.
+        /// </summary>
+        /// <param name="app">Instance of the AppWorkflow class with new data.</param>
+        /// <returns>200 or 400 status code.</returns>
+        [HttpPut("update")]
+        public async Task<IActionResult> EditWorkflow([FromBody] Workflow workflow)
+        {
+            try
+            {
+                if (workflow == null || string.IsNullOrEmpty(workflow.Name))
+                {
+                    return BadRequest();
+                }
+                var res = await _workflowOperations.EditWorkflow(workflow);
                 if (res)
                 {
                     return Ok();
@@ -131,30 +134,25 @@ namespace FormCapture.Server.Controllers
         }
 
         /// <summary>
-        /// Method for handling of app workflow editing.
+        /// Method for obtaining list of user's workflows.
         /// </summary>
-        /// <param name="app">Instance of the AppWorkflow class with new data.</param>
-        /// <returns>200 or 400 status code.</returns>
-        [HttpPut("update")]
-        public async Task<IActionResult> EditWorkflow([FromBody] Workflow workflow)
+        /// <param name="userID">ID of a user.</param>
+        /// <returns>List of user's workflows (in JSON format) or 400 status code.</returns>
+        [HttpPost("")]
+        public IActionResult GetUsersWorkflows([FromBody] string userID)
         {
-            try
+            if (string.IsNullOrEmpty(userID))
             {
-                if (workflow == null || string.IsNullOrEmpty(workflow.Name))
-                {
-                    return BadRequest();
-                }
-                var res = await _workflowOperations.EditWorkflow(workflow);
-                if (res)
-                {
-                    return Ok();
-                }
-                else
-                {
-                    return BadRequest();
-                }
+                return BadRequest();
             }
-            catch (Exception)
+            var workflows = _workflowOperations.GetUsersAppWorkflows(userID)
+                .OrderBy(i => i.Added)
+                .ToList();
+            if (workflows != null)
+            {
+                return Ok(workflows);
+            }
+            else
             {
                 return BadRequest();
             }

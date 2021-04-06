@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FormCapture.Server.DataAccess;
-using Microsoft.AspNetCore.Mvc;
+﻿using FormCapture.Server.DataAccess;
 using FormCapture.Shared.DbModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
@@ -19,42 +16,6 @@ namespace FormCapture.Server.Controllers
         public TemplatesController(AppDbContext dataContext)
         {
             _templateOperations = new TemplateOperations(dataContext);
-        }
-
-        [HttpGet("{appID}")]
-        public IActionResult GetAppTemplates(string appID)
-        {
-            if (string.IsNullOrEmpty(appID))
-            {
-                return BadRequest();
-            }
-            var templates = _templateOperations.GetAppsTemplates(appID);
-            if (templates != null)
-            {
-                return Ok(templates);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpGet("template")]
-        public IActionResult GetTemplate(string templateID)
-        {
-            if (string.IsNullOrEmpty(templateID))
-            {
-                return BadRequest();
-            }
-            var template = _templateOperations.GetTemplate(templateID);
-            if (template != null)
-            {
-                return Ok(template);
-            }
-            else
-            {
-                return BadRequest();
-            }
         }
 
         [HttpPost("Add")]
@@ -86,6 +47,42 @@ namespace FormCapture.Server.Controllers
             if (res)
             {
                 return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("{appID}")]
+        public IActionResult GetAppTemplates(string appID)
+        {
+            if (string.IsNullOrEmpty(appID))
+            {
+                return BadRequest();
+            }
+            var templates = _templateOperations.GetAppsTemplates(appID);
+            if (templates != null)
+            {
+                return Ok(templates);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("template")]
+        public IActionResult GetTemplate(string templateID)
+        {
+            if (string.IsNullOrEmpty(templateID))
+            {
+                return BadRequest();
+            }
+            var template = _templateOperations.GetTemplate(templateID);
+            if (template != null)
+            {
+                return Ok(template);
             }
             else
             {

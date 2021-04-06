@@ -1,12 +1,10 @@
-﻿using System;
+﻿using FormCapture.Server.DataAccess;
+using FormCapture.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FormCapture.Server.DataAccess;
-using Microsoft.AspNetCore.Mvc;
-using FormCapture.Shared.DbModels;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
@@ -23,29 +21,10 @@ namespace FormCapture.Server.Controllers
         }
 
         /// <summary>
-        /// Method for obtaining list of files in a specific batch.
-        /// </summary>
-        /// <param name="batchID">ID of the specific batch.</param>
-        /// <returns>List of files in a specific batch (in JSON format) or 400 status code.</returns>
-        [HttpGet("{queueID}")]
-        public IActionResult GetQueueFiles(string queueID)
-        {
-            List<ProcessedFile> files = _processedFileOperations.GetQueueFiles(queueID).OrderBy(i => i.Added).ToList();
-            if (files != null)
-            {
-                return Ok(files);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
-        /// <summary>
         /// Method for adding a new processed file.
         /// </summary>
         /// <param name="files">List of processed files.</param>
-        /// <returns>200 or 400 status code.</returns>    
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] List<ProcessedFile> files)
         {
@@ -80,6 +59,25 @@ namespace FormCapture.Server.Controllers
             if (res)
             {
                 return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Method for obtaining list of files in a specific batch.
+        /// </summary>
+        /// <param name="batchID">ID of the specific batch.</param>
+        /// <returns>List of files in a specific batch (in JSON format) or 400 status code.</returns>
+        [HttpGet("{queueID}")]
+        public IActionResult GetQueueFiles(string queueID)
+        {
+            List<ProcessedFile> files = _processedFileOperations.GetQueueFiles(queueID).OrderBy(i => i.Added).ToList();
+            if (files != null)
+            {
+                return Ok(files);
             }
             else
             {

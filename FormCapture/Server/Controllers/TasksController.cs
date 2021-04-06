@@ -1,11 +1,10 @@
-using System;
+using FormCapture.Server.DataAccess;
+using FormCapture.Shared.DbModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FormCapture.Server.DataAccess;
-using Microsoft.AspNetCore.Mvc;
-using FormCapture.Shared.DbModels;
-using Microsoft.AspNetCore.Authorization;
 
 namespace FormCapture.Server.Controllers
 {
@@ -19,24 +18,6 @@ namespace FormCapture.Server.Controllers
         public TasksController(AppDbContext context)
         {
             _tasksOperations = new TasksOperations(context);
-        }
-
-        [HttpGet("{userID}")]
-        public IActionResult GetUsersTasks(string userID)
-        {
-            if (string.IsNullOrEmpty(userID))
-            {
-                return BadRequest();
-            }
-            var tasks = _tasksOperations.GetUserTasks(userID).OrderBy(i => i.Added).ToList();
-            if (tasks != null)
-            {
-                return Ok(tasks);
-            }
-            else
-            {
-                return BadRequest();
-            }
         }
 
         [HttpPost("Add")]
@@ -133,6 +114,24 @@ namespace FormCapture.Server.Controllers
             else
             {
                 return BadRequest("There are no tasks.");
+            }
+        }
+
+        [HttpGet("{userID}")]
+        public IActionResult GetUsersTasks(string userID)
+        {
+            if (string.IsNullOrEmpty(userID))
+            {
+                return BadRequest();
+            }
+            var tasks = _tasksOperations.GetUserTasks(userID).OrderBy(i => i.Added).ToList();
+            if (tasks != null)
+            {
+                return Ok(tasks);
+            }
+            else
+            {
+                return BadRequest();
             }
         }
     }

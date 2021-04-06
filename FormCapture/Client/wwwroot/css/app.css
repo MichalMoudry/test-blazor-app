@@ -261,6 +261,10 @@ app {
     height: 52vh;
 }
 
+#app-details-users-body {
+    display: flex;
+}
+
 .table-hover tbody tr:hover {
     cursor: pointer;
 }

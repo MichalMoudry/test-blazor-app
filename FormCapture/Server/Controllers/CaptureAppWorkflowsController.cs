@@ -19,24 +19,6 @@ namespace FormCapture.Server.Controllers
             _captureApplicationsOps = new CaptureAppWorkflowsOperations(appDbContext);
         }
 
-        [HttpGet("{appID}")]
-        public IActionResult GetWorkflowIds(string appID)
-        {
-            if (string.IsNullOrEmpty(appID))
-            {
-                return BadRequest();
-            }
-            List<CaptureAppWorkflows> appWorkflows = _captureApplicationsOps.GetCaptureAppWorkflows(appID);
-            if (appWorkflows != null)
-            {
-                return Ok(appWorkflows);
-            }
-            else
-            {
-                return BadRequest();
-            }
-        }
-
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] List<CaptureAppWorkflows> captureAppWorkflows)
         {
@@ -52,6 +34,24 @@ namespace FormCapture.Server.Controllers
             if (res)
             {
                 return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("{appID}")]
+        public IActionResult GetWorkflowIds(string appID)
+        {
+            if (string.IsNullOrEmpty(appID))
+            {
+                return BadRequest();
+            }
+            List<CaptureAppWorkflows> appWorkflows = _captureApplicationsOps.GetCaptureAppWorkflows(appID);
+            if (appWorkflows != null)
+            {
+                return Ok(appWorkflows);
             }
             else
             {

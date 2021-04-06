@@ -98,6 +98,35 @@
 <!--Block for apps that user is part of-->
 <div>
     <h4><span class="oi oi-chevron-bottom"></span> Apps that you are part of</h4>
+    @if (userApps != null)
+    {
+        @if (userApps.Count > 0)
+        {
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <td>Name</td>
+                            <td>Added to app</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var userApp in userApps)
+                        {
+                            <tr>
+                                <td @onclick="@(e => Navigate($"/formcapture/apps/{userApp.ApplicationID}"))">@userApp.ApplicationName</td>
+                                <td @onclick="@(e => Navigate($"/formcapture/apps/{userApp.ApplicationID}"))">@userApp.Added</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p>You are not a part of any capture application.</p>
+        }
+    }
 </div>
 
 <div class="toast-area">
@@ -150,6 +179,8 @@
     private bool isLoadingIndicatorHidden = true;
 
     private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
+
+    private List<UserApps> userApps;
 
     private void Navigate(string page)
     {
@@ -211,9 +242,11 @@
             isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
             var temp = await HttpClient.PostAsJsonAsync<string>("api/captureapps/", ClaimsHelper.Instance().GetEmailClaim().Value);
-            if (temp.IsSuccessStatusCode)
+            var getAppUsersIdsResponse = await HttpClient.GetAsync($"api/userapps/user/{ClaimsHelper.Instance().GetEmailClaim().Value}");
+            if (temp.IsSuccessStatusCode && getAppUsersIdsResponse.IsSuccessStatusCode)
             {
                 captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
+                userApps = JsonConvert.DeserializeObject<List<UserApps>>(await getAppUsersIdsResponse.Content.ReadAsStringAsync());
             }
             else if (temp.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
             {
