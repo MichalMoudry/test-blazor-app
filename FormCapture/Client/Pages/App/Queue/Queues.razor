@@ -39,7 +39,7 @@
                                     <td>@queue.ID</td>
                                     <td>@queue.UserID</td>
                                     <td>@queue.Added</td>
-                                    <td><span class="oi oi-data-transfer-download"></span></td>
+                                    <td data-toggle="modal" data-target="#exportModal" @onclick="@(e => SelectQueue(queue))"><span class="oi oi-data-transfer-download"></span></td>
                                     <td class="td-hover" @onclick="@(e => DeleteQueue(queue))"><span class="oi oi-trash"></span></td>
                                 </tr>
                             }
@@ -68,6 +68,41 @@
                 </button>
             </div>
         </div>
+
+        <div class="modal" id="exportModal" aria-labelledby="exportModal" aria-hidden="true" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><span class="oi oi-data-transfer-download mr-2"></span> Export data from a queue</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="@ModalLinksCssClass">
+                            <div class="row pl-3">
+                                <a id="csvDownloadLink" class="btn btn-success" download="FormCapture_StandardCSV.csv">Download data as CSV</a>
+                            </div>
+                            <div class="row pl-3 mt-3">
+                                <a id="msCsvDownloadLink" class="btn btn-success" download="FormCapture_MicrosoftCSV.csv">Download data as CSV for MS Excel</a>
+                            </div>
+                            <div class="row pl-3 mt-3">
+                                <a id="jsonDownloadLink" class="btn btn-success" download="FormCapture_JSON.json">Download data as JSON</a>
+                            </div>
+                        </div>
+                        @if (areModalLinkHidden)
+                        {
+                            <div class="d-flex justify-content-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     </Authorized>
 
     <NotAuthorized>
@@ -86,6 +121,67 @@
     private bool isLoadingIndicatorHidden = true;
 
     private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
+
+    private Queue selectedQueue;
+
+    private List<FieldValue> fieldValues;
+
+    private List<ProcessedFile> files;
+
+    private Dictionary<string, List<FieldValue>> valuesForJsonContent = new Dictionary<string, List<FieldValue>>();
+
+    private bool areModalLinkHidden = true;
+
+    private string ModalLinksCssClass => areModalLinkHidden ? "d-none" : null;
+
+    private async Task SelectQueue(Queue queue)
+    {
+        selectedQueue = queue;
+        var processedFilesApiResponse = await HttpClient.GetAsync($"api/processedfiles/{selectedQueue.ID}");
+        string csvContent = "";
+        string mscsvContent = "";
+        string jsonContent = "";
+        if (processedFilesApiResponse.IsSuccessStatusCode)
+        {
+            files = JsonConvert.DeserializeObject<List<ProcessedFile>>(await processedFilesApiResponse.Content.ReadAsStringAsync());
+            HttpResponseMessage fieldValuesApiResponse;
+            foreach (var file in files)
+            {
+                fieldValuesApiResponse = await HttpClient.GetAsync($"api/fieldvalues/{file.ID}");
+                if (fieldValuesApiResponse.IsSuccessStatusCode)
+                {
+                    fieldValues = JsonConvert.DeserializeObject<List<FieldValue>>(await fieldValuesApiResponse.Content.ReadAsStringAsync());
+                    valuesForJsonContent.Add(file.ID, fieldValues);
+                    csvContent += $"{file.ID},";
+                    foreach (var value in fieldValues)
+                    {
+                        if (fieldValues.Last().Equals(value))
+                        {
+                            csvContent += $"{value.Value}\n";
+                            mscsvContent += $"{value.Value}\n";
+                        }
+                        else
+                        {
+                            csvContent += $"{value.Value},";
+                            mscsvContent += $"{value.Value};";
+                        }
+                    }
+                }
+            }
+            jsonContent = JsonConvert.SerializeObject(valuesForJsonContent);
+            areModalLinkHidden = false;
+        }
+        if (!string.IsNullOrEmpty(csvContent) && !string.IsNullOrEmpty(mscsvContent) && !string.IsNullOrEmpty(jsonContent))
+        {
+            await IJsRuntime.InvokeVoidAsync("downloadValues", csvContent, "csvDownloadLink");
+            await IJsRuntime.InvokeVoidAsync("downloadValues", mscsvContent, "msCsvDownloadLink");
+            await IJsRuntime.InvokeVoidAsync("downloadValues", jsonContent, "jsonDownloadLink");
+        }
+        else
+        {
+            //Display error.
+        }
+    }
 
     private async Task DeleteQueue(Queue queue)
     {

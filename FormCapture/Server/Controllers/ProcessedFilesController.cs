@@ -74,6 +74,10 @@ namespace FormCapture.Server.Controllers
         [HttpGet("{queueID}")]
         public IActionResult GetQueueFiles(string queueID)
         {
+            if (string.IsNullOrEmpty(queueID))
+            {
+                return BadRequest();
+            }
             List<ProcessedFile> files = _processedFileOperations.GetQueueFiles(queueID).OrderBy(i => i.Added).ToList();
             if (files != null)
             {

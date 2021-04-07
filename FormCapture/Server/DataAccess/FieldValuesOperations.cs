@@ -1,8 +1,8 @@
 ﻿using FormCapture.Shared.DbModels;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -33,6 +33,8 @@ namespace FormCapture.Server.DataAccess
                 return false;
             }
         }
+
+        public List<FieldValue> GetFilesFieldValues(string fileID) => _dataContext.FieldValues.Where(i => i.FileID.Equals(fileID)).ToList();
 
         public async Task<bool> RemoveRangeOfFieldValues(string queueID)
         {

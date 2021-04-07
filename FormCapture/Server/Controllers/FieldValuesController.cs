@@ -54,5 +54,23 @@ namespace FormCapture.Server.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpGet("{fileID}")]
+        public IActionResult GetFilesValues(string fileID)
+        {
+            if (string.IsNullOrEmpty(fileID))
+            {
+                return BadRequest();
+            }
+            var values = _fieldValuesOperations.GetFilesFieldValues(fileID);
+            if (values != null)
+            {
+                return Ok(values);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

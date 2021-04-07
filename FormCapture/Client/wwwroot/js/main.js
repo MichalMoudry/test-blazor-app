@@ -194,6 +194,11 @@ function drawField(fieldID) {
     }
 }
 
+function downloadValues(content, linkID) {
+    var dataToExport = new Blob([content]);
+    document.getElementById(linkID).href = URL.createObjectURL(dataToExport);
+}
+
 function displayToast(toastID) {
     document.getElementById(toastID).classList.remove("d-none");
     $("#" + toastID).show();

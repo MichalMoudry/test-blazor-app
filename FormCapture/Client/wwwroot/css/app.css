@@ -265,8 +265,9 @@ app {
     display: grid;
 }
 
-.td-hover {
-
+.td-hover:hover {
+    cursor: pointer;
+    background-color: lightgray;
 }
 
 #app-details-users-body {
