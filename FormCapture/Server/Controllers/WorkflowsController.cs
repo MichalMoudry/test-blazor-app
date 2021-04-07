@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
-    [Authorize(Roles = "Admin, Workflow admin")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WorkflowsController : ControllerBase

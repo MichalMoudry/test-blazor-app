@@ -40,16 +40,13 @@ namespace FormCapture.Server.DataAccess
         /// <summary>
         /// Method for removing an entry from db table with processed files.
         /// </summary>
-        /// <param name="files">Entries that will be deleted.</param>
+        /// <param name="queueID">Entries that will be deleted.</param>
         /// <returns>True if entry was removed from db. False if not.</returns>
-        public async Task<bool> DeleteFile(List<ProcessedFile> files)
+        public async Task<bool> DeleteFile(string queueID)
         {
             try
             {
-                foreach (ProcessedFile file in files)
-                {
-                    _dataContext.ProcessedFiles.Remove(file);
-                }
+                _dataContext.RemoveRange(GetQueueFiles(queueID));
                 await _dataContext.SaveChangesAsync();
                 return true;
             }

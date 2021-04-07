@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace FormCapture.Server.DataAccess
 {
@@ -33,11 +34,17 @@ namespace FormCapture.Server.DataAccess
             }
         }
 
-        public async Task<bool> RemoveRangeOfFieldValues(List<FieldValue> fieldValues)
+        public async Task<bool> RemoveRangeOfFieldValues(string queueID)
         {
             try
             {
-                _dataContext.FieldValues.RemoveRange(fieldValues);
+                var files = _dataContext.ProcessedFiles.Where(i => i.QueueID.Equals(queueID)).ToList();
+                List<FieldValue> fieldValues;
+                foreach (var file in files)
+                {
+                    fieldValues = _dataContext.FieldValues.Where(i => i.FileID.Equals(file.ID)).ToList();
+                    _dataContext.FieldValues.RemoveRange(fieldValues);
+                }
                 await _dataContext.SaveChangesAsync();
                 return true;
             }

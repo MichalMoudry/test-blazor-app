@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
-    [Authorize(Roles = "Admin, Workflow admin, User")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProcessedFilesController : ControllerBase
@@ -49,13 +49,13 @@ namespace FormCapture.Server.Controllers
         /// <param name="data">List of processed files.</param>
         /// <returns>200 or 400 status code.</returns>
         [HttpPost("Delete")]
-        public async Task<IActionResult> Delete([FromBody] List<ProcessedFile> files)
+        public async Task<IActionResult> Delete([FromBody] string queueID)
         {
-            if (files == null)
+            if (string.IsNullOrEmpty(queueID))
             {
                 return BadRequest();
             }
-            bool res = await _processedFileOperations.DeleteFile(files);
+            bool res = await _processedFileOperations.DeleteFile(queueID);
             if (res)
             {
                 return Ok();

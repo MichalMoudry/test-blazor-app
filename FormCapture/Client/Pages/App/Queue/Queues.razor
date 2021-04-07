@@ -1,0 +1,119 @@
+﻿@layout AppLayout
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime IJsRuntime
+@page "/formcapture/apps/{appID}/viewqueues"
+
+<AuthorizeView>
+    <Authorized>
+        @if (captureApplication == null)
+        {
+            <h3>Loading...</h3>
+        }
+        else
+        {
+            <h3><span class="oi oi-list-rich"></span> @captureApplication.Name's completed queues</h3>
+        }
+
+        <hr />
+
+        @if (queues != null)
+        {
+            @if (queues.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="thead-dark">
+                            <tr>
+                                <td>ID</td>
+                                <td>Owner</td>
+                                <td>Added</td>
+                                <td>Export</td>
+                                <td>Delete</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var queue in queues.Where(i => i.Status.Equals(QueueStatus.Finished)))
+                            {
+                                <tr>
+                                    <td>@queue.ID</td>
+                                    <td>@queue.UserID</td>
+                                    <td>@queue.Added</td>
+                                    <td><span class="oi oi-data-transfer-download"></span></td>
+                                    <td class="td-hover" @onclick="@(e => DeleteQueue(queue))"><span class="oi oi-trash"></span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p>There are no queues.</p>
+            }
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
+
+        <div class="toast-area">
+            <div class="alert alert-info alert-dismissible fade show d-none" id="queue-deleted-toast" role="alert">
+                <strong class="mr-auto">Queue deleted</strong>
+                <hr />
+                <p>Queue has been deleted.</p>
+                <button type="button" class="close" onclick="closeAlert('queue-deleted-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to access this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string AppID { get; set; }
+
+    private CaptureApplication captureApplication;
+
+    private List<Queue> queues;
+
+    private bool isLoadingIndicatorHidden = true;
+
+    private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
+
+    private async Task DeleteQueue(Queue queue)
+    {
+        var deleteQueueResponse = await HttpClient.PostAsJsonAsync("api/queue/delete", queue);
+        var deleteFieldValuesResponse = await HttpClient.PostAsJsonAsync("api/fieldvalues/delete", queue.ID);
+        var deleteProcessedFilesResponse = await HttpClient.PostAsJsonAsync("api/processedfiles/delete", queue.ID);
+        if (deleteQueueResponse.IsSuccessStatusCode && deleteProcessedFilesResponse.IsSuccessStatusCode && deleteFieldValuesResponse.IsSuccessStatusCode)
+        {
+            queues.Remove(queue);
+            await IJsRuntime.InvokeVoidAsync("displayToast", "queue-deleted-toast");
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+        var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
+        var getQueuesResponse = await HttpClient.GetAsync($"api/queue/{AppID}");
+        if (getAppMessage.IsSuccessStatusCode && getQueuesResponse.IsSuccessStatusCode)
+        {
+            captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
+            queues = JsonConvert.DeserializeObject<List<Queue>>(await getQueuesResponse.Content.ReadAsStringAsync());
+        }
+        else if (getAppMessage.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+    }
+}

@@ -261,6 +261,14 @@ app {
     height: 52vh;
 }
 
+#queue-list-container {
+    display: grid;
+}
+
+.td-hover {
+
+}
+
 #app-details-users-body {
     display: flex;
 }

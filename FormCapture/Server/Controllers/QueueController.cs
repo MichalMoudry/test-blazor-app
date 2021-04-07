@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
-    [Authorize(Roles = "Admin, Workflow admin, User")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class QueueController : ControllerBase
@@ -30,8 +30,7 @@ namespace FormCapture.Server.Controllers
                 {
                     return BadRequest();
                 }
-                string userID = queue.UserID;
-                bool res = await _queueOperations.AddQueue(queue);
+                var res = await _queueOperations.AddQueue(queue);
                 if (res)
                 {
                     return Ok();
@@ -56,7 +55,7 @@ namespace FormCapture.Server.Controllers
             }
             try
             {
-                bool res = await _queueOperations.DeleteQueue(queue);
+                var res = await _queueOperations.DeleteQueue(queue);
                 if (res)
                 {
                     return Ok();
@@ -97,7 +96,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            Queue queue = _queueOperations.GetQueue(id);
+            var queue = _queueOperations.GetQueue(id);
             if (queue != null)
             {
                 return Ok(queue);
@@ -115,7 +114,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            bool res = await _queueOperations.EditQueue(queue);
+            var res = await _queueOperations.EditQueue(queue);
             if (res)
             {
                 return Ok();

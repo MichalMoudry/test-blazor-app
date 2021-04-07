@@ -39,114 +39,118 @@
                         </div>
 
                         <div class="card-body" id="queue-list-container">
-                        </div>
-
-                        <div class="card-footer">
-                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/startqueue"))">
+                            <button class="btn btn-success" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/startqueue"))">
                                 <span class="oi oi-play-circle mr-2"></span> Start a new queue
                             </button>
+
+                            <button class="btn btn-primary mt-2" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/viewqueues"))">
+                                <span class="mr-2">View queues</span> <span class="oi oi-chevron-right"></span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="w-100"></div>
+                @if (context.User.IsInRole("Admin"))
+                {
+                    <div class="w-100"></div>
 
-                <div class="col">
-                    <div class="card m-1">
-                        <div class="card-header">
-                            <h4><span class="oi oi-image"></span> Templates</h4>
-                        </div>
+                    <div class="col">
+                        <div class="card m-1">
+                            <div class="card-header">
+                                <h4><span class="oi oi-image"></span> Templates</h4>
+                            </div>
 
-                        <div class="card-body" id="templates-list-container">
-                            @if (templates != null)
-                            {
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <td><b>Name</b></td>
-                                                <td><b>Added</b></td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var template in templates)
-                                            {
-                                                <tr @onclick="@(e => Navigate($"/formcapture/apps/{template.ID}/edittemplate"))">
-                                                    <td>@template.Name</td>
-                                                    <td>@template.Added</td>
+                            <div class="card-body" id="templates-list-container">
+                                @if (templates != null)
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <td><b>Name</b></td>
+                                                    <td><b>Added</b></td>
                                                 </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
-                        </div>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var template in templates)
+                                                {
+                                                    <tr @onclick="@(e => Navigate($"/formcapture/apps/{template.ID}/edittemplate"))">
+                                                        <td>@template.Name</td>
+                                                        <td>@template.Added</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
 
-                        <div class="card-footer">
-                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/addtemplate"))">
-                                <span class="oi oi-plus mr-2"></span> Add a template
-                            </button>
+                            <div class="card-footer">
+                                <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/addtemplate"))">
+                                    <span class="oi oi-plus mr-2"></span> Add a template
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col">
-                    <div class="card m-1">
-                        <div class="card-header">
-                            <h4><span class="oi oi-project"></span> Workflows</h4>
-                        </div>
+                    <div class="col">
+                        <div class="card m-1">
+                            <div class="card-header">
+                                <h4><span class="oi oi-project"></span> Workflows</h4>
+                            </div>
 
-                        <div class="card-body">
-                            @if (appWorkflows != null)
-                            {
-                                <div class="table-responsive">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <td><b>Name</b></td>
-                                                <td><b>Associated</b></td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var workflow in appWorkflows)
-                                            {
-                                                <tr @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.ID}/edit"))">
-                                                    <td>@workflow.WorkflowName</td>
-                                                    <td>@workflow.Added</td>
+                            <div class="card-body">
+                                @if (appWorkflows != null)
+                                {
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <td><b>Name</b></td>
+                                                    <td><b>Associated</b></td>
                                                 </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            }
-                        </div>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var workflow in appWorkflows)
+                                                {
+                                                    <tr @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.WorkflowID}/edit"))">
+                                                        <td>@workflow.WorkflowName</td>
+                                                        <td>@workflow.Added</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+                            </div>
 
-                        <div class="card-footer">
-                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/addworkflow"))">
-                                <span class="oi oi-plus mr-2"></span> Associate a workflow
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="w-100"></div>
-
-                <div class="col">
-                    <div class="card m-1">
-                        <div class="card-header">
-                            <h4><span class="oi oi-people"></span> Users</h4>
-                        </div>
-                        <div class="card-body" id="app-details-users-body">
-                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/add/users"))">
-                                <span class="oi oi-plus mr-2"></span> Add users
-                            </button>
-
-                            <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/users"))">
-                                <span class="mr-2">View users</span> <span class="oi oi-chevron-right"></span>
-                            </button>
+                            <div class="card-footer">
+                                <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/addworkflow"))">
+                                    <span class="oi oi-plus mr-2"></span> Associate a workflow
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+
+                    <div class="w-100"></div>
+
+                    <div class="col">
+                        <div class="card m-1">
+                            <div class="card-header">
+                                <h4><span class="oi oi-people"></span> Users</h4>
+                            </div>
+                            <div class="card-body" id="app-details-users-body">
+                                <button class="btn btn-success mr-3" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/add/users"))">
+                                    <span class="oi oi-plus mr-2"></span> Add users
+                                </button>
+
+                                <button class="btn btn-primary" @onclick="@(e => Navigate($"/formcapture/apps/{captureApplication.ID}/users"))">
+                                    <span class="mr-2">View users</span> <span class="oi oi-chevron-right"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         }
     </Authorized>
@@ -178,15 +182,31 @@
     {
         HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
         var getAppMessage = await HttpClient.PostAsJsonAsync("api/captureapps/get", AppID);
-        var getTemplatesMessage = await HttpClient.GetAsync($"api/templates/{AppID}");
-        var getWorkflowsMessage = await HttpClient.GetAsync($"api/captureappworkflows/{AppID}");
         var queueApiMesseage = await HttpClient.GetAsync($"api/queue/{AppID}");
-        if (getAppMessage.IsSuccessStatusCode && getTemplatesMessage.IsSuccessStatusCode && getWorkflowsMessage.IsSuccessStatusCode)
+        if (getAppMessage.IsSuccessStatusCode && queueApiMesseage.IsSuccessStatusCode)
         {
             captureApplication = JsonConvert.DeserializeObject<CaptureApplication>(await getAppMessage.Content.ReadAsStringAsync());
-            templates = JsonConvert.DeserializeObject<List<Template>>(await getTemplatesMessage.Content.ReadAsStringAsync());
-            appWorkflows = JsonConvert.DeserializeObject<List<CaptureAppWorkflows>>(await getWorkflowsMessage.Content.ReadAsStringAsync());
             queues = JsonConvert.DeserializeObject<List<Queue>>(await queueApiMesseage.Content.ReadAsStringAsync());
+        }
+        else if (getAppMessage.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+        {
+            Navigate("/");
+        }
+        if (!ClaimsHelper.Instance().GetRoleClaim().Value.Equals("User"))
+        {
+            var getTemplatesMessage = await HttpClient.GetAsync($"api/templates/{AppID}");
+            var getWorkflowsMessage = await HttpClient.GetAsync($"api/captureappworkflows/{AppID}");
+            if (getTemplatesMessage.IsSuccessStatusCode && getWorkflowsMessage.IsSuccessStatusCode)
+            {
+
+                templates = JsonConvert.DeserializeObject<List<Template>>(await getTemplatesMessage.Content.ReadAsStringAsync());
+                appWorkflows = JsonConvert.DeserializeObject<List<CaptureAppWorkflows>>(await getWorkflowsMessage.Content.ReadAsStringAsync());
+
+            }
+            else if (getTemplatesMessage.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
+            {
+                Navigate("/");
+            }
         }
     }
 }

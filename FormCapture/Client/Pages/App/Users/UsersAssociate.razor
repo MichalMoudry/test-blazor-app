@@ -102,11 +102,6 @@
                             await IJSRuntime.InvokeVoidAsync("displayToast", "form-error-toast");
                             return;
                         }
-                        else if (userApps.Any(i => i.UserID.Equals(app.UserID)))
-                        {
-                            await IJSRuntime.InvokeVoidAsync("displayToast", "duplicate-error-toast");
-                            return;
-                        }
                     }
                 }
                 var addUserAppsApiResponse = await HttpClient.PostAsJsonAsync("api/userapps/add", userApps);

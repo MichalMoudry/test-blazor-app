@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
 {
-    [Authorize(Roles = "Admin, Workflow admin, User")]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class FieldValuesController : ControllerBase
@@ -38,13 +38,13 @@ namespace FormCapture.Server.Controllers
         }
 
         [HttpPost("delete")]
-        public async Task<IActionResult> DeleteFieldValues([FromBody] List<FieldValue> fieldValues)
+        public async Task<IActionResult> DeleteFieldValues([FromBody] string queueID)
         {
-            if (fieldValues == null || fieldValues.Count == 0)
+            if (string.IsNullOrEmpty(queueID))
             {
                 return BadRequest();
             }
-            var res = await _fieldValuesOperations.RemoveRangeOfFieldValues(fieldValues);
+            var res = await _fieldValuesOperations.RemoveRangeOfFieldValues(queueID);
             if (res)
             {
                 return Ok();

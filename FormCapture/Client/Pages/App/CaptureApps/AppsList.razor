@@ -26,29 +26,36 @@
             }
             else
             {
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <td>Name</td>
-                                <td>Locale</td>
-                                <td>Added</td>
-                                <td>Delete</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (CaptureApplication application in captureApplications)
-                            {
+                @if (captureApplications.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-dark">
                                 <tr>
-                                    <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Name</td>
-                                    <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Locale</td>
-                                    <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Added</td>
-                                    <td @onclick="@(e => DeleteApp(application))"><span class="oi oi-trash"></span></td>
+                                    <td>Name</td>
+                                    <td>Locale</td>
+                                    <td>Added</td>
+                                    <td>Delete</td>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach (CaptureApplication application in captureApplications)
+                                {
+                                    <tr>
+                                        <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Name</td>
+                                        <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Locale</td>
+                                        <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Added</td>
+                                        <td @onclick="@(e => DeleteApp(application))"><span class="oi oi-trash"></span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p>No capture applications has been created yet.</p>
+                }
                 <div class="d-flex justify-content-center">
                     <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
                         <span class="sr-only">Loading...</span>
@@ -127,6 +134,11 @@
             <p>You are not a part of any capture application.</p>
         }
     }
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
 </div>
 
 <div class="toast-area">
@@ -237,22 +249,25 @@
     /// </summary>
     protected override async Task OnInitializedAsync()
     {
+        isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
+        HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
+        var getAppUsersIdsResponse = await HttpClient.GetAsync($"api/userapps/user/{ClaimsHelper.Instance().GetEmailClaim().Value}");
+        if (getAppUsersIdsResponse.IsSuccessStatusCode)
+        {
+            userApps = JsonConvert.DeserializeObject<List<UserApps>>(await getAppUsersIdsResponse.Content.ReadAsStringAsync());
+        }
         if (!ClaimsHelper.Instance().GetRoleClaim().Value.Equals("User"))
         {
-            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", ClaimsHelper.Instance().GetToken());
             var temp = await HttpClient.PostAsJsonAsync<string>("api/captureapps/", ClaimsHelper.Instance().GetEmailClaim().Value);
-            var getAppUsersIdsResponse = await HttpClient.GetAsync($"api/userapps/user/{ClaimsHelper.Instance().GetEmailClaim().Value}");
-            if (temp.IsSuccessStatusCode && getAppUsersIdsResponse.IsSuccessStatusCode)
+            if (temp.IsSuccessStatusCode)
             {
                 captureApplications = JsonConvert.DeserializeObject<List<CaptureApplication>>(await temp.Content.ReadAsStringAsync());
-                userApps = JsonConvert.DeserializeObject<List<UserApps>>(await getAppUsersIdsResponse.Content.ReadAsStringAsync());
             }
             else if (temp.StatusCode.Equals(System.Net.HttpStatusCode.Unauthorized))
             {
                 Navigate("/");
             }
-            isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
         }
+        isLoadingIndicatorHidden = !isLoadingIndicatorHidden;
     }
 }
