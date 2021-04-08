@@ -1,6 +1,7 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
 @page "/formcapture/apps/{appid}"
 
 <AuthorizeView>
@@ -19,7 +20,16 @@
                 <div class="col">
                     <div class="card m-1">
                         <div class="card-header">
-                            <h4><span class="oi oi-info"></span> App information</h4>
+                            <div class="row">
+                                <div class="col">
+                                    <h4><span class="oi oi-info"></span> App information</h4>
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn" type="button" data-toggle="modal" data-target="#appEditModal">
+                                        <span class="oi oi-pencil pointer"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="card-body">
@@ -153,6 +163,66 @@
                 }
             </div>
         }
+
+        <div id="appEditModal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        @if (captureApplication == null)
+                        {
+                            <h5 class="modal-title" id="appEditModal">Loading...</h5>
+                        }
+                        else
+                        {
+                            <h5 class="modal-title" id="appEditModal">Edit '@captureApplication.Name' app</h5>
+                        }
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="app-name">Application name:</label>
+                            <input type="text" @bind="newAppName" id="app-name" name="app-name" placeholder="Application name..." class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="lang-codes">Capture language:</label>
+                            <select @bind="appLocale" class="form-control" id="lang-codes" name="lang-codes">
+                                <option value="eng">en-US</option>
+                                <option value="ces">cz-CS</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @onclick="ConfirmChanges" data-dismiss="modal"><span class="oi oi-check mr-2"></span> Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast-area mt-2">
+            <div class="alert alert-success alert-dismissible fade show d-none" id="app-updated-toast" role="alert">
+                <strong class="mr-auto">Capture application updated</strong>
+                <hr />
+                <p>Capture application has been successfully updated.</p>
+                <button type="button" class="close" onclick="closeAlert('app-updated-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="alert alert-danger alert-dismissible fade show d-none" id="app-error-toast" role="alert">
+                <strong class="mr-auto">Form error</strong>
+                <hr />
+                <p>Form for updating the app contained an error.</p>
+                <button type="button" class="close" onclick="closeAlert('app-error-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
     </Authorized>
 
     <NotAuthorized>
@@ -167,6 +237,10 @@
 
     private CaptureApplication captureApplication;
 
+    private string appLocale;
+
+    private string newAppName;
+
     private List<Template> templates;
 
     private List<CaptureAppWorkflows> appWorkflows;
@@ -176,6 +250,28 @@
     private void Navigate(string page)
     {
         NavigationManager.NavigateTo(page);
+    }
+
+    private async Task ConfirmChanges()
+    {
+        if (string.IsNullOrEmpty(appLocale))
+        {
+            appLocale = "eng";
+        }
+        if (!string.IsNullOrEmpty(appLocale) && !string.IsNullOrEmpty(newAppName))
+        {
+            captureApplication.Updated = DateTime.Now;
+            captureApplication.Name = newAppName;
+            captureApplication.Locale = appLocale;
+            var temp = await HttpClient.PostAsJsonAsync("api/captureapps/edit", captureApplication);
+            appLocale = "eng";
+            newAppName = string.Empty;
+            await IJSRuntime.InvokeVoidAsync("displayToast", "app-updated-toast");
+        }
+        else
+        {
+            await IJSRuntime.InvokeVoidAsync("displayToast", "app-error-toast");
+        }
     }
 
     protected override async Task OnInitializedAsync()

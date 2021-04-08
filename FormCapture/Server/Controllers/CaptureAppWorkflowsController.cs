@@ -19,6 +19,11 @@ namespace FormCapture.Server.Controllers
             _captureApplicationsOps = new CaptureAppWorkflowsOperations(appDbContext);
         }
 
+        /// <summary>
+        /// Method for adding a new capture application and workflow association.
+        /// </summary>
+        /// <param name="captureAppWorkflows">Instance of the CaptureApplication class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] List<CaptureAppWorkflows> captureAppWorkflows)
         {
@@ -41,6 +46,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a list of workflow associations of an app.
+        /// </summary>
+        /// <param name="appID">ID of a specific app.</param>
+        /// <returns>400 status code or 200 with requested data in JSON format.</returns>
         [HttpGet("{appID}")]
         public IActionResult GetWorkflowIds(string appID)
         {
@@ -59,6 +69,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for deleting a new capture application and workflow association.
+        /// </summary>
+        /// <param name="captureAppWorkflows">Instance of the CaptureApplication class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Delete")]
         public async Task<IActionResult> Remove([FromBody] List<CaptureAppWorkflows> captureAppWorkflows)
         {

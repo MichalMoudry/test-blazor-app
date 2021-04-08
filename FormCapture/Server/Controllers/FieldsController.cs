@@ -65,6 +65,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining list of identifying fields for each template. Used during queue processing.
+        /// </summary>
+        /// <param name="templates">List of Template class instances.</param>
+        /// <returns>400 status code or 200 with requested data.</returns>
         [HttpPost("identifying")]
         public IActionResult GetIdentifyingFields([FromBody] List<Template> templates)
         {
@@ -87,6 +92,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining list of non identifying fields for each processed file. Used during queue processing.
+        /// </summary>
+        /// <param name="processedFiles">List of ProcessedFile class instances.</param>
+        /// <returns>400 status code or 200 with requested data.</returns>
         [HttpPost("nonidfields")]
         public IActionResult GetNonIdFields(List<ProcessedFile> processedFiles)
         {
@@ -109,6 +119,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining list of fields for a specific document template.
+        /// </summary>
+        /// <param name="templateID">ID of the document template.</param>
+        /// <returns>400 status code or 200 with requested data in JSON format.</returns>
         [HttpGet("template")]
         public IActionResult GetTemplateFields(string templateID)
         {
@@ -127,6 +142,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for updating multiple rows in Fields database table.
+        /// </summary>
+        /// <param name="fields">List of Field class instances.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPut("update")]
         public async Task<IActionResult> UpdateFields([FromBody] List<Field> fields)
         {
@@ -134,7 +154,7 @@ namespace FormCapture.Server.Controllers
             {
                 return BadRequest();
             }
-            else if (fields.Count == 0)
+            if (fields.Count == 0)
             {
                 return BadRequest("Input is empty.");
             }

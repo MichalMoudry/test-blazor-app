@@ -39,7 +39,7 @@
                                     <td>@queue.ID</td>
                                     <td>@queue.UserID</td>
                                     <td>@queue.Added</td>
-                                    <td data-toggle="modal" data-target="#exportModal" @onclick="@(e => SelectQueue(queue))"><span class="oi oi-data-transfer-download"></span></td>
+                                    <td class="td-hover" data-toggle="modal" data-target="#exportModal" @onclick="@(e => SelectQueue(queue))"><span class="oi oi-data-transfer-download"></span></td>
                                     <td class="td-hover" @onclick="@(e => DeleteQueue(queue))"><span class="oi oi-trash"></span></td>
                                 </tr>
                             }
