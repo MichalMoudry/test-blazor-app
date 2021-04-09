@@ -19,6 +19,11 @@ namespace FormCapture.Server.Controllers
             _fieldValuesOperations = new FieldValuesOperations(dataContext);
         }
 
+        /// <summary>
+        /// Method for adding a list of new field values.
+        /// </summary>
+        /// <param name="fieldValues">A list of new field values.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("add")]
         public async Task<IActionResult> AddFieldValues([FromBody] List<FieldValue> fieldValues)
         {
@@ -37,6 +42,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for removing range of field values based on their queue association.
+        /// </summary>
+        /// <param name="queueID">ID of a specific queue.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("delete")]
         public async Task<IActionResult> DeleteFieldValues([FromBody] string queueID)
         {
@@ -55,6 +65,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining list of field values with same file ID.
+        /// </summary>
+        /// <param name="fileID">ID of a processed file.</param>
+        /// <returns>400 status code or 200 with requested values in JSON data format.</returns>
         [HttpGet("{fileID}")]
         public IActionResult GetFilesValues(string fileID)
         {

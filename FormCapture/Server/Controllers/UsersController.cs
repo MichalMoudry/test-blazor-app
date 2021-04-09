@@ -27,6 +27,11 @@ namespace FormCapture.Server.Controllers
             _signInManager = signInManager;
         }
 
+        /// <summary>
+        /// Method for signing in a user based on entered credentials.
+        /// </summary>
+        /// <param name="login">User credentials in LoginModel class form.</param>
+        /// <returns>400 status code or 200 with JwtSecurityToken.</returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
@@ -58,6 +63,11 @@ namespace FormCapture.Server.Controllers
             return Ok(new JwtSecurityTokenHandler().WriteToken(token));
         }
 
+        /// <summary>
+        /// Method for creaing a new user account in the system.
+        /// </summary>
+        /// <param name="registration">User credentials in RegistrationModel class form.</param>
+        /// <returns>200 status code or 400 with specific errors.</returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationModel registration)
         {
@@ -78,6 +88,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for updating user's password.
+        /// </summary>
+        /// <param name="profileModel">New password and email as ProfileModel instance.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPut("newpassword")]
         public async Task<IActionResult> UpdatePassword([FromBody] ProfileModel profileModel)
         {

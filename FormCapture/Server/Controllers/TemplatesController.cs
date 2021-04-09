@@ -18,6 +18,11 @@ namespace FormCapture.Server.Controllers
             _templateOperations = new TemplateOperations(dataContext);
         }
 
+        /// <summary>
+        /// Method for adding a new document template.
+        /// </summary>
+        /// <param name="template">Instance of the Template class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] Template template)
         {
@@ -36,6 +41,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for deleting an existing document template.
+        /// </summary>
+        /// <param name="template">Instance of the Template class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Delete")]
         public async Task<IActionResult> Delete([FromBody] Template template)
         {
@@ -54,6 +64,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a list of document templates inside a capture application.
+        /// </summary>
+        /// <param name="appID">ID of the application.</param>
+        /// <returns>200 status code with requested data in JSON format or 400 status code.</returns>
         [HttpGet("{appID}")]
         public IActionResult GetAppTemplates(string appID)
         {
@@ -72,6 +87,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a document template.
+        /// </summary>
+        /// <param name="templateID">ID of the template.</param>
+        /// <returns>200 status code with requested data in JSON format or 400 status code.</returns>
         [HttpGet("template")]
         public IActionResult GetTemplate(string templateID)
         {
@@ -90,6 +110,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for updating a row in Templates database table.
+        /// </summary>
+        /// <param name="template">Instnace of the Template class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromBody] Template template)
         {

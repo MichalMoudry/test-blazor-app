@@ -20,6 +20,11 @@ namespace FormCapture.Server.Controllers
             _tasksOperations = new TasksOperations(context);
         }
 
+        /// <summary>
+        /// Method for adding a new row to WorkflowTasks database table.
+        /// </summary>
+        /// <param name="task">Instance of Workflow task class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] WorkflowTask task)
         {
@@ -38,6 +43,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for deleting a row in WorkflowTasks database table.
+        /// </summary>
+        /// <param name="task">Instance of Workflow task class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Delete")]
         public async Task<IActionResult> DeleteTask(WorkflowTask task)
         {
@@ -63,6 +73,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for updating a in to WorkflowTasks database table.
+        /// </summary>
+        /// <param name="task">Instance of Workflow task class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("update")]
         public async Task<IActionResult> EditTask([FromBody] WorkflowTask task)
         {
@@ -81,6 +96,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a single instance of WorkflowTask class.
+        /// </summary>
+        /// <param name="taskID">ID of the task.</param>
+        /// <returns>400 status code or 200 with requested data as JSON.</returns>
         [HttpGet("get/{taskID}")]
         public IActionResult GetTask(string taskID)
         {
@@ -99,6 +119,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining list of tasks that are refrenced in a list of WorkflowTaskGroupings instances.
+        /// </summary>
+        /// <param name="groupings">List of WorkflowTaskGroupings instances.</param>
+        /// <returns>400 status code or 200 with requested data as JSON.</returns>
         [HttpPost("grouped")]
         public IActionResult GetTasksFromGrouping([FromBody] List<WorkflowTaskGrouping> groupings)
         {
@@ -117,6 +142,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a list of user's tasks.
+        /// </summary>
+        /// <param name="userID">ID of the user.</param>
+        /// <returns>400 status code or 200 with requested data as JSON.</returns>
         [HttpGet("{userID}")]
         public IActionResult GetUsersTasks(string userID)
         {

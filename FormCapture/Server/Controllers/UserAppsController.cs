@@ -19,6 +19,11 @@ namespace FormCapture.Server.Controllers
             _userAppsOperations = new UserAppsOperations(dbContext);
         }
 
+        /// <summary>
+        /// Method for adding new rows to UserApps database table.
+        /// </summary>
+        /// <param name="apps">List of Instances of UserApps class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] List<UserApps> apps)
         {
@@ -37,6 +42,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a list of UserApps instances with same AppID.
+        /// </summary>
+        /// <param name="appID">ID of a capture application.</param>
+        /// <returns>400 status code or 200 with requested data in JSON format.</returns>
         [HttpGet("{appID}")]
         public IActionResult GetAppUsers(string appID)
         {
@@ -55,6 +65,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a list of UserApps instances with same UserID.
+        /// </summary>
+        /// <param name="userID">ID of a user.</param>
+        /// <returns>400 status code or 200 with requested data in JSON format.</returns>
         [HttpGet("user/{userID}")]
         public IActionResult GetUserApps(string userID)
         {
@@ -73,6 +88,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for deleting multiple rows in UserApps database table.
+        /// </summary>
+        /// <param name="apps">List of Instances of UserApps class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("delete")]
         public async Task<IActionResult> Remove([FromBody] List<UserApps> apps)
         {

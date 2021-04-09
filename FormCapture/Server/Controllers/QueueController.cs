@@ -21,6 +21,11 @@ namespace FormCapture.Server.Controllers
             _queueOperations = new QueueOperations(dataContext);
         }
 
+        /// <summary>
+        /// Method for adding a new row to Queue database table.
+        /// </summary>
+        /// <param name="queue">Instance of a Queue class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Add")]
         public async Task<IActionResult> Add([FromBody] Queue queue)
         {
@@ -46,6 +51,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for deleting a specific row from Queue database table.
+        /// </summary>
+        /// <param name="queue">Instance of a Queue class.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("Delete")]
         public async Task<IActionResult> Delete([FromBody] Queue queue)
         {
@@ -71,6 +81,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining list of Queue class instances with same value of AppID attribute.
+        /// </summary>
+        /// <param name="appID">ID of a capture application.</param>
+        /// <returns>400 status code or 200 with requested data in JSON.</returns>
         [HttpGet("{appID}")]
         public IActionResult GetAppsQueue(string appID)
         {
@@ -89,6 +104,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for obtaining a single Queue class instance.
+        /// </summary>
+        /// <param name="id">ID of the queue.</param>
+        /// <returns>400 status code or 200 with requested data in JSON.</returns>
         [HttpGet("queue")]
         public IActionResult GetQueue(string id)
         {
@@ -107,6 +127,11 @@ namespace FormCapture.Server.Controllers
             }
         }
 
+        /// <summary>
+        /// Method for updating a row in Queue database table.
+        /// </summary>
+        /// <param name="queue">Instance of Queue class with new data, but same ID.</param>
+        /// <returns>200 or 400 status code.</returns>
         [HttpPost("update")]
         public async Task<IActionResult> Update([FromBody] Queue queue)
         {
