@@ -70,7 +70,7 @@ namespace FormCapture.Server.Controllers
         }
 
         /// <summary>
-        /// Method for deleting a new capture application and workflow association.
+        /// Method for deleting a capture application and workflow association.
         /// </summary>
         /// <param name="captureAppWorkflows">Instance of the CaptureApplication class.</param>
         /// <returns>200 or 400 status code.</returns>

@@ -118,14 +118,16 @@
                                                 <tr>
                                                     <td><b>Name</b></td>
                                                     <td><b>Associated</b></td>
+                                                    <td><b>Delete</b></td>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach (var workflow in appWorkflows)
                                                 {
-                                                    <tr @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.WorkflowID}/edit"))">
-                                                        <td>@workflow.WorkflowName</td>
-                                                        <td>@workflow.Added</td>
+                                                    <tr>
+                                                        <td @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.WorkflowID}/edit"))">@workflow.WorkflowName</td>
+                                                        <td @onclick="@(e => Navigate($"/formcapture/workflows/{workflow.WorkflowID}/edit"))">@workflow.Added</td>
+                                                        <td @onclick="@(e => DeleteWorkflow(workflow))"><span class="oi oi-trash"></span></td>
                                                     </tr>
                                                 }
                                             </tbody>
@@ -250,6 +252,19 @@
     private void Navigate(string page)
     {
         NavigationManager.NavigateTo(page);
+    }
+
+    private async Task DeleteWorkflow(CaptureAppWorkflows captureAppWorkflow)
+    {
+        var res = await IJSRuntime.InvokeAsync<bool>("confirmDialog", $"Do you want to delete association between this app and '{captureAppWorkflow.WorkflowName}'?");
+        if (res)
+        {
+            var deleteWorkflowResponse = await HttpClient.PostAsJsonAsync("api/captureappworkflows/delete", new List<CaptureAppWorkflows> { captureAppWorkflow });
+            if (deleteWorkflowResponse.IsSuccessStatusCode)
+            {
+                appWorkflows.Remove(captureAppWorkflow);
+            }
+        }
     }
 
     private async Task ConfirmChanges()

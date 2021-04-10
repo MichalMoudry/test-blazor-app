@@ -34,7 +34,7 @@
                             <tr>
                                 <td>@userApp.UserID</td>
                                 <td>@userApp.Added</td>
-                                <td @onclick="@(e => DeleteUser(userApp))"><span class="oi oi-trash"></span></td>
+                                <td class="td-hover" @onclick="@(e => DeleteUser(userApp))"><span class="oi oi-trash"></span></td>
                             </tr>
                         }
                     </tbody>
