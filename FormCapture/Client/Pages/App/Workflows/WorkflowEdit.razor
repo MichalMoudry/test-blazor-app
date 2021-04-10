@@ -277,11 +277,12 @@
                 {
                     workflow.Updated = DateTime.Now;
                     var addWorkflowMessage = await HttpClient.PutAsJsonAsync("api/workflows/update", workflow);
+                    var addTaskGroupingMessage = await HttpClient.PostAsJsonAsync("api/workflowtaskgrouping/add", groupings);
                     if (groupingsToDelete.Count > 0)
                     {
-                        var addTaskGroupingMessage = await HttpClient.PutAsJsonAsync("api/workflowtaskgrouping/delete", groupingsToDelete);
+                        var deleteTaskGroupingMessage = await HttpClient.PutAsJsonAsync("api/workflowtaskgrouping/delete", groupingsToDelete);
                     }
-                    if (addWorkflowMessage.IsSuccessStatusCode)
+                    if (addWorkflowMessage.IsSuccessStatusCode && addTaskGroupingMessage.IsSuccessStatusCode)
                     {
                         NavigationManager.NavigateTo("/formcapture/workflows");
                     }

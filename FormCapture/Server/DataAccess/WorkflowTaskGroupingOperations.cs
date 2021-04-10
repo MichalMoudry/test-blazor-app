@@ -44,13 +44,13 @@ namespace FormCapture.Server.DataAccess
         /// <summary>
         /// Method for removing a task grouping from db.
         /// </summary>
-        /// <param name="taskGroupings">List of new task grouping.</param>
+        /// <param name="taskID">ID of the task.</param>
         /// <returns>True if groupings were removed. False if operation failed.</returns>
-        public async Task<bool> RemoveGrouping(List<WorkflowTaskGrouping> taskGroupings)
+        public async Task<bool> RemoveGrouping(string taskID)
         {
             try
             {
-                _appDbContext.RemoveRange(taskGroupings);
+                _appDbContext.TaskGroupings.RemoveRange(_appDbContext.TaskGroupings.Where(i => i.TaskID.Equals(taskID)));
                 await _appDbContext.SaveChangesAsync();
                 return true;
             }

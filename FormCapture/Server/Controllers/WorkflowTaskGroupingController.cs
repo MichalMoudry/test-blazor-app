@@ -53,18 +53,18 @@ namespace FormCapture.Server.Controllers
         /// <summary>
         /// Method for deleting task grouping.
         /// </summary>
-        /// <param name="taskGroupings">List of existing task groupings.</param>
+        /// <param name="taskID">ID of a task.</param>
         /// <returns>200 status code or 400 code.</returns>
-        [HttpPut("delete")]
-        public async Task<IActionResult> DeleteGrouping([FromBody] List<WorkflowTaskGrouping> taskGroupings)
+        [HttpDelete("{taskID}")]
+        public async Task<IActionResult> DeleteGrouping(string taskID)
         {
             try
             {
-                if (taskGroupings == null || taskGroupings.Count <= 0)
+                if (string.IsNullOrEmpty(taskID))
                 {
                     return BadRequest();
                 }
-                bool res = await _workflowTaskGroupingOperations.RemoveGrouping(taskGroupings);
+                bool res = await _workflowTaskGroupingOperations.RemoveGrouping(taskID);
                 if (res)
                 {
                     return Ok();

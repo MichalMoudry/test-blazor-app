@@ -1,6 +1,7 @@
 ﻿@layout AppLayout
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
 @page "/formcapture/tasks"
 
 <AuthorizeView Roles="Admin, Workflow admin">
@@ -36,17 +37,28 @@
                         <tbody>
                             @foreach (WorkflowTask task in tasks)
                             {
-                                <tr>
+                                <tr class="pointer">
                                     <td @onclick="@(e => Navigate($"/formcapture/tasks/edit/{task.ID}"))">@task.Name</td>
                                     <td @onclick="@(e => Navigate($"/formcapture/tasks/edit/{task.ID}"))">@task.Added</td>
                                     <td @onclick="@(e => Navigate($"/formcapture/tasks/edit/{task.ID}"))"><span class="oi oi-pencil"></span></td>
-                                    <td><span class="oi oi-trash"></span></td>
+                                    <td @onclick="@(e => DeleteTask(task))"><span class="oi oi-trash"></span></td>
                                 </tr>
                             }
                         </tbody>
                     </table>
                 </div>
             }
+        </div>
+
+        <div class="toast-area mt-3">
+            <div class="alert alert-success alert-dismissible fade show d-none" id="task-deleted-toast" role="alert">
+                <strong class="mr-auto">Task deleted</strong>
+                <hr />
+                <p>Task has been successfully deleted.</p>
+                <button type="button" class="close" onclick="closeAlert('task-deleted-toast');" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
         </div>
 
         @code
@@ -59,6 +71,21 @@
             private void Navigate(string page)
             {
                 NavigationManager.NavigateTo(page);
+            }
+
+            private async Task DeleteTask(WorkflowTask task)
+            {
+                var res = await IJSRuntime.InvokeAsync<bool>("confirmDialog", $"Do you want to delete '{task.Name}' task?");
+                if (res)
+                {
+                    var deleteTaskResponse = await HttpClient.PostAsJsonAsync("api/tasks/delete", task);
+                    var deleteTaskGroupingResponse = await HttpClient.DeleteAsync($"api/workflowtaskgrouping/{task.ID}");
+                    if (deleteTaskResponse.IsSuccessStatusCode && deleteTaskGroupingResponse.IsSuccessStatusCode)
+                    {
+                        tasks.Remove(task);
+                        await IJSRuntime.InvokeVoidAsync("displayToast", "task-deleted-toast");
+                    }
+                }
             }
 
             /// <summary>
