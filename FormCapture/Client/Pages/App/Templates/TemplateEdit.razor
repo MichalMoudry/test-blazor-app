@@ -138,7 +138,11 @@
         <!--mt-3 mb-3 bottom-row-->
         <div class="mt-2 mb-2">
             <button class="btn btn-success" @onclick="Confirm">
-                <span class="oi oi-check"></span> Edit
+                <span class="oi oi-check mr-2"></span> Edit
+            </button>
+
+            <button class="btn btn-danger" @onclick="DeleteTemplate">
+                <span class="oi oi-trash mr-2"></span> Delete template
             </button>
         </div>
 
@@ -209,6 +213,20 @@
             private string expectedValue;
 
             private bool isTestButtonDisabled = false;
+
+            private async Task DeleteTemplate()
+            {
+                var res = await IJSRuntime.InvokeAsync<bool>("confirmDialog", $"Do you want to delete '{template.Name}' template?");
+                if (res && template != null && fields != null)
+                {
+                    var deleteTemlateResponse = await HttpClient.PostAsJsonAsync("api/templates/delete", template);
+                    var deleteFieldsResponse = await HttpClient.PostAsJsonAsync("api/fields/delete", fields);
+                    if (deleteTemlateResponse.IsSuccessStatusCode && deleteFieldsResponse.IsSuccessStatusCode)
+                    {
+                        NavigationManager.NavigateTo($"/formcapture/apps/{template.AppID}");
+                    }
+                }
+            }
 
             private async Task TestIdFieldRecognition()
             {
