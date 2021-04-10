@@ -1,25 +1,20 @@
-﻿using FormCapture.Shared;
+﻿using Blazored.LocalStorage;
+using FormCapture.Shared;
+using Microsoft.AspNetCore.Components.Authorization;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Blazored.LocalStorage;
-using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace FormCapture.Client.Services
 {
     public class AuthenticationService : IAuthenticationService
     {
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly HttpClient _httpClient;
 
         private readonly ILocalStorageService _localStorageService;
-
-        private readonly AuthenticationStateProvider _authenticationStateProvider;
 
         public AuthenticationService(HttpClient httpClient, ILocalStorageService localStorage, AuthenticationStateProvider provider)
         {

@@ -4,6 +4,49 @@ html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+.darkTheme {
+    color: white !important;
+    background-color: #22272e !important;
+}
+
+.darkTheme hr {
+    background: white;
+}
+
+.darkTheme .table {
+    color: white;
+}
+
+.darkTheme .table-hover tbody tr:hover td {
+    color: white !important;
+}
+
+.darkTheme .card {
+    background-color: #22272e;
+    border: 1px solid;
+}
+
+.darkTheme .card-footer {
+    border-top: 1px solid;
+}
+
+.darkTheme .card-header {
+    border-bottom: 1px solid;
+}
+
+.darkTheme .list-group-item {
+    background-color: #22272e;
+    border: 1px solid;
+}
+
+.darkTheme .top-row {
+    background-color: #22272e !important;
+}
+
+.darkTheme .modal-content {
+    background-color: #22272e !important;
+}
+
 a, .btn-link {
     color: #0366d6;
 }

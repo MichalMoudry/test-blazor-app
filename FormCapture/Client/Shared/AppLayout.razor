@@ -1,11 +1,13 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
+@inject ILocalStorageService LocalStorage
+@inject IJSRuntime IJSRuntime
 
 <div class="sidebar">
     <NavMenu />
 </div>
 
-<div class="main">
+<div class="main" id="main-body">
     <div class="top-row px-4">
         <button class="btn btn-primary" @onclick="@(e => Navigate("/logout"))">
             <span class="oi oi-account-logout"></span> Logout
@@ -19,8 +21,26 @@
 
 @code
 {
+    private string appTheme;
+
     private void Navigate(string page)
     {
         NavigationManager.NavigateTo(page);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        appTheme = await LocalStorage.GetItemAsStringAsync("appTheme");
+        if (!string.IsNullOrEmpty(appTheme))
+        {
+            if (appTheme.Equals(AppTheme.Light.ToString()))
+            {
+                await IJSRuntime.InvokeVoidAsync("switchTheme", "lightTheme");
+            }
+            else
+            {
+                await IJSRuntime.InvokeVoidAsync("switchTheme", "darkTheme");
+            }
+        }
     }
 }

@@ -212,3 +212,17 @@ function confirmDialog(message) {
 function closeAlert(alertID) {
     $("#" + alertID).hide();
 }
+
+function switchTheme(newTheme) {
+    var main = document.getElementById("main-body");
+    if (main != null) {
+        if (newTheme == "lightTheme") {
+            main.classList.remove("darkTheme");
+            main.classList.add(newTheme);
+        }
+        else {
+            main.classList.remove("lightTheme");
+            main.classList.add(newTheme);
+        }
+    }
+}

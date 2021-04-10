@@ -1,10 +1,70 @@
 ﻿@layout AppLayout
-@inject HttpClient HttpClient
-@inject NavigationManager NavigationManager
+@inject IJSRuntime IJSRuntime
+@inject ILocalStorageService localStorage
 @page "/formcapture/settings"
 
-<h3>Settings</h3>
+<AuthorizeView>
+    <Authorized>
+        <h3><span class="oi oi-cog mr-1"></span> Settings</h3>
+
+        <hr />
+
+        <h4><span class="oi oi-contrast mr-2"></span> Application theme</h4>
+        <div class="form-group pl-4 pt-1">
+            <input type="radio" name="theme-radio" id="light-radio" checked="@isLightThemeRadioChecked" class="form-check-input" @onclick="@(e => SetAppTheme(AppTheme.Light))" />
+            <label for="light-radio" class="form-check-label">Light theme</label>
+
+            <br />
+
+            <input type="radio" name="theme-radio" id="dark-radio" checked="@isDarkThemeRadioChecked" class="form-check-input" @onclick="@(e => SetAppTheme(AppTheme.Dark))" />
+            <label for="dark-radio" class="form-check-label">Dark theme</label>
+        </div>
+    </Authorized>
+
+    <NotAuthorized>
+        <h3>You are not authorized to accesss this page.</h3>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
+    private string appTheme;
 
+    private bool isLightThemeRadioChecked = false;
+
+    private bool isDarkThemeRadioChecked = false;
+
+    private async Task SetAppTheme(AppTheme theme)
+    {
+        if (theme.Equals(AppTheme.Light))
+        {
+            await IJSRuntime.InvokeVoidAsync("switchTheme", "lightTheme");
+            await localStorage.SetItemAsync("appTheme", AppTheme.Light.ToString());
+        }
+        else
+        {
+            await IJSRuntime.InvokeVoidAsync("switchTheme", "darkTheme");
+            await localStorage.SetItemAsync("appTheme", AppTheme.Dark.ToString());
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        appTheme = await localStorage.GetItemAsStringAsync("appTheme");
+        if (string.IsNullOrEmpty(appTheme))
+        {
+            isLightThemeRadioChecked = true;
+            await localStorage.SetItemAsync("appTheme", AppTheme.Light.ToString());
+        }
+        else
+        {
+            if (appTheme.Equals(AppTheme.Light.ToString()))
+            {
+                isLightThemeRadioChecked = true;
+            }
+            else
+            {
+                isDarkThemeRadioChecked = true;
+            }
+        }
+    }
 }
