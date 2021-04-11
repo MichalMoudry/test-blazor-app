@@ -1,10 +1,154 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Michal Moudrý">
     <title>FormCapture - Guide</title>
+    <link href="../css/guidestyle.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
 </head>
-<body>
 
+<body>
+    <div class="container-main mt-5 mb-5">
+        <header>
+            <h1><span class="oi oi-book mr-1 blue"></span> FormCapture documentation</h1>
+            <hr />
+            <p>This page contains user documentation for FormCapture client application. </p>
+            <hr />
+        </header>
+    
+        <main>
+            <h2><span class="oi oi-copywriting mr-2 blue"></span> Table of contents</h2>
+            <ol class="pt-2">
+                <li><a href="#workflow-overview" title="Initial FormCapture application set up">Initial application setup</a></li>
+                <li><a href="#user-registration" title="How to register a user">User registration</a></li>
+                <li><a href="#user-login" title="How to login into the app">User login</a></li>
+                <li><a href="#user-logout" title="How to logout of the app">User logout</a></li>
+                <li><a href="#workflows">Workflows</a>
+                    <ul>
+                        <li>Add a new workflow</li>
+                        <li>Edit an existing workflow</li>
+                    </ul>
+                </li>
+                <li><a href="#workflow-tasks">Workflow tasks</a>
+                    <ul>
+                        <li>Add a new workflow task</li>
+                        <li>Edit an existing workflow task</li>
+                    </ul>
+                </li>
+                <li><a href="#capture-apps">Capture apps</a>
+                    <ul>
+                        <li>Add a new capture app</li>
+                        <li>Edit an existing capture app</li>
+                    </ul>
+                </li>
+                <li>Templates
+                    <ul>
+                        <li>Add a new template</li>
+                        <li>Edit an existing template</li>
+                    </ul>
+                </li>
+                <li><a href="#settings" title="How to set app's settings">Settings</a></li>
+                <li><a href="#new-password">Change account password</a></li>
+            </ol>
+
+            <hr />
+
+            <h2 id="workflow-overview"><span class="oi oi-wrench mr-2 blue"></span> Initial application setup</h2>
+            <div class="pt-2">
+                <p>This part of the documentation describes how to initially set up FormCapture application.</p>
+            </div>
+
+            <hr />
+
+            <h2 id="user-registration"><span class="oi oi-person mr-2 blue"></span> User registration</h2>
+            <div class="pt-2">
+                <p>To register a user, you need to visit <i>/register</i> page of the app where registration form exists. First 3 input fields are for email (which is used to identify the user), password and its confirmation. Last field is for selecting which role the user will have inside the system. You can see the form <a href="#picture-1" title="Registration form">in the picture n. 1</a>.</p>
+                <p><u>Role descriptions</u>:</p>
+                <ul>
+                    <li><b>Admin</b> - Admin account has access to a lot of operations regarding items within the app. For example admin has access to user interface for creating capture apps.</li>
+                    <li><b>User</b> - User has access to limited functionality and exists only for processing images.</li>
+                </ul>
+
+                <figure class="figure" id="picture-1">
+                    <img src="guide-images/registration-form.png" class="figure-img img-fluid rounded" alt="Registration form" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 1 – Registration form</figcaption>
+                </figure>
+
+                <p>After you have succesfully completed registration, then you will be sent to login page.</p>
+            </div>
+
+            <hr />
+
+            <h2 id="user-login"><span class="oi oi-account-login mr-2 blue"></span> User login</h2>
+            <div class="pt-2">
+                <p>To login into the app, you need to visit <i>/login</i> page or you can automatically navigate to it. The login form consists of 2 fields for email and password (<a href="#picture-2" title="Login form">see picture n. 2</a>). If you are successful, then you will be navigated to a page with a list of capture applications.</p>
+                <figure class="figure" id="picture-2">
+                    <img src="guide-images/login-form.png" class="figure-img img-fluid rounded" alt="Login form" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 2 – Login form</figcaption>
+                </figure>
+            </div>
+
+            <hr />
+
+            <h2 id="user-logout"><span class="oi oi-account-logout mr-2 blue"></span> User logout</h2>
+            <div class="pt-2">
+                <p>To logout of the application you have to click the logout button, that is located in the top right corner of the screen (<a href="#picture-3" title="Logout button">see picture n. 3</a>).</p>
+                <figure class="figure" id="picture-3">
+                    <img src="guide-images/logout-button.png" class="figure-img img-fluid rounded" alt="Logout form" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 3 – Logout button</figcaption>
+                </figure>
+            </div>
+
+            <hr />
+
+            <h2 id="workflows"><span class="oi oi-project mr-2 blue"></span> Workflows</h2>
+
+            <hr />
+
+            <h2 id="workflow-tasks"><span class="oi oi-code mr-2 blue"></span> Workflow tasks</h2>
+
+            <hr />
+
+            <h2 id="capture-apps"><span class="oi oi-aperture mr-2 blue"></span> Capture apps</h2>
+            <div class="pt-2 pb-2">
+                <p>Main page of FormCapture application consists of a list of your capture applications, or applications that your account has been added to <a href="#picture-?2" title="View main page of FormCapture application">as seen below</a>.</p>
+                <figure class="figure" id="picture-?2">
+                    <img src="guide-images/applist-page.png" class="figure-img img-fluid rounded" alt="Main page of FormCapture application" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. ? – Main page of FormCapture application</figcaption>
+                </figure>
+            </div>
+            <h3 id="add-capture-app"><span class="oi oi-plus mr-2 blue"></span> Adding a new capture app</h3>
+
+            <hr />
+
+            <h2 id="templates"><span class="oi oi-document mr-2 blue"></span> Document templates</h2>
+
+            <hr />
+
+            <h2 id="settings"><span class="oi oi-cog mr-2 blue"></span> Settings</h2>
+            <div class="pt-2">
+                <p>To change available application settings, you need to go to <i>/formcapture/settings</i> page. That page currently contains only application theme setting as per <a href="#picture-?" title="Setting page">picture n. ?</a>.</p>
+                <figure class="figure" id="picture-?">
+                    <img src="guide-images/settings-page.png" class="figure-img img-fluid rounded" alt="Settings page" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. ? – Current application settings</figcaption>
+                </figure>
+            </div>
+
+            <hr />
+
+            <h2 id="new-password"><span class="oi oi-pencil mr-2 blue"></span> New account password</h2>
+            <div class="pt-2">
+                <p>To change your account password visit <i>/formcapture/profile</i> page, which contains a form for changing your current password. This page can be seen in the <a href="#picture-?1" title="Profile page">picture n. ?1</a>.</p>
+                <figure class="figure" id="picture-?">
+                    <img src="guide-images/profile-page.png" class="figure-img img-fluid rounded" alt="Account page" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. ? – Account page</figcaption>
+                </figure>
+            </div>
+        </main>
+    </div>
 </body>
 </html>
