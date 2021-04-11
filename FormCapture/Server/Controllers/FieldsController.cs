@@ -50,11 +50,37 @@ namespace FormCapture.Server.Controllers
         [HttpPost("delete")]
         public async Task<IActionResult> Delete([FromBody] List<Field> fields)
         {
-            if (fields == null || fields.Count <= 0)
+            if (fields == null)
+            {
+                return BadRequest();
+            }
+            else if (fields.Count <= 0)
             {
                 return BadRequest();
             }
             var res = await _fieldOperations.RemoveFields(fields);
+            if (res)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("deletewithtemplates")]
+        public async Task<IActionResult> DeleteWithTemplates([FromBody] List<Template> templates)
+        {
+            if (templates == null)
+            {
+                return BadRequest();
+            }
+            else if (templates.Count <= 0)
+            {
+                return BadRequest();
+            }
+            var res = await _fieldOperations.RemoveFields(templates);
             if (res)
             {
                 return Ok();

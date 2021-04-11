@@ -51,6 +51,24 @@ namespace FormCapture.Server.DataAccess
             }
         }
 
+        public async Task<bool> DeleteTemplates(List<Template> templates)
+        {
+            try
+            {
+                if (templates == null)
+                {
+                    return false;
+                }
+                _appDbContext.Templates.RemoveRange(templates);
+                await _appDbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public List<Template> GetAppsTemplates(string appID)
         {
             var templates = _appDbContext.Templates.Where(i => i.AppID.Equals(appID)).OrderBy(i => i.Added).ToList();

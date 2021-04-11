@@ -29,6 +29,11 @@
                                         <span class="oi oi-pencil pointer"></span>
                                     </button>
                                 </div>
+                                <div class="col-1">
+                                    <button class="btn" type="button" data-toggle="modal" @onclick="DeleteApp">
+                                        <span class="oi oi-trash pointer"></span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -263,6 +268,31 @@
             if (deleteWorkflowResponse.IsSuccessStatusCode)
             {
                 appWorkflows.Remove(captureAppWorkflow);
+            }
+        }
+    }
+
+    private async Task DeleteApp()
+    {
+        if (captureApplication != null)
+        {
+            var res = await IJSRuntime.InvokeAsync<bool>("confirmDialog", $"Do you want to delete '{captureApplication.Name}' app?");
+            if (res)
+            {
+                var getAppUsersIdsResponse = await HttpClient.GetAsync($"api/userapps/{captureApplication.ID}");
+                if (getAppUsersIdsResponse.IsSuccessStatusCode)
+                {
+                    var userApps = JsonConvert.DeserializeObject<List<UserApps>>(await getAppUsersIdsResponse.Content.ReadAsStringAsync());
+                    var deleteWorkflowResponse = await HttpClient.PostAsJsonAsync("api/captureappworkflows/delete", appWorkflows);
+                    var deleteTemplatesResponse = await HttpClient.PostAsJsonAsync("api/templates/deletemultiple", templates);
+                    var deleteCaptureAppResponse = await HttpClient.PostAsJsonAsync("api/captureapps/delete", captureApplication);
+                    var deleteFieldsResponse = await HttpClient.PostAsJsonAsync("api/fields/deletewithtemplates", templates);
+                    var deleteUserAppsResponse = await HttpClient.PostAsJsonAsync("api/userapps/delete", userApps);
+                    if (deleteWorkflowResponse.IsSuccessStatusCode && deleteTemplatesResponse.IsSuccessStatusCode && deleteCaptureAppResponse.IsSuccessStatusCode && deleteFieldsResponse.IsSuccessStatusCode && deleteUserAppsResponse.IsSuccessStatusCode)
+                    {
+                        Navigate("/formcapture/apps");
+                    }
+                }
             }
         }
     }

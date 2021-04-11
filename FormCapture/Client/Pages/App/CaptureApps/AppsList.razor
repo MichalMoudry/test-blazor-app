@@ -35,7 +35,6 @@
                                     <td>Name</td>
                                     <td>Locale</td>
                                     <td>Added</td>
-                                    <td>Delete</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,7 +44,6 @@
                                         <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Name</td>
                                         <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Locale</td>
                                         <td @onclick="@(e => Navigate($"/formcapture/apps/{application.ID}"))">@application.Added</td>
-                                        <td @onclick="@(e => DeleteApp(application))"><span class="oi oi-trash"></span></td>
                                     </tr>
                                 }
                             </tbody>
@@ -151,14 +149,6 @@
         </button>
     </div>
 
-    <div class="alert alert-info alert-dismissible fade show d-none" id="app-deleted-toast" role="alert">
-        <strong class="mr-auto">Capture application deleted</strong>
-        <p>Capture application has been successfully deleted.</p>
-        <button type="button" class="close" onclick="closeAlert('app-deleted-toast');" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-
     <div class="alert alert-danger alert-dismissible fade show d-none" id="app-error-toast" role="alert">
         <strong class="mr-auto">Form error</strong>
         <hr />
@@ -231,17 +221,6 @@
         {
             await IJSRuntime.InvokeVoidAsync("displayToast", "app-error-toast");
         }
-    }
-
-    private async Task DeleteApp(CaptureApplication application)
-    {
-        var res = await IJSRuntime.InvokeAsync<bool>("confirmDialog", $"Do you want to delete '{application.Name}' app?");
-        if (res)
-        {
-            captureApplications.Remove(application);
-            await IJSRuntime.InvokeVoidAsync("displayToast", "app-deleted-toast");
-        }
-        //TODO: Přidat volání pro mazání
     }
 
     /// <summary>

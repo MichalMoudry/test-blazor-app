@@ -2,6 +2,7 @@
 using FormCapture.Shared.DbModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FormCapture.Server.Controllers
@@ -54,6 +55,29 @@ namespace FormCapture.Server.Controllers
                 return BadRequest();
             }
             var res = await _templateOperations.DeleteTemplate(template);
+            if (res)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        /// <summary>
+        /// Method for deleting existing document templates.
+        /// </summary>
+        /// <param name="template">List of Template class instances.</param>
+        /// <returns>200 or 400 status code.</returns>
+        [HttpPost("deletemultiple")]
+        public async Task<IActionResult> DeleteMultiple([FromBody] List<Template> templates)
+        {
+            if (templates == null)
+            {
+                return BadRequest();
+            }
+            var res = await _templateOperations.DeleteTemplates(templates);
             if (res)
             {
                 return Ok();

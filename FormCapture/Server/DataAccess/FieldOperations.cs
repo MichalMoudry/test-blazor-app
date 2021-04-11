@@ -59,7 +59,24 @@ namespace FormCapture.Server.DataAccess
         {
             try
             {
-                _appDbContext.RemoveRange(fields);
+                _appDbContext.Fields.RemoveRange(fields);
+                await _appDbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveFields(List<Template> templates)
+        {
+            try
+            {
+                foreach (var template in templates)
+                {
+                    _appDbContext.Fields.RemoveRange(_appDbContext.Fields.Where(i => i.TemplateID.Equals(template.ID)));
+                }
                 await _appDbContext.SaveChangesAsync();
                 return true;
             }

@@ -61,7 +61,7 @@ namespace FormCapture.Server.DataAccess
         {
             try
             {
-                CaptureApplication origApp = _dataContext.CaptureApplications.SingleOrDefault(i => i.ID.Equals(newApp.ID));
+                var origApp = _dataContext.CaptureApplications.SingleOrDefault(i => i.ID.Equals(newApp.ID));
                 if (origApp == null)
                 {
                     return false;
