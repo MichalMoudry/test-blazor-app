@@ -12,9 +12,13 @@ html, body {
 .hr-main {
     background-color: black;
     height: 3px !important;
-    border-radius: 5px;
+    border-radius: 7px;
 }
 
 .blue {
     color: rgba(59,94,186,1);
+}
+
+img {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
