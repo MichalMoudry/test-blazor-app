@@ -9,6 +9,12 @@ html, body {
     width: 60%;
 }
 
+.hr-main {
+    background-color: black;
+    height: 3px !important;
+    border-radius: 5px;
+}
+
 .blue {
     color: rgba(59,94,186,1);
 }

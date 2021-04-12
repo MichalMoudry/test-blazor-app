@@ -29,8 +29,8 @@
                 <li><a href="#user-logout" title="How to logout of the app">User logout</a></li>
                 <li><a href="#workflows">Workflows</a>
                     <ul>
-                        <li>Add a new workflow</li>
-                        <li>Edit an existing workflow</li>
+                        <li><a href="#add-new-workflow" title="Adding a new workflow">Add a new workflow</a></li>
+                        <li><a href="#edit-new-workflow" title="Edit an existing workflow">Edit an existing workflow</a></li>
                     </ul>
                 </li>
                 <li><a href="#workflow-tasks">Workflow tasks</a>
@@ -51,18 +51,33 @@
                         <li>Edit an existing template</li>
                     </ul>
                 </li>
+                <li>Queues
+                    <ul>
+                        <li>Starting a new queue</li>
+                        <li>Queue processing</li>
+                        <li>Data export</li>
+                    </ul>
+                </li>
                 <li><a href="#settings" title="How to set app's settings">Settings</a></li>
                 <li><a href="#new-password">Change account password</a></li>
             </ol>
 
-            <hr />
+            <hr class="hr-main" />
 
-            <h2 id="workflow-overview"><span class="oi oi-wrench mr-2 blue"></span> Initial application setup</h2>
+            <h2 id="workflow-overview"><span class="oi oi-wrench mr-1 blue"></span> Initial application setup</h2>
             <div class="pt-2">
                 <p>This part of the documentation describes how to initially set up FormCapture application.</p>
+                <p><u>Steps:</u></p>
+                <ol>
+                    <li>Create a workflow (<a href="#add-new-workflow" title="Adding a new workflow">as per this section</a>)</li>
+                    <li>Create a capture application</li>
+                    <li>Add a new document template</li>
+                    <li>Associate a created workflow from step 1 to a existing capture application</li>
+                </ol>
+                <p><b>After completing these steps</b>, you will be able to start a queue where uploaded images will be processed.</p>
             </div>
 
-            <hr />
+            <hr class="hr-main" />
 
             <h2 id="user-registration"><span class="oi oi-person mr-2 blue"></span> User registration</h2>
             <div class="pt-2">
@@ -81,7 +96,7 @@
                 <p>After you have succesfully completed registration, then you will be sent to login page.</p>
             </div>
 
-            <hr />
+            <hr class="hr-main" />
 
             <h2 id="user-login"><span class="oi oi-account-login mr-2 blue"></span> User login</h2>
             <div class="pt-2">
@@ -92,7 +107,7 @@
                 </figure>
             </div>
 
-            <hr />
+            <hr class="hr-main" />
 
             <h2 id="user-logout"><span class="oi oi-account-logout mr-2 blue"></span> User logout</h2>
             <div class="pt-2">
@@ -103,15 +118,53 @@
                 </figure>
             </div>
 
-            <hr />
+            <hr class="hr-main" />
 
             <h2 id="workflows"><span class="oi oi-project mr-2 blue"></span> Workflows</h2>
-
+            <div class="pt-2">
+                <p>Workflows are used to add additional tasks to each step in image processing with the help of JavaScript. If you click on the link Workflows in side menu, then you will be navigated to a page with the list of existing workflows (<a href="#picture-4" title="Page with a list of existing workflows">as seen below</a>) and a button, that will navigate you to a workflow creation page.</p>
+                <figure class="figure" id="picture-4">
+                    <img src="guide-images/workflows-list.png" class="figure-img img-fluid rounded" alt="Page with a list of existing workflows" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 4 – Page with a list of existing workflows</figcaption>
+                </figure>
+            </div>
             <hr />
+            <h3 id="add-new-workflow"><span class="oi oi-plus mr-2 blue"></span> Add a new workflow</h3>
+            <div class="pt-2">
+                <p>To create a new workflow, you need to click on a <b>Add a new workflow button</b> on the page with the list of existing workflows, then you will be navigated to the workflow creation page <a href="#picture-5" title="Page for creating a new workflow">as seen below</a>.</p>
+                <figure class="figure" id="picture-5">
+                    <img src="guide-images/create-workflow.png" class="figure-img img-fluid rounded" alt="Page for creating a new workflow" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 5 – Page for creating a new workflow</figcaption>
+                </figure>
+                <p>On this page you can see 4 boxes, where you can add your own JavaScript tasks to each step in image processing, but they are not required to create a workflow. Only required field is the one for workflow name.</p>
+            </div>
+            <hr />
+            <h3 id="edit-new-workflow"><span class="oi oi-pencil mr-2 blue"></span> Edit an existing workflow</h3>
+            <div class="pt-2">
+                <p>To edit an existing workflow, you need to click on an item in a list with workflows. There are two list with them, one is shown in the <a href="#picture-4" title="Page with a list of existing workflows">picture n. 4</a> and the other one is on a page with capture application details. After that, you will be navigated to a page where you can edit the specific workflow (<a href="#picture-6" title="Page for editing an existing workflow">see picture n. 6</a>).</p>
+                <figure class="figure" id="picture-6">
+                    <img src="guide-images/create-workflow.png" class="figure-img img-fluid rounded" alt="Page for editing an existing workflow" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 6 – Page for editing an existing workflow</figcaption>
+                </figure>
+                <p>This page is simillar in functionality to the page for creating a new workflow.</p>
+            </div>
+
+            <hr class="hr-main" />
 
             <h2 id="workflow-tasks"><span class="oi oi-code mr-2 blue"></span> Workflow tasks</h2>
-
+            <div class="pt-2">
+                <p>If you want to add a custom task to each step in image processing, then you can do that through workflow tasks. When you click on Tasks link in side menu, you will be navigated to a page with a list of existing tasks and a button to add a new one (<a href="#picture-7" title="Page with a list of existing workflow tasks">see picture n. 7</a>).</p>
+                <figure class="figure" id="picture-7">
+                    <img src="guide-images/task-list.png" class="figure-img img-fluid rounded" alt="Page with a list of existing workflow tasks" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 7 – Page with a list of existing workflow tasks</figcaption>
+                </figure>
+            </div>
             <hr />
+            <h3 id="add-new-task"><span class="oi oi-plus mr-2 blue"></span> Add a new workflow task</h3>
+            <hr />
+            <h3 id="edit-new-task"><span class="oi oi-pencil mr-2 blue"></span> Edit an existing workflow task</h3>
+
+            <hr class="hr-main" />
 
             <h2 id="capture-apps"><span class="oi oi-aperture mr-2 blue"></span> Capture apps</h2>
             <div class="pt-2 pb-2">
@@ -123,11 +176,11 @@
             </div>
             <h3 id="add-capture-app"><span class="oi oi-plus mr-2 blue"></span> Adding a new capture app</h3>
 
-            <hr />
+            <hr class="hr-main" />
 
             <h2 id="templates"><span class="oi oi-document mr-2 blue"></span> Document templates</h2>
 
-            <hr />
+            <hr class="hr-main" />
 
             <h2 id="settings"><span class="oi oi-cog mr-2 blue"></span> Settings</h2>
             <div class="pt-2">
@@ -138,7 +191,7 @@
                 </figure>
             </div>
 
-            <hr />
+            <hr class="hr-main" />
 
             <h2 id="new-password"><span class="oi oi-pencil mr-2 blue"></span> New account password</h2>
             <div class="pt-2">
