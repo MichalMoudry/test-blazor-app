@@ -42,20 +42,20 @@
                 <li><a href="#capture-apps">Capture apps</a>
                     <ul>
                         <li><a href="#add-capture-app" title="Add a new capture app">Add a new capture app</a></li>
-                        <li><a>Edit an existing capture app</a></li>
+                        <li><a href="#edit-capture-app" title="Edit an existing capture app">Edit an existing capture app</a></li>
                     </ul>
                 </li>
-                <li>Templates
+                <li><a href="#templates">Templates</a>
                     <ul>
-                        <li>Add a new template</li>
-                        <li>Edit an existing template</li>
+                        <li><a href="#add-template" title="Add a new template">Add a new template</a></li>
+                        <li><a href="#edit-template" title="Edit an existing template">Edit an existing template</a></li>
                     </ul>
                 </li>
-                <li>Queues
+                <li><a href="#queues">Queues</a>
                     <ul>
-                        <li>Starting a new queue</li>
-                        <li>Queue processing</li>
-                        <li>Data export</li>
+                        <li><a href="#start-a-queue" title="Starting a new queue">Starting a new queue</a></li>
+                        <li><a title="Queue processing">Queue processing</a></li>
+                        <li><a title="Data export">Data export</a></li>
                     </ul>
                 </li>
                 <li><a href="#settings" title="How to set app's settings">Settings</a></li>
@@ -72,7 +72,7 @@
                     <li>Create a workflow (<a href="#add-new-workflow" title="Adding a new workflow">as per this section</a>)</li>
                     <li>Create a capture application</li>
                     <li>Add a new document template</li>
-                    <li>Associate a created workflow from step 1 to a existing capture application</li>
+                    <li>Associate a created workflow from step 1 to an existing capture application</li>
                 </ol>
                 <p><b>After completing these steps</b>, you will be able to start a queue where uploaded images will be processed.</p>
             </div>
@@ -209,6 +209,49 @@
             <hr class="hr-main" />
 
             <h2 id="templates"><span class="oi oi-document mr-2 blue"></span> Document templates</h2>
+            <div class="pt-2">
+                <p>Document templates are used to set fields, that are used to set areas for text recognition. Templates list can be seen on a app's details page (<a href="#picture-12" title="Capture application's details page with highlighted buttons for editing and deleting">picture n. 12</a>).</p>
+            </div>
+            <hr />
+            <h3 id="add-template"><span class="oi oi-plus mr-2 blue"></span> Adding a new template</h3>
+            <div class="pt-2">
+                <p>To create a new document template you need to click on a <b>Add a template</b> button, that will navigate you to a page which contains a form with inputs (<a href="#picture-13" title="Page with a form for adding a new template">see picture n. 13</a>) for uploading a template image, template name, fields and block with selected identifying field.</p>
+                <figure class="figure" id="picture-13">
+                    <img src="guide-images/add-template.png" class="figure-img img-fluid rounded" alt="Page with a form for adding a new template" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 13 – Page with a form for adding a new template</figcaption>
+                </figure>
+                <p>To properly add a template, you need to set an identifying field (its a field that is used to ID processed image) and its expected value. Also through <b>Test ID field</b> yellow button, you can test if image will be properly IDed.</p>
+            </div>
+            <hr />
+            <h3 id="edit-template"><span class="oi oi-pencil mr-2 blue"></span> Edit an existing template</h3>
+            <div class="pt-2">
+                <p>To edit an existing template, you need to click on a row in the table, which displays existing templates (table can be seen <a href="#picture-12" title="Capture application's details page with highlighted buttons for editing and deleting">in the picture n. 12</a>). After that you will be navigated to a page, which contains a simillar form to the one for adding a template (<a href="#picture-14" title="Page with a form for editing an existing template">see picture n. 14</a>), but now you can edit a specific template or delete it.</p>
+                <figure class="figure" id="picture-14">
+                    <img src="guide-images/edit-template.png" class="figure-img img-fluid rounded" alt="Page with a form for editing an existing template" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 14 – Page with a form for editing an existing template</figcaption>
+                </figure>
+            </div>
+
+            <hr class="hr-main" />
+
+            <h2 id="queues"><span class="oi oi-list-rich mr-2 blue"></span> Queues</h2>
+            <div class="pt-2">
+                <p>Queues are used to encapsulate uploaded images for their processing. To start a queue or view finished ones, you can access these pages through navigation buttons displayed on the page with capture application's details (<a href="#picture-15" title="Block with navigation buttons related to queues">see picture n. 15</a>).</p>
+                <figure class="figure" id="picture-15">
+                    <img src="guide-images/queue-block.png" class="figure-img img-fluid rounded" alt="Block with navigation buttons related to queues" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 15 – Block with navigation buttons related to queues</figcaption>
+                </figure>
+            </div>
+            <hr />
+            <h3 id="start-a-queue"><span class="oi oi-play-circle mr-2 blue"></span> Starting a new queue</h3>
+            <div class="pt-2">
+                <p>To start a queue, you need to access page for starting one through <b>Start a new queue</b>, which is located on the page with capture application's details, then you will be navigated to a page where you select a workflow and upload images you want processed (<a href="#picture-16" title="Form for creating a new queue">as seen below</a>).</p>
+                <figure class="figure" id="picture-16">
+                    <img src="guide-images/start-queue.png" class="figure-img img-fluid rounded" alt="Form for creating a new queue" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 15 – Form for creating a new queue</figcaption>
+                </figure>
+            </div>
+            <hr />
 
             <hr class="hr-main" />
 

@@ -6,7 +6,7 @@ html, body {
 
 .container-main {
     margin: 0 auto;
-    width: 60%;
+    width: 90%;
 }
 
 .hr-main {
@@ -21,4 +21,10 @@ html, body {
 
 img {
     box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+@media screen and (min-width: 1000px) {
+    .container-main {
+        width: 60%;
+    }
 }
