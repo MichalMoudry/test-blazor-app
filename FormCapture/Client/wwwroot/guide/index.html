@@ -54,8 +54,8 @@
                 <li><a href="#queues">Queues</a>
                     <ul>
                         <li><a href="#start-a-queue" title="Starting a new queue">Starting a new queue</a></li>
-                        <li><a title="Queue processing">Queue processing</a></li>
-                        <li><a title="Data export">Data export</a></li>
+                        <li><a href="#queue-processing" title="Queue processing">Queue processing</a></li>
+                        <li><a href="#data-export" title="Data export">Data export</a></li>
                     </ul>
                 </li>
                 <li><a href="#settings" title="How to set app's settings">Settings</a></li>
@@ -248,19 +248,41 @@
                 <p>To start a queue, you need to access page for starting one through <b>Start a new queue</b>, which is located on the page with capture application's details, then you will be navigated to a page where you select a workflow and upload images you want processed (<a href="#picture-16" title="Form for creating a new queue">as seen below</a>).</p>
                 <figure class="figure" id="picture-16">
                     <img src="guide-images/start-queue.png" class="figure-img img-fluid rounded" alt="Form for creating a new queue" draggable="false" />
-                    <figcaption class="figure-caption">Picture n. 15 – Form for creating a new queue</figcaption>
+                    <figcaption class="figure-caption">Picture n. 16 – Form for creating a new queue</figcaption>
                 </figure>
             </div>
             <hr />
+            <h3 id="queue-processing"><span class="oi oi-list mr-2 blue"></span> Queue processing</h3>
+            <div class="pt-2">
+                <p>Queue processing will start immediately after you create the queue (<a href="#picture-17" title="Page with an example of queue processing">see picture n. 17</a>). Processing is not fully automated and TesseractJS can have errors in text recognition, so to fully complete processing, you need to view verification dialog and confirm recognized values or change ones that are not recognized.</p>
+                <figure class="figure" id="picture-17">
+                    <img src="guide-images/queue-processing.png" class="figure-img img-fluid rounded" alt="Page with an example of queue processing" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 17 – Page with an example of queue processing</figcaption>
+                </figure>
+            </div>
+            <hr />
+            <h3 id="data-export"><span class="oi oi-data-transfer-download mr-2 blue"></span> Data export</h3>
+            <div class="pt-2">
+                <p>To export captured data to different data format, you have to navigate to a page, which contains a list of finished queues (<a href="#picture-18" title="Page with completed queues">see picture n. 18</a>) through the blue button <b>View queues</b> on the app details page.</p>
+                <figure class="figure" id="picture-18">
+                    <img src="guide-images/completed-queues.png" class="figure-img img-fluid rounded" alt="Page with completed queues" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 18 – Page with completed queues</figcaption>
+                </figure>
+                <p>Each queue has an option to export its data, this option opens up a modal window with available export options (<a href="#picture-19" title="Modal window with export options">see picture n. 19</a>). Only export to CSV, Microsoft CSV and JSON are available.</p>
+                <figure class="figure" id="picture-19">
+                    <img src="guide-images/export-options.png" class="figure-img img-fluid rounded" alt="Modal window with export options" draggable="false" />
+                    <figcaption class="figure-caption">Picture n. 19 – Modal window with export options</figcaption>
+                </figure>
+            </div>
 
             <hr class="hr-main" />
 
             <h2 id="settings"><span class="oi oi-cog mr-2 blue"></span> Settings</h2>
             <div class="pt-2">
-                <p>To change available application settings, you need to go to <i>/formcapture/settings</i> page. That page currently contains only application theme setting as per <a href="#picture-?" title="Setting page">picture n. ?</a>.</p>
-                <figure class="figure" id="picture-?">
+                <p>To change available application settings, you need to go to <i>/formcapture/settings</i> page. That page currently contains only application theme setting as per <a href="#picture-20" title="Setting page">picture n. ?</a>.</p>
+                <figure class="figure" id="picture-20">
                     <img src="guide-images/settings-page.png" class="figure-img img-fluid rounded" alt="Settings page" draggable="false" />
-                    <figcaption class="figure-caption">Picture n. ? – Current application settings</figcaption>
+                    <figcaption class="figure-caption">Picture n. 20 – Current application settings</figcaption>
                 </figure>
             </div>
 
@@ -268,10 +290,10 @@
 
             <h2 id="new-password"><span class="oi oi-pencil mr-2 blue"></span> New account password</h2>
             <div class="pt-2">
-                <p>To change your account password visit <i>/formcapture/profile</i> page, which contains a form for changing your current password. This page can be seen in the <a href="#picture-?1" title="Profile page">picture n. ?1</a>.</p>
-                <figure class="figure" id="picture-?">
+                <p>To change your account password visit <i>/formcapture/profile</i> page, which contains a form for changing your current password. This page can be seen in the <a href="#picture-21" title="Profile page">picture n. ?1</a>.</p>
+                <figure class="figure" id="picture-21">
                     <img src="guide-images/profile-page.png" class="figure-img img-fluid rounded" alt="Account page" draggable="false" />
-                    <figcaption class="figure-caption">Picture n. ? – Account page</figcaption>
+                    <figcaption class="figure-caption">Picture n. 21 – Account page</figcaption>
                 </figure>
             </div>
         </main>

@@ -122,8 +122,6 @@
 
     private string LoadingIndicatorCssClass => isLoadingIndicatorHidden ? "d-none" : null;
 
-    private Queue selectedQueue;
-
     private List<FieldValue> fieldValues;
 
     private List<ProcessedFile> files;
@@ -136,11 +134,11 @@
 
     private async Task SelectQueue(Queue queue)
     {
-        selectedQueue = queue;
-        var processedFilesApiResponse = await HttpClient.GetAsync($"api/processedfiles/{selectedQueue.ID}");
+        var processedFilesApiResponse = await HttpClient.GetAsync($"api/processedfiles/{queue.ID}");
         string csvContent = "";
         string mscsvContent = "";
         string jsonContent = "";
+        valuesForJsonContent.Clear();
         if (processedFilesApiResponse.IsSuccessStatusCode)
         {
             files = JsonConvert.DeserializeObject<List<ProcessedFile>>(await processedFilesApiResponse.Content.ReadAsStringAsync());

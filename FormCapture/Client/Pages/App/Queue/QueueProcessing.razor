@@ -132,7 +132,7 @@
                         }
                     </ul>
 
-                    <button type="button" class="btn btn-danger mt-3 @DisplayVerificationButtonCssClass" data-toggle="modal" data-target="#verificationModal">
+                    <button type="button" class="btn btn-danger mt-3 @DisplayVerificationButtonCssClass" data-toggle="modal" data-target="#resultModal">
                         <span class="oi oi-target"></span> View verification dialog
                     </button>
                 </div>
@@ -261,7 +261,13 @@
                                     <ul class="list-group">
                                         @foreach (var value in fieldValues.Where(i => i.FileID.Equals(file.ID)))
                                         {
-                                            <li class="list-group-item">@value.FieldName - <span id="@value.FieldID">@value.Value</span></li>
+                                            <li class="list-group-item">
+                                                <div class="form-group">
+                                                    <!--@value.FieldName - <span id="@value.FieldID">@value.Value</span>-->
+                                                    <label for="@value.FieldID">@value.FieldName:</label>
+                                                    <input @bind-value="value.Value" name="@value.FieldID" id="@value.FieldID" class="form-control" />
+                                                </div>
+                                            </li>
                                         }
                                     </ul>
                                 }
@@ -274,36 +280,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!--Verficition modal-->
-        <div id="verificationModal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><span class="oi oi-eye"></span> Results verification</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        @if (fieldValues != null)
-                        {
-                            @foreach (var value in fieldValues.Where(i => i.Value.Equals("Not recognized.")))
-                            {
-                                <label for="@value.ID">@value.FieldName</label>
-                                <input @bind-value="@value.Value" name="@value.ID" id="@value.ID" placeholder="Enter field value..." />
-                            }
-                        }
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-dismiss="modal" @onclick="ContinueProcessingAfterVerification">Submit</button>
+                        <button type="button" class="btn btn-success @VerificationSubmitButtonCssClass" data-dismiss="modal" @onclick="ContinueProcessingAfterVerification">Submit</button>
                         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
@@ -340,6 +317,10 @@
             private Dictionary<string, List<Field>> nonIdFields;
 
             private List<FieldValue> fieldValues = new List<FieldValue>();
+
+            private bool isVerificationSubmitButtonHidden = true;
+
+            private string VerificationSubmitButtonCssClass => isVerificationSubmitButtonHidden ? "d-none" : null;
 
             private bool isContinueButtonHidden = true;
 
@@ -385,6 +366,7 @@
                 }
                 else
                 {
+                    scanTaskProgression["Obtaining custom tasks..."] = true;
                     return;
                 }
 
@@ -516,10 +498,8 @@
                 verificationTaskProgression.Add("Checking if files or fields need user verification", false);
                 var failedFieldValues = fieldValues.Where(i => i.Value.Equals("Not recognized.")).ToList();
                 verificationTaskProgression["Checking if files or fields need user verification"] = true;
-                if (failedFieldValues.Count > 0)
-                {
-                    isDisplayVerificationButtonHidden = false;
-                }
+                isDisplayVerificationButtonHidden = false;
+                isVerificationSubmitButtonHidden = false;
                 //Execute custom js tasks
                 this.StateHasChanged();
                 bool executeJSRes;
