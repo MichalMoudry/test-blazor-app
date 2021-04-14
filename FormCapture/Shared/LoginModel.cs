@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FormCapture.Shared
 {
@@ -14,12 +11,12 @@ namespace FormCapture.Shared
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
-        public string Password { get; set; }
+        [Display(Name = "Confirm password")]
+        public bool KeepMeSignedIn { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        public bool KeepMeSignedIn { get; set; }
+        [Display(Name = "Password")]
+        public string Password { get; set; }
     }
 }

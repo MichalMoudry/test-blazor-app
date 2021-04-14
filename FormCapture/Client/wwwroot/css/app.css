@@ -365,4 +365,14 @@ app {
     align-items: center;
     text-align: center;
     min-height: 100vh;
+    margin: 0 auto;
+    width: 100px;
+}
+
+#password-info {
+    text-align: left;
+}
+
+#password-info ul {
+    margin-bottom: 0px;
 }

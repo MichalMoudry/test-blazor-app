@@ -29,7 +29,7 @@
         </select>
     </div>
 
-    <button @onclick="SubmitForm" class="btn btn-primary">Submit</button>
+    <button @onclick="SubmitForm" class="btn btn-primary" disabled="@isSubmitButtonDisabled">Submit</button>
 
     <div class="d-flex justify-content-center">
         <div class="spinner-border text-primary @LoadingIndicatorCssClass" role="status">
@@ -40,6 +40,15 @@
 
 <div class="alert alert-danger form-alert @FormAlertCssClass" role="alert">
     Registration form wasn't properly completed. Or user is already registered.
+</div>
+
+<div class="alert alert-info form-alert" id="password-info" role="alert">
+    Password must be <b>at least 6 characters total</b>:
+    <ul>
+        <li>at least one digit</li>
+        <li>one lower and upper case character</li>
+        <li>one non-alpha numeric character</li>
+    </ul>
 </div>
 
 @code
@@ -56,9 +65,12 @@
 
     private string FormAlertCssClass => isFormAlertDisplayed ? "d-block" : "d-none";
 
+    private bool isSubmitButtonDisabled = false;
+
     private async Task SubmitForm()
     {
         isFormAlertDisplayed = false;
+        isSubmitButtonDisabled = true;
         if (!string.IsNullOrEmpty(model.Email) && !string.IsNullOrEmpty(model.Password) && !string.IsNullOrEmpty(model.ConfirmationPassword))
         {
             if (string.IsNullOrEmpty(accountRole))
@@ -72,6 +84,7 @@
                 bool res = await AuthenticationService.RegisterUser(model);
                 if (res)
                 {
+                    isSubmitButtonDisabled = false;
                     NavigationManager.NavigateTo("/login");
                 }
                 else
@@ -85,5 +98,6 @@
         {
             isFormAlertDisplayed = true;
         }
+        isSubmitButtonDisabled = false;
     }
 }

@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FormCapture.Shared
 {
     public class RegistrationModel
     {
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        public string ConfirmationPassword { get; set; }
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -17,11 +19,6 @@ namespace FormCapture.Shared
         [Display(Name = "Password")]
         [StringLength(1000, MinimumLength = 6)]
         public string Password { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        public string ConfirmationPassword { get; set; }
 
         [Required]
         [RegularExpression(@"(^Admin$|^Workflow admin$|^User$)")]
