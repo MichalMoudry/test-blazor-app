@@ -15,3 +15,8 @@
 /.vs
 /FormCapture/Client/bin/Debug/net5.0
 /FormCapture/Client/FormCapture.Client.csproj.user
+/FormCapture/Client/bin/Release/net5.0
+/FormCapture/Server/bin/Release/net5.0
+/FormCapture/Server/Properties/PublishProfiles
+/FormCapture/Server/FormCapture.Server.csproj.user
+/FormCapture/Shared/bin/Release/netstandard2.1
