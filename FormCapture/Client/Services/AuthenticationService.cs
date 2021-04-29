@@ -9,6 +9,12 @@ using System.Threading.Tasks;
 
 namespace FormCapture.Client.Services
 {
+    /// <summary>
+    /// Authentication service class.
+    /// 
+    /// Sources:
+    /// SAINTY, Chris, 2019. Authentication with client-side Blazor using WebAPI and ASP.NET Core Identity. Chris Sainty [online]. [vid. 2021-04-29]. Dostupné z: https://chrissainty.com/securing-your-blazor-apps-authentication-with-clientside-blazor-using-webapi-aspnet-core-identity/
+    /// </summary>
     public class AuthenticationService : IAuthenticationService
     {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
