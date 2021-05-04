@@ -2,17 +2,16 @@
 @inject NavigationManager NavigationManager
 @page "/"
 
-<h1>Form Capture</h1>
+<h1 class="mb-4">
+    <img src="/favicon.ico" alt="Form Capture logo" draggable="false" class="mb-3 mr-2" />
+    <span>Form Capture</span>
+</h1>
 
 <p id="app-description">
     FormCapture is an app for creating complete digitalization workflow using OCR.
 </p>
 
-<p>
-    <a>Learn more...</a>
-</p>
-
-<div class="container">
+<div class="container mt-3">
     <div class="row">
         <div class="col-2">
             <button type="button" @onclick="@(e => Navigate("/login"))" class="btn btn-light"><span class="oi oi-account-login"></span> Log in</button>

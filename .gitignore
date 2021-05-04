@@ -20,3 +20,4 @@
 /FormCapture/Server/Properties/PublishProfiles
 /FormCapture/Server/FormCapture.Server.csproj.user
 /FormCapture/Shared/bin/Release/netstandard2.1
+/FormCapture/Server/Properties/ServiceDependencies/FormCaptureServer - Web Deploy/profile.arm.json

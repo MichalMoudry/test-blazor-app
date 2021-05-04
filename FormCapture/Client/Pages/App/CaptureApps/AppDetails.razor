@@ -24,16 +24,19 @@
                                 <div class="col">
                                     <h4><span class="oi oi-info mr-2"></span> App information</h4>
                                 </div>
-                                <div class="col-1">
-                                    <button class="btn" type="button" data-toggle="modal" data-target="#appEditModal">
-                                        <span class="oi oi-pencil pointer"></span>
-                                    </button>
-                                </div>
-                                <div class="col-1">
-                                    <button class="btn" type="button" data-toggle="modal" @onclick="DeleteApp">
-                                        <span class="oi oi-trash pointer"></span>
-                                    </button>
-                                </div>
+                                @if (context.User.IsInRole("Admin"))
+                                {
+                                    <div class="col-1">
+                                        <button class="btn" type="button" data-toggle="modal" data-target="#appEditModal">
+                                            <span class="oi oi-pencil pointer"></span>
+                                        </button>
+                                    </div>
+                                    <div class="col-1">
+                                        <button class="btn" type="button" data-toggle="modal" @onclick="DeleteApp">
+                                            <span class="oi oi-trash pointer"></span>
+                                        </button>
+                                    </div>
+                                }
                             </div>
                         </div>
 
