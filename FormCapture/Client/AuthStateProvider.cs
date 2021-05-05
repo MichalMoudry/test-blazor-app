@@ -1,19 +1,18 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using Blazored.LocalStorage;
+using FormCapture.Client.Helpers;
+using Microsoft.AspNetCore.Components.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Blazored.LocalStorage;
 using System.Security.Claims;
-using System.Net.Http;
 using System.Text.Json;
-using FormCapture.Client.Helpers;
+using System.Threading.Tasks;
 
 namespace FormCapture.Client
 {
     /// <summary>
     /// Authentication state provider class.
-    /// 
+    ///
     /// Sources:
     /// SAINTY, Chris, 2019. Authentication with client-side Blazor using WebAPI and ASP.NET Core Identity. Chris Sainty [online]. [vid. 2021-04-29]. Dostupné z: https://chrissainty.com/securing-your-blazor-apps-authentication-with-clientside-blazor-using-webapi-aspnet-core-identity/
     /// </summary>
@@ -47,6 +46,21 @@ namespace FormCapture.Client
             NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()))));
         }
 
+        private static byte[] ParseBase64WithoutPadding(string base64)
+        {
+            switch (base64.Length % 4)
+            {
+                case 2:
+                    base64 += "==";
+                    break;
+
+                case 3:
+                    base64 += "=";
+                    break;
+            }
+            return Convert.FromBase64String(base64);
+        }
+
         private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
         {
             List<Claim> claims = new List<Claim>();
@@ -59,20 +73,6 @@ namespace FormCapture.Client
             ClaimsHelper.Instance().SetClaims(claims);
             ClaimsHelper.Instance().SetToken(jwt);
             return claims;
-        }
-
-        private static byte[] ParseBase64WithoutPadding(string base64)
-        {
-            switch (base64.Length % 4)
-            {
-                case 2:
-                    base64 += "==";
-                    break;
-                case 3:
-                    base64 += "=";
-                    break;
-            }
-            return Convert.FromBase64String(base64);
         }
     }
 }

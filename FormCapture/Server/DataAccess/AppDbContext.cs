@@ -38,6 +38,8 @@ namespace FormCapture.Server.DataAccess
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            //Source:
+            //SAINTY, Chris, 2019. Configuring Role-based Authorization with client-side Blazor. Chris Sainty [online]. [vid. 2021-05-05]. Dostupné z: https://chrissainty.com/securing-your-blazor-apps-configuring-role-based-authorization-with-client-side-blazor/
             builder.Entity<IdentityRole>().HasData(new IdentityRole() { Id = Guid.NewGuid().ToString(), Name = "Admin", NormalizedName = "ADMIN", ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<IdentityRole>().HasData(new IdentityRole() { Id = Guid.NewGuid().ToString(), Name = "Workflow admin", NormalizedName = "WORKFLOW ADMIN", ConcurrencyStamp = Guid.NewGuid().ToString() });
             builder.Entity<IdentityRole>().HasData(new IdentityRole() { Id = Guid.NewGuid().ToString(), Name = "User", NormalizedName = "USER", ConcurrencyStamp = Guid.NewGuid().ToString() });
